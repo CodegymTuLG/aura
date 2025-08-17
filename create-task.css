@@ -1,0 +1,99 @@
+
+
+.task-creation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: 600;
+}
+
+input[type="text"], input[type="number"], input[type="date"], textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+ 
+#create-task{
+    padding: 10px 20px;
+    background-color: #388e3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#create-task:hover {
+    background-color: #64c969;
+}
+
+#create-task:active {
+    transform: scale(0.98);
+}
+#add-repeat-task{
+    padding: 10px 20px;
+    background-color: #388e3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#add-repeat-task:hover {
+    background-color: #64c969;
+}
+
+#add-repeat-task:active {
+    transform: scale(0.98);
+}
+.form-actions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: space-between;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+input[type="checkbox"] {
+    margin: 0;
+}
+
+
+
+#store-filter {
+    width: 80%;
+    display: inline-block;
+}

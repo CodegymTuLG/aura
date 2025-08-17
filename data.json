@@ -1,0 +1,486 @@
+[
+  {
+    "id": 1,
+    "name": "Clean ice cream machine",
+    "status": "Completed",
+    "deadline": "30/06",
+    "date": "30/06",
+    "re": "10M",
+    "comment": "đã hoàn thành bình thường"
+  },
+  {
+    "id": 2,
+    "name": "Clean front door",
+    "status": "Completed",
+    "deadline": "30/06",
+    "date": "30/06",
+    "re": "5M",
+    "comment": "ádasdasdad"
+  },
+  {
+    "id": 3,
+    "name": "Clean table",
+    "status": "Completed",
+    "deadline": "30/06",
+    "date": "30/06",
+    "re": "10M",
+    "comment": "test thử"
+  },
+  {
+    "id": 4,
+    "name": "Clean ice cream machine",
+    "status": "Completed",
+    "deadline": "02/07",
+    "date": "30/06",
+    "re": "10M",
+    "comment": "ádasdasd"
+  },
+  {
+    "id": 5,
+    "name": "Clean front door",
+    "status": "Completed",
+    "comment": "1232412312312312",
+    "deadline": "02/07",
+    "date": "30/06",
+    "re": "5M"
+  },
+  {
+    "id": 6,
+    "name": "Clean table",
+    "status": "Completed",
+    "deadline": "02/07",
+    "date": "30/06",
+    "re": "10M",
+    "comment": "ấccsasc"
+  },
+  {
+    "id": 7,
+    "name": "Clean table",
+    "status": "Not yet",
+    "deadline": "02/07",
+    "date": "02/07",
+    "re": "10M"
+  },
+  {
+    "id": 8,
+    "name": "Clean table",
+    "status": "Completed",
+    "deadline": "02/07",
+    "date": "02/07",
+    "re": "10M",
+    "comment": "test đăng ký thành công"
+  },
+  {
+    "id": 9,
+    "name": "Clean table",
+    "status": "Completed",
+    "deadline": "02/07",
+    "date": "02/07",
+    "re": "10M",
+    "comment": "test đăng ký"
+  },
+  {
+    "id": 10,
+    "name": "Clean table",
+    "status": "Not yet",
+    "deadline": "02/07",
+    "date": "02/07",
+    "re": "10M"
+  },
+  {
+    "id": 11,
+    "name": "Clean kitchen floor",
+    "status": "Completed",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "15M",
+    "comment": "Cleaned the entire kitchen floor."
+  },
+  {
+    "id": 12,
+    "name": "Stock shelves",
+    "status": "Not yet",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "20M",
+    "comment": "Waiting for new stock."
+  },
+  {
+    "id": 13,
+    "name": "Clean the windows",
+    "status": "Completed",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "10M",
+    "comment": "Windows cleaned thoroughly."
+  },
+  {
+    "id": 14,
+    "name": "Organize the storage area",
+    "status": "Completed",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "15M",
+    "comment": "Reorganized items in storage."
+  },
+  {
+    "id": 15,
+    "name": "Disinfect the restroom",
+    "status": "Not yet",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "12M",
+    "comment": "Scheduled for later today."
+  },
+  {
+    "id": 16,
+    "name": "Clean front desk",
+    "status": "Completed",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "8M",
+    "comment": "Front desk cleaned."
+  },
+  {
+    "id": 17,
+    "name": "Check inventory",
+    "status": "Not yet",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "5M",
+    "comment": "Inventory check pending."
+  },
+  {
+    "id": 18,
+    "name": "Wipe down tables",
+    "status": "Completed",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "10M",
+    "comment": "Tables wiped and sanitized."
+  },
+  {
+    "id": 19,
+    "name": "Check air conditioning",
+    "status": "Completed",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "7M",
+    "comment": "Air conditioning checked and cleaned."
+  },
+  {
+    "id": 20,
+    "name": "Sweep the floor",
+    "status": "Not yet",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "10M",
+    "comment": "Pending sweep of the floor."
+  },
+  {
+    "id": 21,
+    "name": "Check stock levels",
+    "status": "Completed",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "25M",
+    "comment": "Checked all stock levels and placed necessary orders."
+  },
+  {
+    "id": 22,
+    "name": "Clean display windows",
+    "status": "Not yet",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "10M",
+    "comment": "Scheduled for cleaning by end of day."
+  },
+  {
+    "id": 23,
+    "name": "Vacuum the floor",
+    "status": "Completed",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "12M",
+    "comment": "Floor vacuumed and cleaned thoroughly."
+  },
+  {
+    "id": 24,
+    "name": "Organize staff schedules",
+    "status": "Not yet",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "15M",
+    "comment": "Schedules need to be finalized."
+  },
+  {
+    "id": 25,
+    "name": "Refill supplies",
+    "status": "Completed",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "10M",
+    "comment": "All supplies refilled and restocked."
+  },
+  {
+    "id": 26,
+    "name": "Check cleaning equipment",
+    "status": "Not yet",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "8M",
+    "comment": "Cleaning equipment needs checking for maintenance."
+  },
+  {
+    "id": 27,
+    "name": "Inspect fire exits",
+    "status": "Completed",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "12M",
+    "comment": "All fire exits inspected and clear."
+  },
+  {
+    "id": 28,
+    "name": "Prepare safety equipment",
+    "status": "Not yet",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "10M",
+    "comment": "Safety equipment needs to be prepared and checked."
+  },
+  {
+    "id": 29,
+    "name": "Update product display",
+    "status": "Completed",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "20M",
+    "comment": "Product display updated with new items."
+  },
+  {
+    "id": 30,
+    "name": "Test emergency lights",
+    "status": "Not yet",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "7M",
+    "comment": "Emergency lights testing pending."
+  },
+  {
+    "id": 31,
+    "name": "Update inventory system",
+    "status": "Completed",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "30M",
+    "comment": "Inventory system updated with new stock entries."
+  },
+  {
+    "id": 32,
+    "name": "Test store security system",
+    "status": "Not yet",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "15M",
+    "comment": "Scheduled for testing by security team."
+  },
+  {
+    "id": 33,
+    "name": "Reorganize stockroom",
+    "status": "Completed",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "18M",
+    "comment": "Stockroom reorganized and shelves restocked."
+  },
+  {
+    "id": 34,
+    "name": "Conduct staff training",
+    "status": "Not yet",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "20M",
+    "comment": "Training session for new staff members to be scheduled."
+  },
+  {
+    "id": 35,
+    "name": "Check product quality",
+    "status": "Completed",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "25M",
+    "comment": "Product quality checked and samples taken for testing."
+  },
+  {
+    "id": 36,
+    "name": "Test cash register",
+    "status": "Not yet",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "10M",
+    "comment": "Cash register testing scheduled for tomorrow."
+  },
+  {
+    "id": 37,
+    "name": "Check lighting in store",
+    "status": "Completed",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "12M",
+    "comment": "Lighting in the store checked and adjusted."
+  },
+  {
+    "id": 38,
+    "name": "Update marketing materials",
+    "status": "Not yet",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "30M",
+    "comment": "New marketing materials need to be updated in the system."
+  },
+  {
+    "id": 39,
+    "name": "Check air conditioning system",
+    "status": "Completed",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "10M",
+    "comment": "Air conditioning system inspected and repaired."
+  },
+  {
+    "id": 40,
+    "name": "Prepare store for new arrivals",
+    "status": "Not yet",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "12M",
+    "comment": "Store layout needs to be adjusted for new stock arrivals."
+  },
+  {
+    "id": 41,
+    "name": "Finalize product launch plans",
+    "status": "Overdue",
+    "deadline": "04/07",
+    "date": "05/07",
+    "re": "15M",
+    "comment": "The product launch plans were due yesterday."
+  },
+  {
+    "id": 42,
+    "name": "Fix broken display units",
+    "status": "On Progress",
+    "deadline": "07/07",
+    "date": "05/07",
+    "re": "20M",
+    "comment": "Currently repairing the broken units, expected to finish soon."
+  },
+  {
+    "id": 43,
+    "name": "Complete inventory check",
+    "status": "Overdue",
+    "deadline": "04/07",
+    "date": "05/07",
+    "re": "30M",
+    "comment": "Inventory check was due yesterday but has not been completed."
+  },
+  {
+    "id": 44,
+    "name": "Replenish cleaning supplies",
+    "status": "On Progress",
+    "deadline": "06/07",
+    "date": "05/07",
+    "re": "12M",
+    "comment": "Cleaning supplies are being ordered, expected to arrive soon."
+  },
+  {
+    "id": 45,
+    "name": "Clean refrigeration units",
+    "status": "Completed",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "15M",
+    "comment": "All refrigeration units cleaned and checked."
+  },
+  {
+    "id": 46,
+    "name": "Prepare product showcase",
+    "status": "Not yet",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "20M",
+    "comment": "Product showcase is scheduled for tomorrow."
+  },
+  {
+    "id": 47,
+    "name": "Update employee records",
+    "status": "Completed",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "10M",
+    "comment": "Employee records updated and stored securely."
+  },
+  {
+    "id": 48,
+    "name": "Fix leaking pipe in restroom",
+    "status": "On Progress",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "25M",
+    "comment": "The pipe is being fixed by maintenance; expected to be done today."
+  },
+  {
+    "id": 49,
+    "name": "Check safety alarms",
+    "status": "Not yet",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "30M",
+    "comment": "Safety alarms need to be tested and reset."
+  },
+  {
+    "id": 50,
+    "name": "Staff schedule updates",
+    "status": "Completed",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "12M",
+    "comment": "Staff schedules updated and sent to HR."
+  },
+  {
+    "id": 51,
+    "name": "Replace store signage",
+    "status": "Not yet",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "18M",
+    "comment": "New signage for the store is scheduled for installation."
+  },
+  {
+    "id": 52,
+    "name": "Review customer feedback",
+    "status": "Completed",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "20M",
+    "comment": "All customer feedback reviewed and actioned where needed."
+  },
+  {
+    "id": 53,
+    "name": "Inspect fire extinguishers",
+    "status": "On Progress",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "22M",
+    "comment": "Fire extinguisher inspection is ongoing, will complete by end of day."
+  },
+  {
+    "id": 54,
+    "name": "Clean public areas",
+    "status": "Completed",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "10M",
+    "comment": "Public areas cleaned and inspected by the housekeeping team."
+  }
+]

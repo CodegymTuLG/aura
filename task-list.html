@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <!-- <link rel="stylesheet" href="hq-screen.css"> -->
+    <link rel="stylesheet" href="hq-screen.css">
+    <link rel="stylesheet" href="task-list.css">
+    <link rel="stylesheet" href="common/styles-common.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HQ SYSTEM</h1>
+        </header>
+
+        <!-- Home Screen -->
+        <div class="home-screen">
+            <button id="store-screen">Go to Store screen</button>
+        </div>
+    <section style="text-align: center;">
+        <button id="go-to-task-list">View Task List</button>
+        <button id="go-to-create-task">Assign New Task</button>
+        <button id="go-to-store-list">Manage Stores</button>
+        <button id="go-to-reports">View Reports</button>
+    </section>
+</div>
+  <div class="container">
+            <h2 style="text-align: left;">Task List</h1>
+
+
+        <div class="chart-controls">
+        <button id="togglePie" class="chart-toggle red">Hiện biểu đồ tiến độ</button>
+        <button id="toggleBar" class="chart-toggle red">Hiện biểu đồ thống kê theo tuần</button>
+        </div>
+            <div class="charts-container">
+                <div>
+                    <canvas id="progressPieChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="progressBarChart"></canvas>
+                </div>
+            </div>
+
+
+        
+    <div class="filters">
+      <input type="date" id="startDate" />
+      <input type="date" id="endDate" />
+      <input type="text" id="taskSearch" placeholder="Search by Task Name..." />
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th id="weekFilter" class="clickable">Week</th>
+          <th id="respFilter" class="clickable">Responsible</th>
+          <th>Task</th>
+          <th>Progress</th>
+          <th>Stores Unable</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="taskTableBody">
+        <!-- Rendered dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+</body>
+  <script src="task-list.js"></script>
+    <script src="hq-index.js"></script> 
+</html>

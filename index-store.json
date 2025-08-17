@@ -1,0 +1,272 @@
+[
+  {
+    "id": 1,
+    "name": "Clean ice cream machine",
+    "status": "Completed",
+    "deadline": "30/06",
+    "date": "30/06",
+    "re": "10M",
+    "comment": "Completed successfully"
+  },
+  {
+    "id": 2,
+    "name": "Clean front door",
+    "status": "Not yet",
+    "deadline": "01/07",
+    "date": "01/07",
+    "re": "5M",
+    "comment": "Pending"
+  },
+  {
+    "id": 3,
+    "name": "Clean table",
+    "status": "Completed",
+    "deadline": "02/07",
+    "date": "02/07",
+    "re": "7M",
+    "comment": "Completed successfully"
+  },
+  {
+    "id": 4,
+    "name": "Check inventory",
+    "status": "Not yet",
+    "deadline": "03/07",
+    "date": "03/07",
+    "re": "2M",
+    "comment": "Pending"
+  },
+  {
+    "id": 5,
+    "name": "Prepare shipping",
+    "status": "In progress",
+    "deadline": "04/07",
+    "date": "04/07",
+    "re": "15M",
+    "comment": "Shipping process ongoing"
+  },
+  {
+    "id": 6,
+    "name": "Inspect refrigeration system",
+    "status": "Completed",
+    "deadline": "05/07",
+    "date": "05/07",
+    "re": "20M",
+    "comment": "Refrigeration system checked"
+  },
+  {
+    "id": 7,
+    "name": "Stock shelves",
+    "status": "Not yet",
+    "deadline": "06/07",
+    "date": "06/07",
+    "re": "12M",
+    "comment": "Task still pending"
+  },
+  {
+    "id": 8,
+    "name": "Clean restrooms",
+    "status": "In progress",
+    "deadline": "07/07",
+    "date": "07/07",
+    "re": "10M",
+    "comment": "Cleaning underway"
+  },
+  {
+    "id": 9,
+    "name": "Restock pantry",
+    "status": "Completed",
+    "deadline": "08/07",
+    "date": "08/07",
+    "re": "5M",
+    "comment": "Restocking completed"
+  },
+  {
+    "id": 10,
+    "name": "Test fire safety equipment",
+    "status": "Not yet",
+    "deadline": "09/07",
+    "date": "09/07",
+    "re": "15M",
+    "comment": "Task pending"
+  },
+  {
+    "id": 11,
+    "name": "Check for pest issues",
+    "status": "In progress",
+    "deadline": "10/07",
+    "date": "10/07",
+    "re": "18M",
+    "comment": "Inspection ongoing"
+  },
+  {
+    "id": 12,
+    "name": "Staff meeting",
+    "status": "Completed",
+    "deadline": "11/07",
+    "date": "11/07",
+    "re": "0M",
+    "comment": "Meeting concluded"
+  },
+  {
+    "id": 13,
+    "name": "Order new stock",
+    "status": "Not yet",
+    "deadline": "12/07",
+    "date": "12/07",
+    "re": "8M",
+    "comment": "Pending order"
+  },
+  {
+    "id": 14,
+    "name": "Update software",
+    "status": "Completed",
+    "deadline": "13/07",
+    "date": "13/07",
+    "re": "10M",
+    "comment": "Software updated"
+  },
+  {
+    "id": 15,
+    "name": "Test machines",
+    "status": "In progress",
+    "deadline": "14/07",
+    "date": "14/07",
+    "re": "3M",
+    "comment": "Testing ongoing"
+  },
+  {
+    "id": 16,
+    "name": "Clean windows",
+    "status": "Completed",
+    "deadline": "15/07",
+    "date": "15/07",
+    "re": "20M",
+    "comment": "Windows cleaned"
+  },
+  {
+    "id": 17,
+    "name": "Organize inventory",
+    "status": "Not yet",
+    "deadline": "16/07",
+    "date": "16/07",
+    "re": "25M",
+    "comment": "Pending task"
+  },
+  {
+    "id": 18,
+    "name": "Deep clean kitchen",
+    "status": "In progress",
+    "deadline": "17/07",
+    "date": "17/07",
+    "re": "30M",
+    "comment": "Cleaning in process"
+  },
+  {
+    "id": 19,
+    "name": "Check air conditioning",
+    "status": "Completed",
+    "deadline": "18/07",
+    "date": "18/07",
+    "re": "5M",
+    "comment": "Task completed"
+  },
+  {
+    "id": 20,
+    "name": "Prepare promotional materials",
+    "status": "Not yet",
+    "deadline": "19/07",
+    "date": "19/07",
+    "re": "12M",
+    "comment": "Pending task"
+  },
+  {
+    "id": 21,
+    "name": "Fix broken shelf",
+    "status": "In progress",
+    "deadline": "20/07",
+    "date": "20/07",
+    "re": "5M",
+    "comment": "Under repair"
+  },
+  {
+    "id": 22,
+    "name": "Clean storage area",
+    "status": "Completed",
+    "deadline": "21/07",
+    "date": "21/07",
+    "re": "18M",
+    "comment": "Storage cleaned"
+  },
+  {
+    "id": 23,
+    "name": "Update inventory list",
+    "status": "Not yet",
+    "deadline": "22/07",
+    "date": "22/07",
+    "re": "20M",
+    "comment": "Pending"
+  },
+  {
+    "id": 24,
+    "name": "Service coffee machine",
+    "status": "Completed",
+    "deadline": "23/07",
+    "date": "23/07",
+    "re": "10M",
+    "comment": "Task completed"
+  },
+  {
+    "id": 25,
+    "name": "Restock cleaning supplies",
+    "status": "Not yet",
+    "deadline": "24/07",
+    "date": "24/07",
+    "re": "15M",
+    "comment": "Stock not yet received"
+  },
+  {
+    "id": 26,
+    "name": "Staff training",
+    "status": "In progress",
+    "deadline": "25/07",
+    "date": "25/07",
+    "re": "30M",
+    "comment": "Training ongoing"
+  },
+  {
+    "id": 27,
+    "name": "Check lighting system",
+    "status": "Completed",
+    "deadline": "26/07",
+    "date": "26/07",
+    "re": "20M",
+    "comment": "Checked and fixed"
+  },
+  {
+    "id": 28,
+    "name": "Restock shelves",
+    "status": "Not yet",
+    "deadline": "27/07",
+    "date": "27/07",
+    "re": "8M",
+    "comment": "Pending"
+  },
+  {
+    "id": 29,
+    "name": "Check fire alarm",
+    "status": "In progress",
+    "deadline": "28/07",
+    "date": "28/07",
+    "re": "5M",
+    "comment": "Test ongoing"
+  },
+  {
+    "id": 30,
+    "name": "Set up POS system",
+    "status": "Completed",
+    "deadline": "29/07",
+    "date": "29/07",
+    "re": "12M",
+    "comment": "Completed setup"
+  }
+]

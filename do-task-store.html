@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link rel="stylesheet" href="index-store.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <h1>Task List</h1>
+        <button id="back-to-home">Back to Home</button>
+    </header>
+
+    <!-- Task Filters -->
+    <section id="task-filters">
+        <h2>Filter Tasks</h2>
+        <button data-status="active">Active</button>
+        <button data-status="completed">Completed</button>
+        <button data-status="notyet">Not Yet</button>
+        <input type="date" id="task-date-filter">
+    </section>
+
+    <!-- Calendar -->
+    <section id="calendar" class="calendar">
+        <!-- Days will be rendered here dynamically -->
+    </section>
+
+    <!-- Task List -->
+    <section id="task-list">
+        <table id="task-table">
+            <thead>
+                <tr>
+                    <th>Store</th>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows for tasks will be dynamically added here -->
+            </tbody>
+        </table>
+    </section>
+
+    <script src="index-store.js"></script>
+</body>
+</html>

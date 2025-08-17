@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="hq-screen.css">
+    <link rel="stylesheet" href="report.css">
+    <link rel="stylesheet" href="common/styles-common.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+        <header>
+            <h1>HQ SYSTEM</h1>
+        </header>
+
+        <!-- Home Screen -->
+        <div class="home-screen">
+            <button id="store-screen">Go to Store screen</button>
+        </div>
+    <section style="text-align: center;">
+        <button id="go-to-task-list">View Task List</button>
+        <button id="go-to-create-task">Assign New Task</button>
+        <button id="go-to-store-list">Manage Stores</button>
+        <button id="go-to-reports">View Reports</button>
+    </section>
+
+  <div class="container">
+            <h2 style="text-align: left;">Reports</h1>
+        <!-- Left section: Chart -->
+        <div class="chart-section">
+            <canvas id="taskCompletionChart"></canvas>
+        </div>
+ 
+        <div class="task-info-section"> 
+            <table id="task-table">
+                <thead>
+                    <tr>
+                        <th>Store</th>
+                        <th>W22</th>
+                        <th>W23</th>
+                        <th>W24</th>
+                        <th>W25</th>
+                        <th>W26</th>
+                        <th>W27</th>
+                        <th>W28</th>
+                        <th>W29</th>
+                        <th>W30</th>
+                        <th>W31</th>
+                        <th>W32</th>
+                        <th>W33</th>
+                        <th>W34</th>
+                        <th>Average</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+            </table>
+        </div>
+
+         <!-- Left Section: Bar Chart -->
+        <div class="chart-section">
+            <canvas id="taskReviewBarChart"></canvas>
+        </div>
+
+        <!-- Right Section: Task Data Table -->
+        <div class="task-info-section">
+            <table id="task-table2">
+                <thead>
+                <tr>
+                    <th>Dept</th>
+                    <th colspan="2">W22</th>
+                    <th colspan="2">W23</th>
+                    <th colspan="2">W24</th>
+                    <th colspan="2">W25</th>
+                    <th colspan="2">W26</th>
+                    <th colspan="2">W27</th>
+                    <th colspan="2">W28</th>
+                    <th colspan="2">W29</th>
+                    <th colspan="2">W30</th>
+                    <th colspan="2">W31</th>
+                    <th colspan="2">W32</th>
+                    <th colspan="2">W33</th>
+                    <th colspan="2">W34</th>
+                    <th rowspan="2">Total Tasks</th>
+                    <th rowspan="2">% PL</th>
+                    <th rowspan="2">% UnPL</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <th>PL</th>
+                    <th>UnPL</th>
+                    <!-- <th>Total Tasks</th>
+                    <th>% PL</th>
+                    <th>% UnPL</th> -->
+                </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+  
+  <script src="report.js"></script>
+    <script src="hq-index.js"></script> 
+</body>
+</html>

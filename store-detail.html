@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Detail</title>
+    <link rel="stylesheet" href="hq-screen.css">
+    <link rel="stylesheet" href="store-detail.css">
+    <link rel="stylesheet" href="common/styles-common.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>HQ SYSTEM</h1>
+        </header>
+
+        <!-- Home Screen -->
+        <div class="home-screen">
+            <button id="store-screen">Go to Store screen</button>
+        </div>
+    <section style="text-align: center;">
+        <button id="go-to-task-list">View Task List</button>
+        <button id="go-to-create-task">Assign New Task</button>
+        <button id="go-to-store-list">Manage Stores</button>
+        <button id="go-to-reports">View Reports</button>
+    </section>
+  <div class="container">
+            <span style="text-align: left;font-weight: bold;font-size: 18px;;">Store Detail</span>
+            <button id="export-csv" >Export CSV</button>
+ 
+
+    <section id="task-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>StoreName</th>
+                    <th>Area</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>R_Start</th>
+                    <th>R_End</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Task rows will be inserted here dynamically -->
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div id="pagination" style=" text-align: center">
+            <span> << </span> 
+            <span>2/51</span> 
+            <span> >> </span>
+        </div>
+    </section>
+                
+    </div>
+</div>
+ 
+ 
+  <script src="store-detail.js"></script>
+    <script src="hq-index.js"></script> 
+</body>
+</html>

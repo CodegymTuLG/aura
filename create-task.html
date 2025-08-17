@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Task</title>
+    <link rel="stylesheet" href="common/styles-common.css">
+    <link rel="stylesheet" href="hq-screen.css">
+    <link rel="stylesheet" href="create-task.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HQ SYSTEM</h1>
+        </header>
+
+        <!-- Home Screen -->
+        <div class="home-screen">
+            <button id="store-screen">Go to Store screen</button>
+        </div>
+    <section style="text-align: center;">
+        <button id="go-to-task-list">View Task List</button>
+        <button id="go-to-create-task">Assign New Task</button>
+        <button id="go-to-store-list">Manage Stores</button>
+        <button id="go-to-reports">View Reports</button>
+    </section>
+            <h2 style="text-align: left;">Create Task</h1>
+
+     <section class="task-creation">
+
+            <div class="form-group">
+                <label style="font-weight: bold;" for="is-repeate">Is Repeat:</label>
+                    <span style="font-weight: bold;" for="is-repeate-yes">Yes</span>
+                        <input type="radio" id="is-repeate-yes">
+                    <span style="font-weight: bold;" for="is-repeate-no">No</span>
+                        <input type="radio" id="is-repeate-no">
+                    <br>
+                <br>
+                <label for="start">Start:</label>
+                <input type="date" id="start" width="50px">
+                <label for="end">End:</label>
+                <input type="date" id="end" width="50px">    
+            </div>
+
+            <div class="form-group">
+                <label for="keyword">Keyword:</label>
+                <input type="text" id="keyword" value="ACC-ADMIN-00001">
+                <br>
+                <br>
+                 <label for="manual">Manual:</label>
+                <input type="text" id="manual" placeholder="paste link here">
+                <input type="text" id="manual" placeholder="Upload file PDF, Img, png">
+            </div>
+
+            <div class="form-group">
+            <label for="store-filter">Store list</label>
+            <input type="text" id="store-filter" placeholder="Search by store or region">
+            <br><br>
+            <button id="search-button">Search</button>
+            <button id="check-button">Check</button>
+                    <div class="store-list-container">            
+            <table id="store-list" >
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox"></input>
+                        </th>
+                        <th>StoreCode</th>
+                        <th>StoreName</th>
+                        <th>Region</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Store rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+            </div>
+ 
+            
+            <div class="form-group">
+                <span style="font-weight: bold;" for="re">RE(h):</span>
+                <input type="number" id="task-name" style="width: 30px;">
+                <span style="font-weight: bold;" for="task-name">Task name:</span>
+                <input type="text" id="task-name" placeholder="nhập tên task">
+                <br>
+                <br>
+                <span style="font-weight: bold;" for="task-type">Task type:</span>
+                <select name="task-type" id="task-type" style="height: 34px;">
+                    <option value="1">thống kê</option>
+                    <option value="2">sắp xếp</option>
+                    <option value="3">chuẩn bị</option>
+                </select>
+                <br>
+                <br>
+                <label for="response-type">Response type:</label>
+                <select name="response-type" id="response-type" style="height: 34px;">
+                    <option value="1">img</option>
+                    <option value="2">comment</option>
+                    <option value="3">check list</option>
+                    <option value="4">Yes/No</option>
+                </select>
+                <input type="number" style="width: 30px;">
+                <br><br>
+                <textarea id="task-details" placeholder="viết yêu cầu cho cửa hàng"></textarea>
+            </div>
+  
+
+
+
+            <div class="form-actions">
+                <button id="add-repeat-task">Add Repeat Task</button>
+                <button id="create-task">Create</button>
+            </div>
+        </section>
+     </section>
+
+
+    </script>
+    <script src="hq-index.js"></script> 
+    <script src="create-task.js"></script> 
+</body>
+</html>
