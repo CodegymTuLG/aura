@@ -175,7 +175,7 @@ document.getElementById("toggleBar").addEventListener("click", function () {
             const goToHqScreen = document.getElementById('back-to-home');
             if(goToHqScreen) {
                 goToHqScreen.addEventListener('click', function() {
-                    window.location.href = `hq-index.html`;
+                    window.location.href = `../screen-hq/hq-index.html`;
                 });
             }
 

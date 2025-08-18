@@ -8,31 +8,31 @@ document.addEventListener("DOMContentLoaded", function() {
     if(goToReceivingTaskButton)
     // Redirect to Task List page
     goToReceivingTaskButton.addEventListener('click', function() {
-        window.location.href = `task-list.html`;
+        window.location.href = `../screen-task-list/task-list.html`;
     });
     
     // Redirect to Create Task page
     if(goToCreateTaskButton)
     goToCreateTaskButton.addEventListener('click', function() {
-        window.location.href = `create-task.html`;
+        window.location.href = `../screen-create-task/create-task.html`;
     });
     
     // Redirect to Manage Stores page
     if(goToStoreListButton)
     goToStoreListButton.addEventListener('click', function() {
-        window.location.href = `store-detail.html`;
+        window.location.href = `../screen-store-detail/store-detail.html`;
     });
     
     // Redirect to Reports page
     if(goToReportsButton)
     goToReportsButton.addEventListener('click', function() {
-        window.location.href = `report.html`;
+        window.location.href = `../screen-report/report.html`;
     });
 
         // Redirect to Reports page
     if(goToStoreScreenButton)
     goToStoreScreenButton.addEventListener('click', function() {
-        window.location.href = `index.html`;
+        window.location.href = `../index.html`;
     });
 });
 

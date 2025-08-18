@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backButton) {
         backButton.addEventListener('click', function () {
         console.log('back button click');
-        window.location.href = `index.html`; 
+        window.location.href = `../index.html`; 
         });
     } else {
         console.error("Back button not found!");

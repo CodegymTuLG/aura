@@ -6,9 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const taskStatusButtons = document.querySelectorAll('.status');
     const taskList = document.getElementById('task-list');
     const hqScreen = document.getElementById('hq-screen');
-    const previousWeek = document.getElementById('previous-week');
-    const nextWeek = document.getElementById('next-week');
-    let chooseDate = document.getElementById('choose-date').innerHTML = '30/06'; 
+    
     // Ensure the popup exists
     const registerTaskPopupParent = document.getElementById('register-task-popup_parent');
     const registerTaskPopup = document.getElementById('register-task-popup');
@@ -17,34 +15,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const assignees = ["#ffb703", "#fb8500", "#9b5de5", "#00b4d8", "#d00000"];
     let selectedDay = '30/06';   
     // go to hq-index
-    previousWeek.addEventListener('click', () => {
-        alert('show previous week task');
-    });
-    nextWeek.addEventListener('click', () => {
-        alert('show next week task');
-    });
     if (hqScreen) {
         hqScreen.addEventListener('click', function () {
-        window.location.href = `hq-index.html`; 
+        console.log('go to hq-index');
+        window.location.href = `../screen-hq/hq-index.html`; 
         });
     } 
     if (!registerTaskPopup || !registerTaskForm) {
         console.error("Register Task Popup or Form element is missing!");
     }
-    
+
     // Fetch task data from data.json
-async function loadTasks() {
-    try {
-        const response = await fetch('/data.json'); // đường dẫn tương đối
-        const tasks = await response.json();
-        return tasks;
-    } catch (error) {
-        console.error('Error loading tasks:', error);
-        return [];
-    }
-}
-
-
+            async function loadTasks() {
+                try {
+                    const response = await fetch('./data.json');
+                    console.log('Fetch response:', response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const tasks = await response.json();
+                    console.log('Tasks loaded:', tasks);
+                    return tasks;
+                } catch (error) {
+                    console.error('Error loading tasks:', error);
+                    return [];
+                }
+            }
 
     // Show the Receiving Task screen when button is clicked
     // goToReceivingTaskButton.addEventListener('click', function () {
@@ -58,11 +54,13 @@ async function loadTasks() {
         taskList.innerHTML = ''; // Clear existing task list
         const tasks = await loadTasks();
 
+        console.log("test " + day);
         // Filter tasks based on the selected day and status
         const filteredTasks = tasks.filter(task => task.date.includes(day) && (status ? task.status === status : true));
 
         // Update task stats
         updateTaskStats(tasks, day);
+
         // Check if there are filtered tasks to display
         if (filteredTasks.length === 0) {
             taskList.innerHTML = '<p>No tasks found for this day/status.</p>';
@@ -72,7 +70,6 @@ async function loadTasks() {
             const taskDiv = document.createElement('div');
             const depColor = departments[index % departments.length];
             const userColor = assignees[index % assignees.length];
-            const statusColor = task.status === 'Completed' ? 'green' : 'red';
             taskDiv.classList.add('task');
             taskDiv.innerHTML = `
                     <div class="task-left>
@@ -83,7 +80,7 @@ async function loadTasks() {
                         </div>
                         <div class="task-details"> ${task.name}<br>
                         <small>RE ${task.re} ・ ${task.deadline}</small></div>
-                            <div class="task-status" style="color:${statusColor};">${task.status}</div>
+                            <div class="task-status">${task.status}</div>
                     </div>
             `;
 
@@ -127,42 +124,21 @@ async function loadTasks() {
     // Show Register Task Popup
     function showRegisterTaskPopup(task) {
         // Ensure the registerTaskPopup exists
-        if (registerTaskPopup) {            
-            const popup = document.getElementById('register-task-popup');
-            popup.style.position = 'fixed';
-            popup.style.top = '50%';
-            popup.style.left = '50%';
-            popup.style.transform = 'translate(-50%, -50%)';  // This centers the popup on the screen
-            popup.style.width = '550px';
-            popup.style.height = '600px';
-            popup.style.padding = '20px';
-            popup.style.backgroundColor = 'white';
-            popup.style.borderRadius = '10px';
-            popup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-            popup.style.overflowY = 'auto'; // Add overflow for scrolling if content exceeds the height
+        if (registerTaskPopup) {
             // Fill popup with task data
             registerTaskPopupParent.style.display = 'block'; // Show the popup
             registerTaskPopup.style.display = 'flex!importan'; // Show the popup
             registerTaskForm.innerHTML = `
                 <h3>Register Task: ${task.name}</h3>
-                <a href="https://www.youtube.com/watch?v=8KkX71WBpFE&themeRefresh=1&theme=dark" target="_blank" 
-                style="text-decoration: none; color: #007bff;">Manual</a>
                 <p>Deadline: ${task.deadline}</p>
                 <p>Re: ${task.re}</p>
-                <textarea id="task-comment" name="task-comment" placeholder="Add your comment..." 
-                        style="width: 100%; height: 200px; margin-bottom: 10px; padding: 10px; font-size: 14px;"></textarea>
+                <textarea id="task-comment" name="task-comment" placeholder="Add your comment..."></textarea>
                 <div class="camera-section">
-                    <input id="task-photos" type="file" name="task-photos" accept="image/*" capture="camera" multiple 
-                        style="margin-bottom: 10px;"/>
+                    <input id="task-photos" type="file" name="task-photos" accept="image/*" capture="camera" multiple />
                 </div>
-                <button id="submit-task" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; 
-                        cursor: pointer; border-radius: 5px; font-size: 16px; margin-right: 10px; width: 48%;">Submit</button>
-                <button id="close-popup" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; 
-                        cursor: pointer; border-radius: 5px; font-size: 16px; width: 48%;">Close</button>
+                <button id="submit-task">Submit</button>
+				<button id="close-popup">Close</button>
             `;
-
-
-
 
 document.getElementById('submit-task').addEventListener('click', function () {
     //
@@ -190,6 +166,7 @@ document.getElementById('submit-task').addEventListener('click', function () {
     })
     .then(response => response.json())
     .then(data => {
+        console.log('Task updated:', data);
         alert('Task updated successfully!');
         closePopup(); // Close the popup after successful submission
     })
@@ -246,9 +223,6 @@ document.getElementById('submit-task').addEventListener('click', function () {
         button.addEventListener('click', () => {
             selectedDay = button.dataset.day; // Store the selected day
             renderTasks(selectedDay); // Render tasks based on the day clicked
- 
-            const chooseDate = document.getElementById('choose-date');
-            chooseDate.innerHTML = selectedDay == null?'30/06':selectedDay;
         });
     });
 

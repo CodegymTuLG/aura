@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Task Management</title>
-    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="../common/styles.css"> 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/12.1.0/firebase-app-compat.js"></script>
     <!-- include only the Firebase features as you need -->
@@ -40,16 +40,14 @@
   </head>
 <body>
   <div id="load-status"></div>
+  <div class="container">
+      <header>
+        <h1>STORE SYSTEM</h1>
+      </header>
 
-    <div class="container">
-        <header>
-            <h1>STORE SYSTEM</h1>
-        </header>
-
-        <!-- Home Screen -->
-        <div class="home-screen" >
-            <button id="hq-screen">Go to HQ screen</button>
-        </div>
+      <div class="home-screen" >
+        <button id="hq-screen">Go to HQ screen</button>
+      </div>
 
         <!-- Receiving Task Screen -->
         <div id="receiving-task-screen" class="task-screen">
@@ -123,9 +121,7 @@ const firebaseConfig = {
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-          const features = ['Auth', 'Firestore', 'Storage'];
-
-
+        const features = ['Auth', 'Firestore', 'Storage'];
         const loadEl = document.getElementById('load-status');
                 if (loadEl) {
           // loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
@@ -168,6 +164,6 @@ const firebaseConfig = {
       });
     </script>
     
-    <script src="script.js"></script>
+    <script src="common/script.js"></script>
   </body>
 </html>

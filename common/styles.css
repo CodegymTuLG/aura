@@ -199,16 +199,16 @@ button:hover {
       font-weight: bold;
       z-index: 2;
     } */
-    .active-day-wrapper {
-      background: #d0ebff;
-      border-radius: 0 0 14px 14px;
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      margin-left: -1px;
-      position: relative;
-      top: -1px;
-      z-index: 1;
-    }
+.active-day-wrapper {
+    background: #d0ebff;
+    border-radius: 0 0 14px 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    margin-left: -1px;
+    position: relative;
+    top: -1px;
+    z-index: 1;
+}
 
 #calendar button:hover {
     background-color: #d0ebff;

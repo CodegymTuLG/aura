@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Navigate back to home
     if (backButton) {
         backButton.addEventListener('click', function () {
-            window.location.href = 'index.html'; // Adjust this to your home page
+            window.location.href = '../index.html'; // Adjust this to your home page
         });
     }
 
