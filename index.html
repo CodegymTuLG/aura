@@ -38,87 +38,107 @@
       }
     </style>
   </head>
-<body>
-  <div id="load-status"></div>
-  <div class="container">
-      <header>
-        <h1>STORE SYSTEM</h1>
-      </header>
+  <body>
+    <div id="load-status"></div>
+    <!--Draw body-->
+    <div class="container">
+        <header>
+          <h1>STORE SYSTEM</h1>
+        </header>
 
-      <div class="home-screen" >
-        <button id="hq-screen">Go to HQ screen</button>
-      </div>
+        <div class="home-screen" >
+          <button id="hq-screen">Go to HQ screen</button>
+        </div>
 
         <!-- Receiving Task Screen -->
         <div id="receiving-task-screen" class="task-screen">
-            <div class="week-info">
-                <button id="previous-week"> < </button>
-                <p class="week-number">W27
-                    <span id="choose-date" style="color: red;text-align: end;font-size: 14px;"></span>
-                </p>
-                <button id="next-week"> > </button>
-                <p class="week-dates">30 Jun ~ 06 Jul 2025</p>
+          
+          <!-- Draw Selector Store and Selector Staff -->
+          <div class="selectors">
+            <div class="field">
+              <label for="select-store">Select Store:</label>
+              <select id="select-store" name="store">
+                <option value="" disabled selected hidden>— Chọn Store —</option>
+                <!-- các option -->
+              </select>
             </div>
+            <div class="field">
+              <label for="select-staff">Select Staff:</label>
+              <select id="select-staff" name="staff">
+                <option value="" disabled selected hidden>— Chọn Staff —</option>
+                <!-- các option -->
+              </select>
+            </div>
+          </div>
+          
+          <!-- Draw Week Info -->          
+          <div class="week-info">
+            <button id="previous-week"> < </button>
+            <p class="week-number">W27
+                <span id="choose-date" style="color: red;text-align: end;font-size: 14px;"></span>
+            </p>
+            <button id="next-week"> > </button>
+            <p class="week-dates">30 Jun ~ 06 Jul 2025</p>
+          </div>
 
-            <!-- Calendar -->
-            <div id="calendar" class="calendar">
-                <button class="day" data-day="30/06">Mon</button>
-                <button class="day" data-day="01/07">Tue</button>
-                <button class="day" data-day="02/07">Wed</button>
-                <button class="day" data-day="03/07">Thu</button>
-                <button class="day" data-day="04/07">Fri</button>
-                <button class="day" data-day="05/07">Sat</button>
-                <button class="day" data-day="06/07">Sun</button>
+          <!-- Draw Calendar -->
+          <div id="calendar" class="calendar">
+              <button class="day" data-day="30/06">Mon</button>
+              <button class="day" data-day="01/07">Tue</button>
+              <button class="day" data-day="02/07">Wed</button>
+              <button class="day" data-day="03/07">Thu</button>
+              <button class="day" data-day="04/07">Fri</button>
+              <button class="day" data-day="05/07">Sat</button>
+              <button class="day" data-day="06/07">Sun</button>
+          </div>
+          <div class="active-day-wrapper">
+            
+            <!-- Task Stats -->
+            <div id="status-stats" class="task-stats">
+                <button class="status" data-status="Active">Active tasks: 10</button>
+                <button class="status" data-status="Not yet">Not yet: 5</button>
+                <button class="status" data-status="Overdue">Overdue: 1</button>
+                <button class="status" data-status="On Progress">On Progress: 4</button>
+                <button class="status" data-status="Completed">Completed: 2</button>
             </div>
-            <div class="active-day-wrapper">
-                <!-- Task Stats -->
-                <div id="status-stats" class="task-stats">
-                    <button class="status" data-status="Active">Active tasks: 10</button>
-                    <button class="status" data-status="Not yet">Not yet: 5</button>
-                    <button class="status" data-status="Overdue">Overdue: 1</button>
-                    <button class="status" data-status="On Progress">On Progress: 4</button>
-                    <button class="status" data-status="Completed">Completed: 2</button>
-                </div>
-            </div>
+          </div>
             <!-- Task List -->
             <div id="task-list">
                 <!-- Task list items will be dynamically inserted here -->
             </div>
         </div>
     </div>
-<!-- Register Task Popup (initially hidden) -->
-<div id="register-task-popup_parent" style="display: none;">
-	<div id="register-task-popup">
-		<div class="popup-content">
-			<div id="register-task-form">
-				<!-- Popup content will be dynamically added here -->
-			</div>
-		</div>
-	</div>
-</div>
-
+    <!-- Register Task Popup (initially hidden) -->
+    <div id="register-task-popup_parent" style="display: none;">
+      <div id="register-task-popup">
+        <div class="popup-content">
+          <div id="register-task-form">
+            <!-- Popup content will be dynamically added here -->
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Firebase App (the core Firebase SDK) -->
-<script type="module">
- 
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    <script type="module">
+    
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 
-  // Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyC2Qd-730THBLcXKnwMtOmjJ0Bb2Xsk-lI",
-  authDomain: "xej79w1dv8q0xbez5b8jdywwqyvia8.firebaseapp.com",
-  projectId: "xej79w1dv8q0xbez5b8jdywwqyvia8",
-  storageBucket: "xej79w1dv8q0xbez5b8jdywwqyvia8.firebasestorage.app",
-  messagingSenderId: "862261981802",
-  appId: "1:862261981802:web:392b5d1a4198dba4bc5013"
-};
+      // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2Qd-730THBLcXKnwMtOmjJ0Bb2Xsk-lI",
+      authDomain: "xej79w1dv8q0xbez5b8jdywwqyvia8.firebaseapp.com",
+      projectId: "xej79w1dv8q0xbez5b8jdywwqyvia8",
+      storageBucket: "xej79w1dv8q0xbez5b8jdywwqyvia8.firebasestorage.app",
+      messagingSenderId: "862261981802",
+      appId: "1:862261981802:web:392b5d1a4198dba4bc5013"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-</script>
-
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+    </script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const features = ['Auth', 'Firestore', 'Storage'];
@@ -163,7 +183,6 @@ const firebaseConfig = {
         }
       });
     </script>
-    
     <script src="common/script.js"></script>
   </body>
 </html>

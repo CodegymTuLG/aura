@@ -260,3 +260,57 @@ document.getElementById('submit-task').addEventListener('click', function () {
         });
     });
 });
+
+// Selector for store and staff dropdowns
+{
+const selectStore = document.getElementById('select-store');
+const selectStaff = document.getElementById('select-staff');
+
+fetch('../common/data-store-staff.json')
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    // Tạo placeholder cho "Select Store"
+    const placeholderStore = document.createElement('option');
+    placeholderStore.value = "";
+    placeholderStore.disabled = true;
+    placeholderStore.selected = true;
+    placeholderStore.hidden = true;
+    placeholderStore.textContent = '— Select Store —';
+    selectStore.appendChild(placeholderStore);
+
+    // Populate các cửa hàng với format "id — name"
+    data.stores.forEach(store => {
+      const opt = document.createElement('option');
+      opt.value = store.id;
+      opt.textContent = `${store.id} — ${store.name}`;
+      selectStore.appendChild(opt);
+    });
+
+    // Event khi chọn Store
+    selectStore.addEventListener('change', () => {
+      const selectedStore = data.stores.find(s => s.id === selectStore.value);
+
+      // Reset dropdown Staff với placeholder
+      selectStaff.innerHTML = '';
+      const placeholderStaff = document.createElement('option');
+      placeholderStaff.value = "";
+      placeholderStaff.disabled = true;
+      placeholderStaff.selected = true;
+      placeholderStaff.hidden = true;
+      placeholderStaff.textContent = '— Select Staff —';
+      selectStaff.appendChild(placeholderStaff);
+
+      // Populate staff tương ứng store được chọn
+      selectedStore.staff.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st.id;
+        opt.textContent = st.name;
+        selectStaff.appendChild(opt);
+      });
+    });
+  })
+  .catch(err => console.error('Failed to load data-store-staff.json:', err));
+}

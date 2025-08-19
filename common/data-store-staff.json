@@ -1,0 +1,66 @@
+{
+  "stores": [
+    {
+      "id": "3002",
+      "name": "Ecpark",
+      "staff": [
+        { "id": "EC30201", "name": "Nguyễn Văn A" },
+        { "id": "EC30202", "name": "Trần Thị B" },
+        { "id": "EC30203", "name": "Lê Văn C" },
+        { "id": "EC30204", "name": "Phạm Thị D" },
+        { "id": "EC30205", "name": "Hoàng Văn E" }
+      ]
+    },
+    {
+      "id": "3003",
+      "name": "Riverside",
+      "staff": [
+        { "id": "RV30031", "name": "Ngô Thị F" },
+        { "id": "RV30032", "name": "Vũ Văn G" },
+        { "id": "RV30033", "name": "Đỗ Thị H" },
+        { "id": "RV30034", "name": "Bùi Văn I" },
+        { "id": "RV30035", "name": "Phan Thị K" },
+        { "id": "RV30036", "name": "Trịnh Văn L" }
+      ]
+    },
+    {
+      "id": "3005",
+      "name": "Horizon",
+      "staff": [
+        { "id": "HZ30051", "name": "Lê Thị M" },
+        { "id": "HZ30052", "name": "Nguyễn Văn N" },
+        { "id": "HZ30053", "name": "Trần Thị O" },
+        { "id": "HZ30054", "name": "Phạm Văn P" },
+        { "id": "HZ30055", "name": "Hoàng Thị Q" },
+        { "id": "HZ30056", "name": "Võ Văn R" },
+        { "id": "HZ30057", "name": "Lý Thị S" }
+      ]
+    },
+    {
+      "id": "3008",
+      "name": "Hyundai",
+      "staff": [
+        { "id": "HD30081", "name": "Trương Văn T" },
+        { "id": "HD30082", "name": "Đặng Thị U" },
+        { "id": "HD30083", "name": "Lâm Văn V" },
+        { "id": "HD30084", "name": "Phan Thị W" },
+        { "id": "HD30085", "name": "Hoàng Văn X" },
+        { "id": "HD30086", "name": "Nguyễn Thị Y" },
+        { "id": "HD30087", "name": "Vũ Văn Z" },
+        { "id": "HD30088", "name": "Trịnh Thị AA" }
+      ]
+    },
+    {
+      "id": "3011",
+      "name": "Thăng Long",
+      "staff": [
+        { "id": "TL30111", "name": "Trần Văn BB" },
+        { "id": "TL30112", "name": "Lê Thị CC" },
+        { "id": "TL30113", "name": "Nguyễn Văn DD" },
+        { "id": "TL30114", "name": "Phạm Thị EE" },
+        { "id": "TL30115", "name": "Hoàng Văn FF" },
+        { "id": "TL30116", "name": "Đỗ Thị GG" }
+      ]
+    }
+  ]
+}

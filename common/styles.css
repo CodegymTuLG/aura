@@ -59,10 +59,11 @@ button:hover {
 }
 
 .week-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-content: flex-start;
+  margin-bottom: 0;
 }
 
 /* Center the week number and align the dates */
@@ -322,4 +323,22 @@ button:hover {
     #calendar button {
         margin-bottom: 10px;
     }
+}
+/* Selector Styles */
+.selectors {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-weight: 600;
+}
+select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
