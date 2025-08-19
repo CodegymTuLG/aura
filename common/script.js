@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const goToReceivingTaskButton = document.getElementById('go-receiving-task');
-    // const receivingTaskScreen = document.getElementById('receiving-task-screen');
+    // Elements
     const homeScreen = document.querySelector('.home-screen');
     const calendarButtons = document.querySelectorAll('#calendar .day');
     const taskStatusButtons = document.querySelectorAll('.status');
@@ -8,65 +7,121 @@ document.addEventListener("DOMContentLoaded", function () {
     const hqScreen = document.getElementById('hq-screen');
     const previousWeek = document.getElementById('previous-week');
     const nextWeek = document.getElementById('next-week');
-    let chooseDate = document.getElementById('choose-date').innerHTML = '30/06'; 
-    // Ensure the popup exists
+
+    // Date label
+    const chooseDateElement = document.getElementById('choose-date');
+    chooseDateElement.innerHTML = '30/06';
+    let selectedDay = '30/06';   
+
+    // Popup
     const registerTaskPopupParent = document.getElementById('register-task-popup_parent');
     const registerTaskPopup = document.getElementById('register-task-popup');
     const registerTaskForm = document.getElementById('register-task-form');
+
+    // Colors
     const departments = ["#8ecae6", "#219ebc", "#ffafcc", "#bde0fe", "#ffc8dd"];
     const assignees = ["#ffb703", "#fb8500", "#9b5de5", "#00b4d8", "#d00000"];
-    let selectedDay = '30/06';   
-    // go to hq-index
-    previousWeek.addEventListener('click', () => {
-        alert('show previous week task');
-    });
-    nextWeek.addEventListener('click', () => {
-        alert('show next week task');
-    });
+
+    // Dropdowns
+    const selectStore = document.getElementById('select-store');
+    const selectStaff = document.getElementById('select-staff');
+    const selectEmployee = document.getElementById('select-employee'); // optional
+
+    // Navigation
+    previousWeek.addEventListener('click', () => alert('show previous week task'));
+    nextWeek.addEventListener('click', () => alert('show next week task'));
+
     if (hqScreen) {
-        hqScreen.addEventListener('click', function () {
-        window.location.href = `../screen-hq/hq-index.html`; 
+        hqScreen.addEventListener('click', () => {
+            window.location.href = `../screen-hq/hq-index.html`; 
         });
     } 
-    if (!registerTaskPopup || !registerTaskForm) {
-        console.error("Register Task Popup or Form element is missing!");
-    }
-    
-    // Fetch task data from data.json
-async function loadTasks() {
-    try {
-        const response = await fetch('common/data.json'); // đường dẫn tương đối
-        const tasks = await response.json();
-        return tasks;
-    } catch (error) {
-        console.error('Error loading tasks:', error);
-        return [];
-    }
-}
 
+    // Fetch store & staff data
+    fetch('../common/store-staff.json')
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+    })
+    .then(data => {
+        const stores = data.stores;
 
+        // Placeholder cho Store
+        const placeholderStore = document.createElement('option');
+        placeholderStore.value = "";
+        placeholderStore.disabled = true;
+        placeholderStore.selected = true;
+        placeholderStore.hidden = true;
+        placeholderStore.textContent = '— Select Store —';
+        selectStore.appendChild(placeholderStore);
 
-    // Show the Receiving Task screen when button is clicked
-    // goToReceivingTaskButton.addEventListener('click', function () {
-    //     homeScreen.style.display = 'none'; // Hide the home screen
-    //     receivingTaskScreen.style.display = 'block'; // Show the receiving task screen
-        renderTasks(selectedDay); // Default to "30 Jun"
-    // });
+        // Đổ stores vào selector
+        stores.forEach(store => {
+            const opt = document.createElement('option');
+            opt.value = store.id;       // lưu id store làm value
+            opt.textContent = store.name; // hiển thị tên store
+            selectStore.appendChild(opt);
+        });
 
-    // Render tasks for a specific day and status
-    async function renderTasks(day, status = '') {
-        taskList.innerHTML = ''; // Clear existing task list
-        const tasks = await loadTasks();
+        // Khi chọn store → hiển thị staff tương ứng
+        selectStore.addEventListener('change', () => {
+            const selectedStoreId = selectStore.value;
+            const store = stores.find(s => s.id === selectedStoreId);
 
-        // Filter tasks based on the selected day and status
-        const filteredTasks = tasks.filter(task => task.date.includes(day) && (status ? task.status === status : true));
+            // Reset staff dropdown
+            selectStaff.innerHTML = '';
+            const placeholderStaff = document.createElement('option');
+            placeholderStaff.value = "";
+            placeholderStaff.disabled = true;
+            placeholderStaff.selected = true;
+            placeholderStaff.hidden = true;
+            placeholderStaff.textContent = '— Select Staff —';
+            selectStaff.appendChild(placeholderStaff);
 
-        // Update task stats
-        updateTaskStats(tasks, day);
-        // Check if there are filtered tasks to display
-        if (filteredTasks.length === 0) {
-            taskList.innerHTML = '<p>No tasks found for this day/status.</p>';
+            if (store && store.staff) {
+                store.staff.forEach(emp => {
+                    const opt = document.createElement('option');
+                    opt.value = emp.id;   // id employee làm value
+                    opt.textContent = emp.name;
+                    selectStaff.appendChild(opt);
+                });
+            }
+        });
+    })
+    .catch(err => console.error('Failed to load store-staff.json:', err));
+
+    // Begin Function Load tasks
+    async function loadTasks() {
+        try {
+            const response = await fetch('common/data.json'); 
+            return await response.json();
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+            return [];
         }
+    }
+    // End Function Load tasks
+
+    // Function Render tasks
+    async function renderTasks(day, status = '') {
+        taskList.innerHTML = '';
+        const tasks = await loadTasks();
+        const empValue = selectEmployee?.value || '';
+        const filteredTasks = tasks.filter(task => {
+            const matchDay = task.date.includes(day);
+            const matchStatus = (status && status !== 'Active') ? task.status === status : true;
+            const matchEmployee = empValue ? (task.employee === empValue) : true; 
+            return matchDay && matchStatus && matchEmployee;
+        });
+
+        updateTaskStats(tasks, day);
+
+        if (filteredTasks.length === 0) {
+            const displayStatus = (!status || status === 'Active') ? 'Active' : status;
+            taskList.innerHTML = `<p>No tasks found for day "${day}" and status "${displayStatus}".</p>`;
+            return;
+        }
+
 
         filteredTasks.forEach((task, index) => {
             const taskDiv = document.createElement('div');
@@ -75,242 +130,212 @@ async function loadTasks() {
             const statusColor = task.status === 'Completed' ? 'green' : 'red';
             taskDiv.classList.add('task');
             taskDiv.innerHTML = `
-                    <div class="task-left>
-                        <div class="task-number">${index + 1}.</div>
-                        <div class="task-icon">
-                            <div class="square" style="background-color:${depColor}"></div>
-                            <div class="circle" style="background-color:${userColor}"></div>
-                        </div>
-                        <div class="task-details"> ${task.name}<br>
-                        <small>RE ${task.re} ・ ${task.deadline}</small></div>
-                            <div class="task-status" style="color:${statusColor};">${task.status}</div>
+                <div class="task-left">
+                    <div class="task-number">${index + 1}.</div>
+                    <div class="task-icon">
+                        <div class="square" style="background-color:${depColor}"></div>
+                        <div class="circle" style="background-color:${userColor}"></div>
                     </div>
+                    <div class="task-details">
+                        ${task.name}<br>
+                        <small>RE ${task.re} ・ ${task.deadline}</small>
+                    </div>
+                    <div class="task-status" style="color:${statusColor};">${task.status}</div>
+                </div>
             `;
 
-            // Add click event listener to show task details or registration form
-            taskDiv.addEventListener('click', () => {
-                handleTaskClick(task); // Show task details or registration form
-            });
-
+            taskDiv.addEventListener('click', () => handleTaskClick(task));
             taskList.appendChild(taskDiv);
         });
     }
+    // End Function Render tasks
 
-    // Update task statistics dynamically
-    function updateTaskStats(tasks, day) {
-        const activeCount = tasks.filter(task => task.date.includes(day)).length  ;
-        const notYetCount = tasks.filter(task => task.date.includes(day) && (task.status === 'Not yet')).length;
-        const overdueCount = tasks.filter(task => task.date.includes(day) && (task.status === 'Overdue')).length;
-        const onProgressCount = tasks.filter(task => task.date.includes(day) && (task.status === 'On Progress')).length;
-        const completedCount = tasks.filter(task => task.date.includes(day) && (task.status === 'Completed')).length;
+    // Function Update task statistics
+    async function updateTaskStats(tasks, day, store = '', employee = '') {
+        let storeStaff = [];
 
-        // Update task stats buttons with dynamic counts
+        // Nếu cần lọc theo store, load danh sách nhân viên của store
+        if (store && !employee) {
+            try {
+                const response = await fetch('../common/store-staff.json');
+                storeStaff = await response.json();
+            } catch (err) {
+                console.error('Không thể load store-staff.json:', err);
+            }
+        }
+
+        // Hàm lọc task theo trạng thái
+        const filterTasks = (status) => {
+            return tasks.filter(task => {
+                if (!task.date.includes(day) || task.status !== status) return false;
+
+                // Nếu employee được truyền, lọc theo employee
+                if (employee) return task.employee === employee;
+
+                // Nếu store được truyền nhưng employee rỗng, lọc theo tất cả employee thuộc store
+                if (store && !employee) {
+                    const staffInStore = storeStaff.find(s => s.store === store)?.employee || [];
+                    return staffInStore.includes(task.employee);
+                }
+
+                // Nếu cả employee và store rỗng, chỉ lọc theo day và status
+                return true;
+            }).length;
+        };
+
+        // Tính số lượng task
+        const activeCount = tasks.filter(task => task.date.includes(day)).length;
+        const notYetCount = filterTasks('Not yet');
+        const overdueCount = filterTasks('Overdue');
+        const onProgressCount = filterTasks('On Progress');
+        const completedCount = filterTasks('Completed');
+
+        // Cập nhật giao diện
         document.querySelector('.status[data-status="Active"]').textContent = `Active tasks: ${activeCount}`;
         document.querySelector('.status[data-status="Not yet"]').textContent = `Not yet: ${notYetCount}`;
         document.querySelector('.status[data-status="Overdue"]').textContent = `Overdue: ${overdueCount}`;
         document.querySelector('.status[data-status="On Progress"]').textContent = `On Progress: ${onProgressCount}`;
         document.querySelector('.status[data-status="Completed"]').textContent = `Completed: ${completedCount}`;
-
-
     }
+    // End Function Update task statistics
 
-    // Handle task click (open task details or registration form)
+    // Begin Function Handle task click
     function handleTaskClick(task) {
         if (task.status === 'Not yet') {
-            // Show the Register Task Popup if status is "Not yet"
             showRegisterTaskPopup(task);
         } else {
             showTaskDetailPopup(task);
         }
     }
+    // End Function Handle task click
 
-    // Show Register Task Popup
+    // Begin Function Show Register Task Popup
     function showRegisterTaskPopup(task) {
-        // Ensure the registerTaskPopup exists
-        if (registerTaskPopup) {            
-            const popup = document.getElementById('register-task-popup');
-            popup.style.position = 'fixed';
-            popup.style.top = '50%';
-            popup.style.left = '50%';
-            popup.style.transform = 'translate(-50%, -50%)';  // This centers the popup on the screen
-            popup.style.width = '550px';
-            popup.style.height = '600px';
-            popup.style.padding = '20px';
-            popup.style.backgroundColor = 'white';
-            popup.style.borderRadius = '10px';
-            popup.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-            popup.style.overflowY = 'auto'; // Add overflow for scrolling if content exceeds the height
-            // Fill popup with task data
-            registerTaskPopupParent.style.display = 'block'; // Show the popup
-            registerTaskPopup.style.display = 'flex!importan'; // Show the popup
-            registerTaskForm.innerHTML = `
-                <h3>Register Task: ${task.name}</h3>
-                <a href="https://www.youtube.com/watch?v=8KkX71WBpFE&themeRefresh=1&theme=dark" target="_blank" 
-                style="text-decoration: none; color: #007bff;">Manual</a>
-                <p>Deadline: ${task.deadline}</p>
-                <p>Re: ${task.re}</p>
-                <textarea id="task-comment" name="task-comment" placeholder="Add your comment..." 
-                        style="width: 100%; height: 200px; margin-bottom: 10px; padding: 10px; font-size: 14px;"></textarea>
-                <div class="camera-section">
-                    <input id="task-photos" type="file" name="task-photos" accept="image/*" capture="camera" multiple 
-                        style="margin-bottom: 10px;"/>
-                </div>
-                <button id="submit-task" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; 
-                        cursor: pointer; border-radius: 5px; font-size: 16px; margin-right: 10px; width: 48%;">Submit</button>
-                <button id="close-popup" style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; 
-                        cursor: pointer; border-radius: 5px; font-size: 16px; width: 48%;">Close</button>
-            `;
-
-
-
-
-document.getElementById('submit-task').addEventListener('click', function () {
-    //
-    const comment = document.getElementById('task-comment').value; // Get comment value
-    const taskId = task.id; // Assuming `task` is the current task being edited
-
-    // Prepare the updated task data
-    const updatedTask = {
-        id: taskId,
-        name: task.name,
-        status: 'Completed', // Example status change
-        deadline: task.deadline,
-        date: task.date,
-        re: task.re,
-        comment: comment // Add the new comment
-    };
-
-    // Send the updated task to the backend (Node.js server at port 3000)
-    fetch('http://localhost:3000/update-tasks', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedTask) // Send the updated task
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Task updated successfully!');
-        closePopup(); // Close the popup after successful submission
-    })
-    .catch(error => {
-        console.error('Error updating task:', error);
-       // alert('Failed to update task.');
-    });
-    //
-                registerTaskPopupParent.style.display = 'none'; // Close the popup after submission
-            });
-            // Handle form close
-            document.getElementById('close-popup').addEventListener('click', function () {
-                registerTaskPopupParent.style.display = 'none'; 
-				});
-        } else {
+        if (!registerTaskPopup) {
             console.error("Popup is missing, can't show it.");
+            return;
         }
+
+        registerTaskPopupParent.style.display = 'flex'; // show overlay
+        registerTaskPopup.style.display = 'flex';       // show popup
+
+        registerTaskForm.innerHTML = `
+            <h3>Register Task: ${task.name}</h3>
+            <a href="https://www.youtube.com/watch?v=8KkX71WBpFE" target="_blank">Manual</a>
+            <p>Deadline: ${task.deadline}</p>
+            <p>Re: ${task.re}</p>
+            <textarea id="task-comment" name="task-comment" placeholder="Add your comment..."></textarea>
+            <div class="camera-section">
+                <input id="task-photos" type="file" name="task-photos" accept="image/*" capture="camera" multiple />
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+                <button id="submit-task" class="btn-submit">Submit</button>
+                <button id="close-popup" class="btn-close">Close</button>
+            </div>
+        `;
+
+        document.getElementById('submit-task').addEventListener('click', function () {
+            const comment = document.getElementById('task-comment').value;
+            const updatedTask = { ...task, status: 'Completed', comment };
+
+            fetch('http://localhost:3000/update-tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedTask)
+            })
+            .then(response => response.json())
+            .then(() => {
+                alert('Task updated successfully!');
+                closePopup();
+            })
+            .catch(error => console.error('Error updating task:', error));
+        });
+
+        document.getElementById('close-popup').addEventListener('click', closePopup);
+    }
+    // End Function Show Register Task Popup
+
+    function closePopup() {
+        registerTaskPopupParent.style.display = 'none';
+        registerTaskPopup.style.display = 'none';
     }
 
-    // Show Task Detail Popup (view only)
+    // Show Task Detail Popup → redirect
     function showTaskDetailPopup(task) {
-    //  //   alert(`View details for: ${task.name}`);
-	// 	        if (registerTaskPopup) {
-    //         // Fill popup with task data
-    //         registerTaskPopupParent.style.display = 'block'; // Show the popup
-    //         registerTaskPopup.style.display = 'flex!importan'; // Show the popup
-    //         registerTaskForm.innerHTML = `
-    //             <h3>Register Task: ${task.name}</h3>
-    //             <p>Deadline: ${task.deadline}</p>
-    //             <p>Re: ${task.re}</p>
-    //             <p>Comment ${task.comment}</p>
-    //             <div > Image
-    //             </div>
-	// 			<button id="close-popup">Close</button>
-    //         `;
-
-    //         // Handle form close
-    //         document.getElementById('close-popup').addEventListener('click', function () {
-    //             registerTaskPopupParent.style.display = 'none'; 
-	// 			});
-    //     } else {
-    //         console.error("Popup is missing, can't show it.");
-    //     }
-    // Serialize the task object (you can also pass the ID only if you want to fetch from a database or JSON file)
-    const taskData = encodeURIComponent(JSON.stringify(task)); // Serialize the task object
-
-    // Redirect to the task details page with the task data in the URL
-    window.location.href = `../document/Detailtask.html?task=${taskData}`;
-
+        const taskData = encodeURIComponent(JSON.stringify(task));
+        window.location.href = `../document/Detailtask.html?task=${taskData}`;
     }
- 
-    // Event listeners for calendar buttons
+
+    // Calendar buttons
     calendarButtons.forEach(button => {
         button.addEventListener('click', () => {
-            selectedDay = button.dataset.day; // Store the selected day
-            renderTasks(selectedDay); // Render tasks based on the day clicked
- 
-            const chooseDate = document.getElementById('choose-date');
-            chooseDate.innerHTML = selectedDay == null?'30/06':selectedDay;
+            selectedDay = button.dataset.day || '30/06';
+            
+            // Xoá class 'selected' khỏi tất cả button
+            calendarButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Xoá class 'selected' khỏi tất cả task status buttons
+            taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Thêm class 'selected' cho button vừa click
+            button.classList.add('selected');
+
+            // Render task và cập nhật ngày hiển thị
+            renderTasks(selectedDay);
+            chooseDateElement.innerHTML = selectedDay;
         });
     });
 
-    // Event listeners for task status buttons
+    // Task status buttons
     taskStatusButtons.forEach(button => {
         button.addEventListener('click', () => {
             const status = button.dataset.status;
-            renderTasks(selectedDay, status); // Default to "30 Jun" when selecting status
+
+            // Xóa class 'selected' khỏi tất cả button
+            taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
+
+            // Thêm class 'selected' cho button vừa click
+            button.classList.add('selected');
+
+            // Render task theo trạng thái đã chọn
+            renderTasks(selectedDay, status);
         });
     });
-});
+    // End Task status buttons
 
-// Selector for store and staff dropdowns
-{
-const selectStore = document.getElementById('select-store');
-const selectStaff = document.getElementById('select-staff');
+    // Khi selector employee thay đổi
+    selectEmployee.addEventListener('change', () => {
+        const empValue = selectEmployee.value;
 
-fetch('../common/data-store-staff.json')
-  .then(res => {
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    return res.json();
-  })
-  .then(data => {
-    // Tạo placeholder cho "Select Store"
-    const placeholderStore = document.createElement('option');
-    placeholderStore.value = "";
-    placeholderStore.disabled = true;
-    placeholderStore.selected = true;
-    placeholderStore.hidden = true;
-    placeholderStore.textContent = '— Select Store —';
-    selectStore.appendChild(placeholderStore);
+        // Xóa class 'selected' khỏi tất cả taskStatusButtons
+        taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
 
-    // Populate các cửa hàng với format "id — name"
-    data.stores.forEach(store => {
-      const opt = document.createElement('option');
-      opt.value = store.id;
-      opt.textContent = `${store.id} — ${store.name}`;
-      selectStore.appendChild(opt);
+        // Xóa class 'selected' khỏi tất cả calendarButtons
+        calendarButtons.forEach(btn => btn.classList.remove('selected'));
+
+        // Render task theo employee đã chọn, status mặc định 'Active'
+        renderTasks(selectedDay, 'Active');
     });
+    // End Khi selector employee thay đổi
 
-    // Event khi chọn Store
+    // Khi selector store thay đổi
     selectStore.addEventListener('change', () => {
-      const selectedStore = data.stores.find(s => s.id === selectStore.value);
+        const storeValue = selectStore.value;
 
-      // Reset dropdown Staff với placeholder
-      selectStaff.innerHTML = '';
-      const placeholderStaff = document.createElement('option');
-      placeholderStaff.value = "";
-      placeholderStaff.disabled = true;
-      placeholderStaff.selected = true;
-      placeholderStaff.hidden = true;
-      placeholderStaff.textContent = '— Select Staff —';
-      selectStaff.appendChild(placeholderStaff);
+        // Xóa class 'selected' khỏi tất cả taskStatusButtons
+        taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
 
-      // Populate staff tương ứng store được chọn
-      selectedStore.staff.forEach(st => {
-        const opt = document.createElement('option');
-        opt.value = st.id;
-        opt.textContent = st.name;
-        selectStaff.appendChild(opt);
-      });
+        // Xóa class 'selected' khỏi tất cả calendarButtons
+        calendarButtons.forEach(btn => btn.classList.remove('selected'));
+
+        // Reset employee selector
+        selectEmployee.value = '';
+
+        // Render task theo store đã chọn, status mặc định 'Active'
+        renderTasks(selectedDay, 'Active');
     });
-  })
-  .catch(err => console.error('Failed to load data-store-staff.json:', err));
-}
+    // End Khi selector store thay đổi
+
+    // Initial render
+    renderTasks(selectedDay);
+});
