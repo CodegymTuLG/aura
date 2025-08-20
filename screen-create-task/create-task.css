@@ -91,9 +91,11 @@ input[type="checkbox"] {
     margin: 0;
 }
 
-
-
 #store-filter {
     width: 80%;
     display: inline-block;
+}
+
+#is-repeat-group {
+    margin-bottom: 20px;
 }
