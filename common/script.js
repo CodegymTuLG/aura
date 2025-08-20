@@ -275,10 +275,6 @@ document.addEventListener("DOMContentLoaded", function () {
     selectStore.addEventListener('change', () => {
         const storeId = selectStore.value;
 
-        // Xóa class 'selected' khỏi tất cả taskStatusButtons và calendarButtons
-        taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
-        calendarButtons.forEach(btn => btn.classList.remove('selected'));
-
         // Render task theo store đã chọn, status mặc định 'Active'
         renderTasks(selectedDay, 'Active', storeId, 'all');
     });
@@ -288,10 +284,6 @@ document.addEventListener("DOMContentLoaded", function () {
     selectStaff.addEventListener('change', () => {
         const storeId = selectStore.value;
         const staffName = selectStaff.value === 'all' ? 'all' : selectStaff.options[selectStaff.selectedIndex].textContent;
-
-        // Xóa class 'selected' khỏi tất cả taskStatusButtons và calendarButtons
-        taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
-        calendarButtons.forEach(btn => btn.classList.remove('selected'));
 
         // Render task theo store đã chọn, status mặc định 'Active'
         renderTasks(selectedDay, 'Active', storeId, staffName);

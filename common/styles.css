@@ -122,11 +122,13 @@ button:hover {
     display: block;
     color: #888;
 }
+
 .task-status {
-    font-size: 13px;
-    font-weight: bold;  
-    text-align: end!important;
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: bold;
 }
+
 /* Task List */
 #task-list {
     margin-top: 30px;
@@ -154,16 +156,14 @@ button:hover {
     color: #333;
 }
 
-
-
 .task button:hover {
     background-color: #0056b3;
 }
-/* Align the status text to the left */
+
 .task .task-status {
-    text-align: left;  /* Align the status to the left */
-    margin-right: 10px;  /* Optional: Add some space on the right side for clarity */
-    flex-grow: 1; /* Let the status take available space to push other elements (like button) to the right */
+    text-align: left;
+    margin-right: 10px;
+    flex-grow: 1;
 }
 
 /* Calendar */
