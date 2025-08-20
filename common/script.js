@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Dropdowns
     const selectStore = document.getElementById('select-store');
     const selectStaff = document.getElementById('select-staff');
-    const selectEmployee = document.getElementById('select-employee'); // optional
 
     // Navigation
     previousWeek.addEventListener('click', () => alert('show previous week task'));
@@ -38,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } 
 
     // Fetch store & staff data
-    fetch('../common/store-staff.json')
+    fetch('../common/data-store-staff.json')
     .then(res => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         return res.json();
@@ -48,16 +47,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Placeholder cho Store
         const placeholderStore = document.createElement('option');
-        placeholderStore.value = "";
-        placeholderStore.disabled = true;
+        placeholderStore.value = "all";
         placeholderStore.selected = true;
-        placeholderStore.hidden = true;
-        placeholderStore.textContent = '— Select Store —';
+        placeholderStore.textContent = '—— All ——';
         selectStore.appendChild(placeholderStore);
 
         // Đổ stores vào selector
         stores.forEach(store => {
             const opt = document.createElement('option');
+            
             opt.value = store.id;       // lưu id store làm value
             opt.textContent = store.name; // hiển thị tên store
             selectStore.appendChild(opt);
@@ -71,11 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // Reset staff dropdown
             selectStaff.innerHTML = '';
             const placeholderStaff = document.createElement('option');
-            placeholderStaff.value = "";
-            placeholderStaff.disabled = true;
+            placeholderStaff.value = "all";
             placeholderStaff.selected = true;
-            placeholderStaff.hidden = true;
-            placeholderStaff.textContent = '— Select Staff —';
+            placeholderStaff.textContent = '—— All ——';
             selectStaff.appendChild(placeholderStaff);
 
             if (store && store.staff) {
@@ -103,25 +99,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // End Function Load tasks
 
     // Function Render tasks
-    async function renderTasks(day, status = '') {
+    async function renderTasks(day, status = 'Active', storeId = 'all', staffName = 'all') {
         taskList.innerHTML = '';
         const tasks = await loadTasks();
-        const empValue = selectEmployee?.value || '';
         const filteredTasks = tasks.filter(task => {
             const matchDay = task.date.includes(day);
             const matchStatus = (status && status !== 'Active') ? task.status === status : true;
-            const matchEmployee = empValue ? (task.employee === empValue) : true; 
-            return matchDay && matchStatus && matchEmployee;
+            const matchStore = (storeId && storeId !== 'all') ? task.storeId === storeId : true;
+            const matchStaff = (staffName && staffName !== 'all') ? task.staffName === staffName : true;
+            return matchDay && matchStatus && matchStore && matchStaff;
         });
-
-        updateTaskStats(tasks, day);
+        
+        updateTaskStats(tasks, day, storeId, staffName);
 
         if (filteredTasks.length === 0) {
             const displayStatus = (!status || status === 'Active') ? 'Active' : status;
-            taskList.innerHTML = `<p>No tasks found for day "${day}" and status "${displayStatus}".</p>`;
+            taskList.innerHTML = `<p>No tasks found.</p>`;
             return;
         }
-
 
         filteredTasks.forEach((task, index) => {
             const taskDiv = document.createElement('div');
@@ -151,44 +146,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // End Function Render tasks
 
     // Function Update task statistics
-    async function updateTaskStats(tasks, day, store = '', employee = '') {
-        let storeStaff = [];
-
-        // Nếu cần lọc theo store, load danh sách nhân viên của store
-        if (store && !employee) {
-            try {
-                const response = await fetch('../common/store-staff.json');
-                storeStaff = await response.json();
-            } catch (err) {
-                console.error('Không thể load store-staff.json:', err);
-            }
-        }
-
-        // Hàm lọc task theo trạng thái
-        const filterTasks = (status) => {
-            return tasks.filter(task => {
-                if (!task.date.includes(day) || task.status !== status) return false;
-
-                // Nếu employee được truyền, lọc theo employee
-                if (employee) return task.employee === employee;
-
-                // Nếu store được truyền nhưng employee rỗng, lọc theo tất cả employee thuộc store
-                if (store && !employee) {
-                    const staffInStore = storeStaff.find(s => s.store === store)?.employee || [];
-                    return staffInStore.includes(task.employee);
-                }
-
-                // Nếu cả employee và store rỗng, chỉ lọc theo day và status
-                return true;
-            }).length;
-        };
+    async function updateTaskStats(tasks, day, storeId, staffName) {
 
         // Tính số lượng task
-        const activeCount = tasks.filter(task => task.date.includes(day)).length;
-        const notYetCount = filterTasks('Not yet');
-        const overdueCount = filterTasks('Overdue');
-        const onProgressCount = filterTasks('On Progress');
-        const completedCount = filterTasks('Completed');
+        const activeCount = tasks.filter(task => task.date.includes(day) && (task.storeId === storeId || storeId === 'all') && (task.staffName === staffName || staffName === 'all')).length;
+        const notYetCount = tasks.filter(task => task.date.includes(day) && task.status === 'Not yet' && (task.storeId === storeId || storeId === 'all') && (task.staffName === staffName || staffName === 'all')).length;
+        const overdueCount = tasks.filter(task => task.date.includes(day) && task.status === 'Overdue' && (task.storeId === storeId || storeId === 'all') && (task.staffName === staffName || staffName === 'all')).length;
+        const onProgressCount = tasks.filter(task => task.date.includes(day) && task.status === 'On Progress' && (task.storeId === storeId || storeId === 'all') && (task.staffName === staffName || staffName === 'all')).length;
+        const completedCount = tasks.filter(task => task.date.includes(day) && task.status === 'Completed' && (task.storeId === storeId || storeId === 'all') && (task.staffName === staffName || staffName === 'all')).length;
 
         // Cập nhật giao diện
         document.querySelector('.status[data-status="Active"]').textContent = `Active tasks: ${activeCount}`;
@@ -269,19 +234,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Calendar buttons
     calendarButtons.forEach(button => {
         button.addEventListener('click', () => {
+            const storeId = selectStore.value;
+            const staffName = selectStaff.value === 'all' ? 'all' : selectStaff.options[selectStaff.selectedIndex].textContent;
+
             selectedDay = button.dataset.day || '30/06';
-            
             // Xoá class 'selected' khỏi tất cả button
             calendarButtons.forEach(btn => btn.classList.remove('selected'));
-
-            // Xoá class 'selected' khỏi tất cả task status buttons
-            taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
 
             // Thêm class 'selected' cho button vừa click
             button.classList.add('selected');
 
             // Render task và cập nhật ngày hiển thị
-            renderTasks(selectedDay);
+            renderTasks(selectedDay, 'Active', storeId, staffName);
             chooseDateElement.innerHTML = selectedDay;
         });
     });
@@ -289,53 +253,51 @@ document.addEventListener("DOMContentLoaded", function () {
     // Task status buttons
     taskStatusButtons.forEach(button => {
         button.addEventListener('click', () => {
-            const status = button.dataset.status;
+            let status = button.dataset.status;
+            const storeId = selectStore.value;
+            const staffName = selectStaff.value === 'all' ? 'all' : selectStaff.options[selectStaff.selectedIndex].textContent;
 
-            // Xóa class 'selected' khỏi tất cả button
-            taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
-
-            // Thêm class 'selected' cho button vừa click
-            button.classList.add('selected');
-
-            // Render task theo trạng thái đã chọn
-            renderTasks(selectedDay, status);
+            // Nếu button đã được chọn, bỏ chọn nó và đặt status về 'Active'. Nếu không, bỏ chọn tất cả button khác và chọn button này
+            if (button.classList.contains('selected')) {
+                button.classList.remove('selected');
+                status = 'Active';
+            } else {
+                taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
+                button.classList.add('selected');
+            }
+            
+            renderTasks(selectedDay, status, storeId, staffName);
         });
     });
     // End Task status buttons
 
-    // Khi selector employee thay đổi
-    selectEmployee.addEventListener('change', () => {
-        const empValue = selectEmployee.value;
-
-        // Xóa class 'selected' khỏi tất cả taskStatusButtons
-        taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
-
-        // Xóa class 'selected' khỏi tất cả calendarButtons
-        calendarButtons.forEach(btn => btn.classList.remove('selected'));
-
-        // Render task theo employee đã chọn, status mặc định 'Active'
-        renderTasks(selectedDay, 'Active');
-    });
-    // End Khi selector employee thay đổi
-
-    // Khi selector store thay đổi
+    // Khi selector Store thay đổi
     selectStore.addEventListener('change', () => {
-        const storeValue = selectStore.value;
+        const storeId = selectStore.value;
 
-        // Xóa class 'selected' khỏi tất cả taskStatusButtons
+        // Xóa class 'selected' khỏi tất cả taskStatusButtons và calendarButtons
         taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
-
-        // Xóa class 'selected' khỏi tất cả calendarButtons
         calendarButtons.forEach(btn => btn.classList.remove('selected'));
-
-        // Reset employee selector
-        selectEmployee.value = '';
 
         // Render task theo store đã chọn, status mặc định 'Active'
-        renderTasks(selectedDay, 'Active');
+        renderTasks(selectedDay, 'Active', storeId, 'all');
     });
-    // End Khi selector store thay đổi
+    // End Khi selector Store thay đổi
+
+    // Khi selector Staff thay đổi
+    selectStaff.addEventListener('change', () => {
+        const storeId = selectStore.value;
+        const staffName = selectStaff.value === 'all' ? 'all' : selectStaff.options[selectStaff.selectedIndex].textContent;
+
+        // Xóa class 'selected' khỏi tất cả taskStatusButtons và calendarButtons
+        taskStatusButtons.forEach(btn => btn.classList.remove('selected'));
+        calendarButtons.forEach(btn => btn.classList.remove('selected'));
+
+        // Render task theo store đã chọn, status mặc định 'Active'
+        renderTasks(selectedDay, 'Active', storeId, staffName);
+    });
+    // End Khi selector Staff thay đổi
 
     // Initial render
-    renderTasks(selectedDay);
+    renderTasks(selectedDay, 'Active', 'all', 'all');
 });
