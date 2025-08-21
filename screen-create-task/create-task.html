@@ -30,57 +30,77 @@
 
             <section class="task-creation">
                 <div class="form-group">
-                    <div id="is-repeat-group">
+                    <div id="is-repeat" class="form-group">
                         <label style="font-weight: bold;" for="is-repeat">Is Repeat:</label>
+                        
                         <label style="font-weight: bold;" for="is-repeat-yes">Yes</label>
-                        <input type="radio" id="is-repeat-yes" name="is-repeat">
+                        <input type="radio" id="is-repeat-yes" name="is-repeat" value="Yes">
+                        
                         <label style="font-weight: bold;" for="is-repeat-no">No</label>
-                        <input type="radio" id="is-repeat-no" name="is-repeat">
+                        <input type="radio" id="is-repeat-no" name="is-repeat" value="No">
                     </div>
 
-                    <div id="start-end">
+
+                    <div class="form-group">
                         <label for="start">Start:</label>
-                        <input type="date" id="start" width="50px">
+                        <input type="date" id="start-day" width="50px">
                         <label for="end">End:</label>
-                        <input type="date" id="end" width="50px">
+                        <input type="date" id="end-day" width="50px">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="keyword">Keyword:</label>
-                    <input type="text" id="keyword" value="ACC-ADMIN-00001">
-                    <br>
-                    <br>
-                        <label for="manual">Manual:</label>
-                    <input type="text" id="manual" placeholder="paste link here">
-                    <input type="text" id="manual" placeholder="Upload file PDF, Img, png">
+                    <div class="form-keyword-group">
+                        <label for="keyword">Keyword:</label>
+                        <input type="text" id="keyword" value="" placeholder="Enter keyword" autocomplete="off">
+                        <ul id="suggestion-list" class="suggestion-list"></ul> <!-- Danh sách gợi ý đổ xuống ngay dưới input -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="manual-link">Manual:</label>
+                        <input type="text" id="manual-link" placeholder="Paste link here">
+                        <button id="upload-file">Upload file PDF, Img, png</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="store-filter">Store list</label>
-                    <input type="text" id="store-filter" placeholder="Search by store or region">
-                    <br><br>
-                    <button id="search-button">Search</button>
-                    <button id="check-button">Check</button>
-                    <div class="store-list-container">
-                        <table id="store-list" >
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <input type="checkbox"></input>
-                                    </th>
-                                    <th>StoreCode</th>
-                                    <th>StoreName</th>
-                                    <th>Region</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Store rows will be added here dynamically -->
-                            </tbody>
-                        </table>
+                    <div class="form-group" style="display: flex; width: 100%;">
+                        <div class="half">
+                            <label for="store-filter">Store list</label>
+                            <input type="text" id="store-filter" placeholder="Search by Store Name">
+                        </div>
+                        <div class="half">
+                            <label for="region-filter">Region list</label>
+                            <input type="text" id="region-filter" placeholder="Search by Region">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-group" style="display: flex; width: 100%; gap: 10px;">
+                            <button id="search-button">Search</button>
+                            <button id="check-button">Check</button>
+                            <button id="add-button" style="margin-left: auto;">Add</button>
+                        </div>
+
+                        <div class="store-list-container">
+                            <table id="store-list" >
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox"></input>
+                                        </th>
+                                        <th>Store Code</th>
+                                        <th>Store Name</th>
+                                        <th>Region</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Store rows will be added here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-        
                     
                 <div class="form-group">
                     <span style="font-weight: bold;" for="re">RE(h):</span>
@@ -109,7 +129,7 @@
                     <textarea id="task-details" placeholder="viết yêu cầu cho cửa hàng"></textarea>
                 </div>
         
-                <div class="form-actions">
+                <div id="repeat-create" class="form-actions">
                     <button id="add-repeat-task">Add Repeat Task</button>
                     <button id="create-task">Create</button>
                 </div>

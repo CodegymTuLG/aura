@@ -1,0 +1,27 @@
+[
+    {
+        "keyword": "ACC-ADMIN-00001",
+        "taskName": "Make coffee",
+        "RE": 17
+    },
+    {
+        "keyword": "ACC-ADMIN-00002",
+        "taskName": "Clean tables",
+        "RE": 3
+    },
+    {
+        "keyword": "ACC-ADMIN-00003",
+        "taskName": "Greet customers",
+        "RE": 21
+    },
+    {
+        "keyword": "ACC-ADMIN-00004",
+        "taskName": "Process payment",
+        "RE": 8
+    },
+    {
+        "keyword": "ACC-ADMIN-00005",
+        "taskName": "Check ingredients",
+        "RE": 12
+    }
+]

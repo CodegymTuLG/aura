@@ -1,0 +1,47 @@
+[
+    {
+        "id": "HN1",
+        "name": "AEON Long Biên",
+        "region": "Residential",
+        "staff": [
+            { "employeeId": "HN-101" },
+            { "employeeId": "HN-102" }
+        ]
+    },
+    {
+        "id": "HN2",
+        "name": "AEON Hà Đông",
+        "region": "Market",
+        "staff": [
+            { "employeeId": "HN-201" },
+            { "employeeId": "HN-202" }
+        ]
+    },
+    {
+        "id": "HN3",
+        "name": "AEON The Nine",
+        "region": "Residential",
+        "staff": [
+            { "employeeId": "HN-301" },
+            { "employeeId": "HN-302" }
+        ]
+    },
+    {
+        "id": "HN4",
+        "name": "AEON MaxValu Florence",
+        "region": "Park",
+        "staff": [
+            { "employeeId": "HN-401" },
+            { "employeeId": "HN-402" }
+        ]
+    },
+    {
+        "id": "HN5",
+        "name": "AEON MaxValu Horizon",
+        "region": "Market",
+        "staff": [
+            { "employeeId": "HN-501" },
+            { "employeeId": "HN-502" }
+        ]
+    }
+]
