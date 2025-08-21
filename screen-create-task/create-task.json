@@ -1,32 +1,37 @@
 [
-    {
-        "keyword": "ACC-ADMIN-00001",
-        "taskName": "Make coffee",
-        "RE": 17,
-        "manualLink": "https://www.youtube.com/watch?v=FdR1M_uy90M&list=RDFdR1M_uy90M&start_radio=1"
-    },
-    {
-        "keyword": "ACC-ADMIN-00002",
-        "taskName": "Clean tables",
-        "RE": 3,
-        "manualLink": "https://www.youtube.com/watch?v=14RNSzMa30E&list=RD14RNSzMa30E&start_radio=1"
-    },
-    {
-        "keyword": "ACC-ADMIN-00003",
-        "taskName": "Greet customers",
-        "RE": 21,
-        "manualLink": "https://www.youtube.com/watch?v=Y_qUVS2yiDk&list=RDY_qUVS2yiDk&start_radio=1"
-    },
-    {
-        "keyword": "ACC-ADMIN-00004",
-        "taskName": "Process payment",
-        "RE": 8,
-        "manualLink": "https://www.youtube.com/watch?v=1Zjv5rkDK9s&list=RD1Zjv5rkDK9s&start_radio=1"
-    },
-    {
-        "keyword": "ACC-ADMIN-00005",
-        "taskName": "Check ingredients",
-        "RE": 12,
-        "manualLink": "https://www.youtube.com/watch?v=9ICQyfQ35-M&list=RD9ICQyfQ35-M&start_radio=1"
-    }
+  {
+    "keyword": "ACC-ADMIN-00001",
+    "taskName": "Make coffee",
+    "RE": 17,
+    "manualLink": "https://www.youtube.com/watch?v=FdR1M_uy90M&list=RDFdR1M_uy90M&start_radio=1",
+    "taskType": "Chuẩn bị"
+  },
+  {
+    "keyword": "ACC-ADMIN-00002",
+    "taskName": "Clean tables",
+    "RE": 3,
+    "manualLink": "https://www.youtube.com/watch?v=14RNSzMa30E&list=RD14RNSzMa30E&start_radio=1",
+    "taskType": "Sắp xếp"
+  },
+  {
+    "keyword": "ACC-ADMIN-00003",
+    "taskName": "Greet customers",
+    "RE": 21,
+    "manualLink": "https://www.youtube.com/watch?v=Y_qUVS2yiDk&list=RDY_qUVS2yiDk&start_radio=1",
+    "taskType": "Thống kê"
+  },
+  {
+    "keyword": "ACC-ADMIN-00004",
+    "taskName": "Process payment",
+    "RE": 8,
+    "manualLink": "https://www.youtube.com/watch?v=1Zjv5rkDK9s&list=RD1Zjv5rkDK9s&start_radio=1",
+    "taskType": "Chuẩn bị"
+  },
+  {
+    "keyword": "ACC-ADMIN-00005",
+    "taskName": "Check ingredients",
+    "RE": 12,
+    "manualLink": "https://www.youtube.com/watch?v=9ICQyfQ35-M&list=RD9ICQyfQ35-M&start_radio=1",
+    "taskType": "Sắp xếp"
+  }
 ]

@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const storeNameSearchInput = document.getElementById("store-filter");
     const storeRegionSearchInput = document.getElementById("region-filter");
     const storeListTable = document.getElementById("store-list");
+    const reInput = document.getElementById("re");
+    const taskNameInput = document.getElementById("task-name");
     let isRepeatValue = document.querySelector('input[name="is-repeat"]:checked')?.value || 'No';
     startInput.value = today; // Mặc định startInput là ngày hôm nay
     endInput.value = today; // Mặc định endInput là ngày hôm nay
@@ -21,6 +23,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let keywordValue = keywordInput.value || '';
     let manualLinkValue = manualLinkInput.value || '';
     let storeList = []; // Biến lưu trữ danh sách cửa hàng
+    let reValue = 0;
+    let taskNameValue = "";
 
     // Đặt danh sách ban đầu của table store list là trống
     storeListTable.querySelector('tbody').innerHTML = '';
@@ -44,18 +48,47 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Gán giá trị Yes hoặc No cho biến isRepeatValue mỗi khi người dùng chọn radio
     radios.forEach(radio => {
-        radio.addEventListener("change", function(event) {
-            isRepeatValue = event.target.value;
-            if (event.target.value === "Yes") {
-                addRepeatButton.style.display = "none"; // Ẩn nút "Add Repeat Task" nếu isRepeatValue là "Yes"
-            } else {
-                addRepeatButton.style.display = "inline-block"; // Hiển thị nút "Add Repeat Task" nếu isRepeatValue là "Yes"
-            }
-        });
+    radio.addEventListener("change", function(event) {
+        const val = event.target.value;
+        isRepeatValue = val;
+
+        if (val === "Yes") {
+        addRepeatButton.style.display = "none";
+        } else {
+        addRepeatButton.style.display = "inline-block";
+        }
+
+        if (document.activeElement === keywordInput) {
+        handleKeywordSuggestions({ type: "focus" });
+        }
+
+        autofillFieldsByKeyword(event);
     });
-    
+    });
+
+    keywordInput.addEventListener("input", autofillFieldsByKeyword);
+    console.log('keywordValue', keywordValue)
+
+    async function autofillFieldsByKeyword() {
+        if (isRepeatValue === "Yes" && keywordInput.value.trim() !== "") {
+            const taskDatas = await loadTaskDatas();
+            const matchedTask = taskDatas.find(task => task.keyword.toLowerCase() === keywordInput.value.toLowerCase());
+            if (matchedTask) {
+                manualLinkInput.value = matchedTask.manualLink || '';
+                manualLinkValue = manualLinkInput.value;
+
+                if (reInput) {
+                    reInput.value = matchedTask.re || '';
+                }
+
+                if (taskNameInput) {
+                    taskNameInput.value = matchedTask.taskName || '';
+                }
+            }
+        }
+    }
+
     // Gán giá trị cho startInput mỗi khi người dùng thay đổi ngày, đồng thời kiểm tra ngày bắt đầu và kết thúc
     startInput.addEventListener("change", () => {
         startDate = startInput.value;
@@ -76,87 +109,66 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Nếu isRepeatValue là "Yes", keywordInput sẽ hiển thị danh sách đề xuất từ data để gợi ý
-    keywordInput.addEventListener("input", async function () {
+    // Hiển thị suggestion khi focus/click/input vào keywordInput chỉ khi isRepeatValue là "Yes"
+    async function handleKeywordSuggestions(event) {
         const suggestionList = document.getElementById('suggestion-list');
         suggestionList.innerHTML = ''; // Clear previous suggestions
 
+        if (isRepeatValue !== "Yes") {
+            suggestionList.style.display = "none";
+            return;
+        }
+
         const inputValue = keywordInput.value.toLowerCase().trim();
+        const taskDatas = await loadTaskDatas();
+        // Lấy danh sách keyword duy nhất
+        const keywordSuggest = taskDatas
+            .map(task => task.keyword)
+            .filter((value, index, self) => self.indexOf(value) === index);
 
-        if (isRepeatValue === "Yes" && inputValue !== "") {
-            const taskDatas = await loadTaskDatas();
-            // Lấy danh sách keyword duy nhất
-            const keywordSuggest = taskDatas
-                .map(task => task.keyword)
-                .filter((value, index, self) => self.indexOf(value) === index);
-
-            // Tìm kiếm tương đối (giống %XXX%)
-            const filteredSuggest = keywordSuggest.filter(keyword =>
+        let filteredSuggest = keywordSuggest;
+        // Nếu là sự kiện input thì lọc theo giá trị nhập
+        if (event.type === "input" && inputValue !== "") {
+            filteredSuggest = keywordSuggest.filter(keyword =>
                 keyword.toLowerCase().includes(inputValue)
             );
+        }
 
-            console.log('Keyword suggestions:', filteredSuggest);
-
-            if (filteredSuggest.length > 0) {
-                suggestionList.style.display = "block";
-
-                filteredSuggest.forEach(suggestion => {
-                    const suggestionItem = document.createElement('li');
-                    suggestionItem.textContent = suggestion;
-
-                    suggestionItem.addEventListener('click', function () {
-                        keywordInput.value = suggestion; 
-                        suggestionList.innerHTML = ''; 
-                        suggestionList.style.display = "none";
-                    });
-
-                    suggestionList.appendChild(suggestionItem);
+        if (filteredSuggest.length > 0) {
+            suggestionList.style.display = "block";
+            filteredSuggest.forEach(suggestion => {
+                const suggestionItem = document.createElement('li');
+                suggestionItem.textContent = suggestion;
+                suggestionItem.addEventListener('click', function () {
+                    keywordInput.value = suggestion;
+                    suggestionList.innerHTML = '';
+                    suggestionList.style.display = "none";
+                    autofillFieldsByKeyword();
                 });
-            } else {
-                suggestionList.style.display = "none";
-            }
+                suggestionList.appendChild(suggestionItem);
+            });
+
+            // Đóng suggestionList khi click ra ngoài
+            document.addEventListener('mousedown', function hideSuggestionList(e) {
+                if (!suggestionList.contains(e.target) && e.target !== keywordInput) {
+                    suggestionList.style.display = "none";
+                    document.removeEventListener('mousedown', hideSuggestionList);
+                }
+            });
         } else {
             suggestionList.style.display = "none";
         }
-
         keywordValue = keywordInput.value;
-        console.log('Keyword value:', keywordValue);
-    });
-
-    // Nếu isRepeatValue là "Yes", tự động điền manualLinkInput, RE Input, Task Name dựa trên keywordValue
-    async function autofillFieldsByKeyword() {
-        if (isRepeatValue === "Yes" && keywordValue.trim() !== "") {
-            const taskDatas = await loadTaskDatas();
-            const matchedTask = taskDatas.find(task => task.keyword.toLowerCase() === keywordValue.toLowerCase());
-            if (matchedTask) {
-                // Gán giá trị cho manualLinkInput
-                manualLinkInput.value = matchedTask.manualLink || '';
-                manualLinkValue = manualLinkInput.value;
-
-                // Gán giá trị cho RE Input
-                const reInput = document.getElementById('re-input');
-                if (reInput) {
-                    reInput.value = matchedTask.re || '';
-                }
-
-                // Gán giá trị cho Task Name
-                const taskNameInput = document.getElementById('task-name');
-                if (taskNameInput) {
-                    taskNameInput.value = matchedTask.taskName || '';
-                }
-            }
-        }
+        autofillFieldsByKeyword();
     }
 
-    // Gọi autofillFieldsByKeyword mỗi khi keywordInput thay đổi nếu isRepeatValue là Yes
-    keywordInput.addEventListener("input", autofillFieldsByKeyword);
-    radios.forEach(radio => {
-        radio.addEventListener("change", autofillFieldsByKeyword);
+    // Kết hợp các sự kiện focus, click, input
+    ["focus", "click", "input"].forEach(evt => {
+        keywordInput.addEventListener(evt, handleKeywordSuggestions);
     });
-    
+
     manualLinkInput.addEventListener("input", function () {
         manualLinkValue = manualLinkInput.value.trim();
-        console.log('Manual link value:', manualLinkValue);
 
         // Kiểm tra định dạng link hợp lệ (bắt đầu bằng http:// hoặc https://)
         const urlPattern = /^(https?:\/\/)[^\s]+$/;
@@ -182,39 +194,53 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     fileUploadButton.addEventListener("click", function () {
-        // Tải lên file PDF, Img, png từ máy tính, mở một popup để người dùng chọn file
+        // Cho phép chọn nhiều file, tối đa 5 file
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
-        fileInput.accept = 'application/pdf,image/png,image/jpeg'; // Accept PDF, PNG, JPEG files
-        fileInput.onchange = function () { 
-            const file = fileInput.files[0];
-            if (file) {
-                // Kiểm tra định dạng file
-                if (file.type === 'application/pdf' || file.type === 'image/png' || file.type === 'image/jpeg') {
-                    // Hiển thị tên file đã tải lên dưới button upload
-                    let fileDisplay = document.getElementById('uploaded-file-display');
-                    if (!fileDisplay) {
-                        fileDisplay = document.createElement('div');
-                        fileDisplay.id = 'uploaded-file-display';
-                        fileDisplay.style.marginTop = '8px';
-                        fileUploadButton.parentNode.insertBefore(fileDisplay, fileUploadButton.nextSibling);
-                    }
-                    fileDisplay.innerHTML = `
-                        <span>${file.name}</span>
-                        <button type="button" id="remove-uploaded-file" style="margin-left:8px;">x</button>
-                    `;
-                    // Không đặt giá trị manualLinkInput thành tên file
-
-                    // Xử lý nút x để huỷ bỏ file đã upload
-                    document.getElementById('remove-uploaded-file').onclick = function() {
-                        fileDisplay.remove();
-                    };
-                } else {
-                    alert("Please upload a valid PDF, PNG, or JPEG file.");
-                }
+        fileInput.accept = 'application/pdf,image/png,image/jpeg';
+        fileInput.multiple = true;
+        fileInput.onchange = function () {
+            const files = Array.from(fileInput.files);
+            if (files.length > 5) {
+                alert("You can upload up to 5 files only.");
+                return;
             }
-        }
-        fileInput.click(); // Mở hộp thoại chọn file
+            // Hiển thị danh sách tên file đã tải lên dưới button upload
+            let fileDisplay = document.getElementById('uploaded-file-display');
+            if (!fileDisplay) {
+                fileDisplay = document.createElement('div');
+                fileDisplay.id = 'uploaded-file-display';
+                fileDisplay.style.marginTop = '8px';
+                fileUploadButton.parentNode.insertBefore(fileDisplay, fileUploadButton.nextSibling);
+            }
+            fileDisplay.innerHTML = '';
+            files.forEach((file, idx) => {
+                if (
+                    file.type === 'application/pdf' ||
+                    file.type === 'image/png' ||
+                    file.type === 'image/jpeg'
+                ) {
+                    const fileItem = document.createElement('div');
+                    fileItem.style.display = 'flex';
+                    fileItem.style.alignItems = 'center';
+                    fileItem.style.marginBottom = '4px';
+                    fileItem.innerHTML = `
+                        <span>${file.name}</span>
+                        <button type="button" class="remove-uploaded-file" data-idx="${idx}" style="margin-left:8px;">x</button>
+                    `;
+                    fileDisplay.appendChild(fileItem);
+                } else {
+                    alert(`File "${file.name}" is not a valid PDF, PNG, or JPEG file.`);
+                }
+            });
+            // Xử lý nút x để huỷ bỏ file đã upload
+            fileDisplay.querySelectorAll('.remove-uploaded-file').forEach(btn => {
+                btn.onclick = function () {
+                    btn.parentNode.remove();
+                };
+            });
+        };
+        fileInput.click();
     });
 
     // Tìm kiếm cửa hàng theo giá trị nhập vào storeNameSearchInput và storeRegionSearchInput (tương đối %XXX%)
@@ -262,10 +288,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function getSelectedStores() {
         const rows = storeListBody.querySelectorAll('tr');
-        const selectedStores = [];
+        const selectedStores = storeList;
         rows.forEach(row => {
             const checkbox = row.querySelector('.select-store');
             if (checkbox && checkbox.checked) {
+                // Kiểm tra tính duy nhất của cửa hàng
+                if (selectedStores.some(store => store.id === row.cells[1].textContent)) {
+                    return; // Cửa hàng đã được thêm, không thêm lại
+                }
+                // Thêm cửa hàng vào danh sách selectedStores
                 const id = row.cells[1].textContent;
                 const name = row.cells[2].textContent;
                 const region = row.cells[3].textContent;
@@ -294,7 +325,12 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 storeList = getSelectedStores();
             }
-            console.log('Current storeList:', storeList);
+            if (storeList.length === 0) {
+                alert('Please select at least one store.');
+                return;
+            }
+            // Hiển thị thông báo đã thêm cửa hàng
+            alert(`Added ${storeList.length} store(s) to the task.`);
         });
     }
 
