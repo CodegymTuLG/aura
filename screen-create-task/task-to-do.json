@@ -1,0 +1,147 @@
+[
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00002",
+    "manualLink": "https://www.youtube.com/watch?v=14RNSzMa30E&list=RD14RNSzMa30E&start_radio=1",
+    "storeList": [
+      "AEON Hà Đông",
+      "AEON The Nine"
+    ],
+    "re": "3",
+    "taskName": "Clean tables",
+    "taskType": "Sắp xếp",
+    "responseType": "Comment",
+    "responseTypeNumber": "500",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00003",
+    "manualLink": "https://www.youtube.com/watch?v=Y_qUVS2yiDk&list=RDY_qUVS2yiDk&start_radio=1",
+    "storeList": [
+      "AEON The Nine"
+    ],
+    "re": "21",
+    "taskName": "Greet customers",
+    "taskType": "Thống kê",
+    "responseType": "Check list",
+    "responseTypeNumber": "",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00003",
+    "manualLink": "https://www.youtube.com/watch?v=Y_qUVS2yiDk&list=RDY_qUVS2yiDk&start_radio=1",
+    "storeList": [
+      "AEON The Nine"
+    ],
+    "re": "21",
+    "taskName": "Greet customers",
+    "taskType": "Thống kê",
+    "responseType": "Check list",
+    "responseTypeNumber": "",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00006",
+    "manualLink": "https://www.youtube.com/watch?v=wifSr3ILpCw",
+    "storeList": [
+      "AEON The Nine"
+    ],
+    "re": "4",
+    "taskName": "Clean",
+    "taskType": "Thống kê",
+    "responseType": "Img",
+    "responseTypeNumber": "3",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00006",
+    "manualLink": "https://nodejs.org/en/download",
+    "storeList": [
+      "AEON Hà Đông"
+    ],
+    "re": "2",
+    "taskName": "Test Add Repeat Task",
+    "taskType": "Sắp xếp",
+    "responseType": "Comment",
+    "responseTypeNumber": "500",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00002",
+    "manualLink": "https://www.youtube.com/watch?v=14RNSzMa30E&list=RD14RNSzMa30E&start_radio=1",
+    "storeList": [
+      "AEON The Nine"
+    ],
+    "re": "3",
+    "taskName": "Clean tables",
+    "taskType": "Sắp xếp",
+    "responseType": "Comment",
+    "responseTypeNumber": "500",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "sdd",
+    "manualLink": "https://nodejs.org/en/download",
+    "storeList": [
+      "AEON Hà Đông",
+      "AEON The Nine"
+    ],
+    "re": "1",
+    "taskName": "testtttt",
+    "taskType": "Thống kê",
+    "responseType": "Img",
+    "responseTypeNumber": "5",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00002",
+    "manualLink": "https://www.youtube.com/watch?v=14RNSzMa30E&list=RD14RNSzMa30E&start_radio=1",
+    "storeList": [
+      "AEON Long Biên",
+      "AEON Hà Đông",
+      "AEON The Nine",
+      "AEON MaxValu Florence",
+      "AEON MaxValu Horizon"
+    ],
+    "re": "3",
+    "taskName": "Clean tables",
+    "taskType": "Sắp xếp",
+    "responseType": "Comment",
+    "responseTypeNumber": "500",
+    "taskDetails": ""
+  },
+  {
+    "startDate": "2025-08-22",
+    "endDate": "2025-08-22",
+    "keyword": "ACC-ADMIN-00004",
+    "manualLink": "https://www.youtube.com/watch?v=1Zjv5rkDK9s&list=RD1Zjv5rkDK9s&start_radio=1",
+    "storeList": [
+      "AEON Long Biên",
+      "AEON Hà Đông",
+      "AEON The Nine",
+      "AEON MaxValu Florence",
+      "AEON MaxValu Horizon"
+    ],
+    "re": "8",
+    "taskName": "Process payment",
+    "taskType": "Chuẩn bị",
+    "responseType": "Yes/No",
+    "responseTypeNumber": "",
+    "taskDetails": ""
+  }
+]
