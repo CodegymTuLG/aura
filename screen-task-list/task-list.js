@@ -1,4 +1,9 @@
-const allTasks = Array.from({ length: 30 }, (_, i) => {
+document.addEventListener("DOMContentLoaded", function () {
+  const createTaskButton = document.getElementById("go-to-create-task");
+  const storeListButton = document.getElementById("go-to-store-list");
+  const viewReportButton = document.getElementById("go-to-reports");
+  
+  const allTasks = Array.from({ length: 30 }, (_, i) => {
   const week = `W${26 + (i % 5)}`;
   const responsibleList = ["Trainer Perishable", "Trainer Delica/D&D", "Trainer Aeon CF", "PLANNING"];
   const responsible = responsibleList[i % responsibleList.length];
@@ -243,3 +248,13 @@ document.getElementById("toggleBar").addEventListener("click", function () {
             // Initially load all tasks
             loadTasks();
         });
+  createTaskButton.addEventListener("click", function() {
+    window.location.href = `../screen-create-task/create-task.html`;
+  });
+  storeListButton.addEventListener("click", function() {
+    window.location.href = `../screen-store-detail/store-detail.html`;
+  });
+  viewReportButton.addEventListener("click", function() {
+    window.location.href = `../screen-report/report.html`;
+  });
+});

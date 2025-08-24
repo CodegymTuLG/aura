@@ -5,13 +5,94 @@ document.addEventListener("DOMContentLoaded", function () {
     const taskStatusButtons = document.querySelectorAll('.status');
     const taskList = document.getElementById('task-list');
     const hqScreen = document.getElementById('hq-screen');
+    
+    // Week Info
     const previousWeek = document.getElementById('previous-week');
     const nextWeek = document.getElementById('next-week');
+    const weekNumber = document.getElementById('week-number');
+    const chooseDate = document.getElementById('choose-date');
+    const weekDates = document.getElementById('week-dates');
+    const today = new Date();
+    const currentWeek = getISOWeekNumber(new Date());
+    const currentDay = new Date();
+    const locale = 'en-US'; // hoặc 'en-US', 'vi-VN' tuỳ ngôn ngữ
+    const options = { day: '2-digit', month: 'short' };
+    let selectedDay = currentDay;
+    let selectedWeek = currentWeek;
+    const start = startOfWeek(selectedDay);
+    const end = endOfWeek(selectedDay);
+    const year = end.getFullYear(); // hoặc lấy year từ start: thường giống nhau
+    const formattedStart = formatDayMonth(start);
+    const formattedEnd = formatDayMonth(end);
+    weekNumber.innerHTML = `W${selectedWeek.toString().padStart(2, '0')}`;
+    chooseDate.innerHTML = selectedDay.toLocaleDateString();
 
-    // Date label
-    const chooseDateElement = document.getElementById('choose-date');
-    chooseDateElement.innerHTML = '30/06';
-    let selectedDay = '30/06';   
+    function getISOWeekNumber(date) {
+        const currentDate = new Date(date);
+        currentDate.setHours(0, 0, 0, 0);
+        currentDate.setDate(currentDate.getDate() + 3 - (currentDate.getDay() + 6) % 7);
+        const week1 = new Date(currentDate.getFullYear(), 0, 4);
+        return 1 + Math.round(((currentDate - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+    }
+
+    previousWeek.addEventListener('click', () => {
+        // Trừ 7 ngày cho đối tượng Date
+        selectedDay.setDate(selectedDay.getDate() - 7);
+
+        // Giảm tuần chọn đi 1 (nếu bạn muốn dùng selectedWeek)
+        selectedWeek = selectedWeek - 1;
+
+        // Cập nhật UI tuần
+        weekNumber.innerHTML = `W${selectedWeek.toString().padStart(2, '0')}`;
+
+        // Hiển thị ngày được chọn
+        chooseDate.innerHTML = selectedDay.toLocaleDateString();
+
+        weekDates.textContent = `${formattedStart} ~ ${formattedEnd} ${year}`;
+    });
+
+    nextWeek.addEventListener('click', () => {
+        // Cộng thêm 7 ngày cho selectedDay
+        selectedDay.setDate(selectedDay.getDate() + 7);
+
+        // Tăng tuần được chọn lên 1
+        selectedWeek = selectedWeek + 1;
+
+        // Cập nhật UI cho tuần
+        weekNumber.innerHTML = `W${selectedWeek.toString().padStart(2, '0')}`;
+
+        // Hiển thị ngày đã chọn
+        chooseDate.innerHTML = selectedDay.toLocaleDateString();
+
+        weekDates.textContent = `${formattedStart} ~ ${formattedEnd} ${year}`;
+    });
+
+    // Hàm lấy ngày bắt đầu tuần (Monday)
+    function startOfWeek(date) {
+        const dt = new Date(date);
+        const diff = dt.getDate() - dt.getDay() + (dt.getDay() === 0 ? -6 : 1);
+        return new Date(dt.setDate(diff));
+    }
+
+    // Hàm lấy ngày kết thúc tuần (Sunday)
+    function endOfWeek(date) {
+        const dt = new Date(date);
+        const dayOfWeek = dt.getDay(); // Chủ Nhật = 0, Thứ Hai = 1, ..., Thứ 7 = 6
+        if (dayOfWeek === 0) {
+            // Nếu là Chủ Nhật, trả về chính nó
+            return dt;
+        }
+        // Ngược lại, tính Chủ Nhật của tuần đó
+        const lastDay = dt.getDate() - (dayOfWeek - 1) + 6;
+        dt.setDate(lastDay);
+        return dt;
+    }
+
+    function formatDayMonth(date) {
+        return date.toLocaleDateString(locale, options);
+    }
+
+    weekDates.textContent = `${formattedStart} ~ ${formattedEnd} ${year}`;
 
     // Popup
     const registerTaskPopupParent = document.getElementById('register-task-popup_parent');
@@ -25,10 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Dropdowns
     const selectStore = document.getElementById('select-store');
     const selectStaff = document.getElementById('select-staff');
-
-    // Navigation
-    previousWeek.addEventListener('click', () => alert('show previous week task'));
-    nextWeek.addEventListener('click', () => alert('show next week task'));
 
     if (hqScreen) {
         hqScreen.addEventListener('click', () => {
@@ -246,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Render task và cập nhật ngày hiển thị
             renderTasks(selectedDay, 'Active', storeId, staffName);
-            chooseDateElement.innerHTML = selectedDay;
+            chooseDate.innerHTML = selectedDay;
         });
     });
 

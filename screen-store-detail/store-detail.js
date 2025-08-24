@@ -1,6 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
     const taskListContainer = document.querySelector("#task-list tbody");
     const paginationContainer = document.getElementById("pagination");
+    const taskListButton = document.getElementById("go-to-task-list");
+    const creatTaskButton = document.getElementById("go-to-create-task");
+
+    taskListButton.addEventListener("click", function() {
+        window.location.href = `../screen-task-list/task-list.html`;
+    });
+    creatTaskButton.addEventListener("click", function() {
+        window.location.href = `../screen-create-task/create-task.html`;
+    });      
 
     // Sample data
     const tasks = [
