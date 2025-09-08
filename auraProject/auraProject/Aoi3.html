@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Weekly Task Dashboard + Jumping Star</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  html,body{margin:0;padding:0;font-family:"Segoe UI",sans-serif;background:#f5f6ff;color:#333;overflow-x:hidden}
+
+  /* Upload nổi ngoài khung */
+  .upload-float{position:fixed;top:6px;left:6px;z-index:2147483647;display:flex;align-items:center;gap:8px}
+  .upload-float input[type=file]{padding:4px 6px;font-size:12px}
+  .upload-float .hint{color:#7d8da1;font-size:12px}
+
+  .container{width:768px;min-height:100vh;margin:0 auto;padding:20px;background:#fff;border:8px solid #b2ebf2;border-radius:20px;box-sizing:border-box}
+  @media (max-width:1024px){.container{width:95%;max-width:768px}}
+
+  .week-header{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:10px;position:relative}
+  .week-nav{font-size:22px;cursor:pointer;user-select:none;padding:2px 10px;border-radius:10px}
+  .week-nav:hover{background:#eaf6ff}
+  .week-title{text-align:center;cursor:pointer}
+  .week-title h1{font-size:26px;margin:0;font-weight:700;color:#3949ab}
+  .week-title p{color:#66bb6a;font-size:14px;margin:4px 0;font-weight:500}
+
+  /* HUD sao tổng (góc trái trong khung) */
+  .xp-hud{position:absolute;left:14px;top:8px;display:flex;align-items:center;gap:8px}
+  .xp-star{width:36px;height:36px;display:grid;place-items:center}
+  .xp-bar{width:54px;height:8px;border-radius:6px;background:#e7eef7;overflow:hidden;border:1px solid #cfe1ff}
+  .xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffd54f,#ffb300);transition:width .28s ease}
+  .xp-count{font-size:12px;color:#4b5563;font-weight:600;min-width:28px;text-align:right}
+
+  .day-tabs{display:flex;justify-content:space-between;padding:0 10px}
+  .day-tabs button{background:transparent;border:none;padding:10px 14px;font-size:14px;cursor:pointer;color:#444;border-radius:12px 12px 0 0;transition:background .25s,box-shadow .25s;position:relative;z-index:1}
+  .day-tabs button.active{background:#a9d8ff;color:#000;font-weight:700;box-shadow:inset 0 -2px 0 #7fbfff}
+
+  .active-day-wrapper{background:#d0ebff;border-radius:0 0 14px 14px;padding:16px 20px;margin-bottom:16px;position:relative;top:-1px;z-index:1}
+  .status-summary{display:flex;justify-content:space-around;font-size:14px;flex-wrap:wrap;text-align:center}
+  .status-summary div{margin:4px 0;min-width:80px;cursor:pointer}
+  .status-summary div strong{font-size:18px;display:block}
+  .status-summary .selected{outline:2px solid #222;border-radius:10px;padding:2px 6px}
+
+  .task{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ddd;padding:12px 0}
+  .task-left{display:flex;gap:10px;align-items:center}
+  .task-number{font-size:14px;font-weight:700;width:20px;text-align:right}
+  .task-icon{position:relative;width:32px;height:32px}
+  .task-icon .square{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#1b1b1b;background:#ccc}
+  .task-icon .circle{width:16px;height:16px;background:#d4d46a;border-radius:50%;position:absolute;bottom:-4px;right:-4px;border:2px solid #fff}
+  .task-details{font-size:14px;line-height:1.3}
+  .task-details small{display:block;color:#888}
+
+  .task-status{font-size:13px;font-weight:700;display:flex;align-items:center;gap:.6rem}
+  .task-status.has-star{gap:1.5cm} /* ~1.5cm trước chữ Done */
+
+  .status-notyet{color:red}.status-overdue{color:#8b0000}.status-progress{color:blue}.status-done{color:green}
+  .muted{color:#999;font-size:12px}
+
+  /* === Sao nhảy nhót (bên cạnh chữ Done) === */
+  .done-star-btn{background:transparent;border:0;padding:0;margin:0;cursor:pointer;width:44px;height:44px;display:grid;place-items:center}
+  .done-star{width:42px;height:42px;transform-origin:center bottom;animation:hop 1.1s ease-in-out infinite}
+  @keyframes hop{
+    0%,100%{ transform:translateY(0) scale(1) rotate(0deg) }
+    45%    { transform:translateY(-15px) scale(1.3) rotate(-3deg) } /* 0.4cm ≈ 15px */
+  }
+  /* Sao bay tạm thời về HUD */
+  .fly-star{position:fixed;left:0;top:0;width:38px;height:38px;pointer-events:none;z-index:9999}
+
+  /* đập nhịp khi cộng exp */
+  .pulse{animation:pulse .28s ease}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+  <!-- Upload ngoài khung -->
+  <div class="upload-float">
+    <input id="fileInput" type="file" accept=".xlsx,.xls,.csv"/>
+    <span class="hint">Chọn Excel: Week, Dept, Task Name, Start day, End day, Status, RE</span>
+  </div>
+
+  <div class="container">
+    <div class="week-header">
+      <div class="week-nav" id="prevWeek">«</div>
+      <div class="week-title" id="weekTitle" title="Bấm để xem ALL ngày của tuần">
+        <h1 id="weekLabel">W--</h1>
+        <p id="weekRange">-- --- ~ -- --- ----</p>
+      </div>
+      <div class="week-nav" id="nextWeek">»</div>
+
+      <!-- HUD sao tổng + thanh EXP -->
+      <div class="xp-hud" id="xpHud">
+        <div class="xp-star" id="xpStar" aria-label="Sao kinh nghiệm">
+          <!-- sao tổng (SVG) -->
+          <svg viewBox="0 0 100 100" width="36" height="36">
+            <defs>
+              <linearGradient id="gHUD" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ffe680"/>
+                <stop offset="100%" stop-color="#ffc84d"/>
+              </linearGradient>
+            </defs>
+            <polygon fill="url(#gHUD)" stroke="#ffb300" stroke-width="4"
+              points="50,5 60,35 93,38 68,58 76,90 50,73 24,90 32,58 7,38 40,35"/>
+          </svg>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+        <div class="xp-count" id="xpCount">0</div>
+      </div>
+    </div>
+
+    <div class="day-tabs" id="dayTabs"></div>
+
+    <div class="active-day-wrapper">
+      <div class="status-summary" id="status-summary"></div>
+    </div>
+
+    <div id="task-list"></div>
+  </div>
+
+<script>
+/* ===== Helpers ===== */
+function toDateAny(v){
+  if (v == null) return null;
+  if (v instanceof Date) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  if (typeof v === "number"){ const epoch=new Date(Date.UTC(1899,11,30)); const d=new Date(epoch.getTime()+v*86400000); return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+  if (typeof v === "string"){
+    const s=v.trim(); let m=s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+    if(m) return new Date(+m[1],+m[2]-1,+m[3]);
+    m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})$/);
+    if(m){ let a=+m[1],b=+m[2],y=+m[3]; if(y<100) y+=2000; if(a>12) return new Date(y,b-1,a); if(b>12) return new Date(y,a-1,b); return new Date(y,a-1,b); }
+    const d=new Date(s); if(!isNaN(d)) return new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  }
+  return null;
+}
+function fmtMMM(d){ const mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; return `${d.getDate()} ${mo[d.getMonth()]}`; }
+function getISOWeek(date){ const d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())); const dayNum=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-dayNum+3); const firstThursday=new Date(Date.UTC(d.getUTCFullYear(),0,4)); return 1+Math.round((d-firstThursday)/(7*24*3600*1000)); }
+function getWeekStart(date){ const d=new Date(date); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(0,0,0,0); return d; }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+
+/* Dept colors (sửa theo quy ước nếu muốn) */
+const DEPT_COLORS={OP:"#8ecae6",ORD:"#219ebc",ADM:"#bde0fe",HR:"#ffd54f",IMP:"#ffc8dd",MKT:"#c5e1a5",QC:"#ffafcc"};
+const MEMBER_COLORS=["#ffb703","#fb8500","#9b5de5","#00b4d8","#d00000","#4caf50","#6a4c93"];
+const statusClassMap={"Not Yet":"status-notyet","Ovedue":"status-overdue","On Progess":"status-progress","Done":"status-done"};
+
+/* ===== State ===== */
+let weeks=[], weekToDaysMap={}, currentWeekIndex=0, currentDayIndex=0, statusFilter=null, allWeekMode=false;
+
+/* UI refs */
+const fileInput=document.getElementById("fileInput");
+const weekLabelEl=document.getElementById("weekLabel");
+const weekRangeEl=document.getElementById("weekRange");
+const weekTitle=document.getElementById("weekTitle");
+const dayTabsEl=document.getElementById("dayTabs");
+const listEl=document.getElementById("task-list");
+const summaryEl=document.getElementById("status-summary");
+
+/* === EXP HUD logic === */
+let xp=0, levelMax=20; // mỗi 20 sao đầy 1 thanh
+const xpFill=document.getElementById("xpFill");
+const xpCount=document.getElementById("xpCount");
+const xpStar=document.getElementById("xpStar");
+
+function addXP(n=1){
+  xp+=n;
+  xpCount.textContent = xp;
+  const pct=((xp%levelMax)/levelMax)*100;
+  xpFill.style.width=pct+"%";
+  // đập nhịp sao tổng
+  xpStar.classList.remove("pulse");
+  void xpStar.offsetWidth; // restart animation
+  xpStar.classList.add("pulse");
+}
+
+/* === âm thanh vui khi click sao === */
+let audioCtx;
+function playChime(){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type="triangle";
+    const t=audioCtx.currentTime;
+    o.frequency.setValueAtTime(660,t);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(0.2,t+0.02);
+    o.frequency.exponentialRampToValueAtTime(1320,t+0.15);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+    o.start(t); o.stop(t+0.24);
+  }catch(e){}
+}
+
+/* Tabs */
+const dayNames=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+function renderDayTabs(){
+  dayTabsEl.innerHTML=dayNames.map((d,i)=>`<button data-day="${i}">${d}</button>`).join("");
+  dayTabsEl.querySelectorAll("button").forEach((btn,i)=>{
+    const active=allWeekMode || i===currentDayIndex;
+    btn.classList.toggle("active",active);
+    btn.onclick=()=>{allWeekMode=false;currentDayIndex=i;renderDayTabs();renderWeek();};
+  });
+}
+
+/* Render */
+function renderWeek(){
+  const weekNum=weeks[currentWeekIndex];
+  const days=weekToDaysMap[weekNum]||Array.from({length:7},()=>[]);
+
+  let anyDate=null; for(const arr of days){ if(arr.length){ anyDate=arr[0].startDate; break; } }
+  if(!anyDate) anyDate=new Date();
+  const ws=getWeekStart(anyDate), we=addDays(ws,6);
+  weekLabelEl.textContent="W"+weekNum;
+  weekRangeEl.textContent=`${fmtMMM(ws)} ~ ${fmtMMM(we)} ${we.getFullYear()}`;
+
+  let base=[]; if(allWeekMode){ days.forEach(d=>base=base.concat(d)); } else base=days[currentDayIndex]||[];
+
+  let showing=base;
+  if(statusFilter==="Ovedue") showing=base.filter(t=>t.Status==="Ovedue");
+  else if(statusFilter && statusFilter!=="all") showing=base.filter(t=>t.Status===statusFilter);
+
+  const counts={all:showing.length,"Not Yet":0,"Ovedue":0,"On Progess":0,"Done":0};
+  let totalMin=0;
+  showing.forEach(t=>{counts[t.Status]=(counts[t.Status]||0)+1; totalMin+=(t.RE||0);});
+  const rieHour=(totalMin/60).toFixed(1);
+
+  summaryEl.innerHTML=`
+    <div data-filter="all" class="${statusFilter==='all'?'selected':''}"><strong>${counts.all}</strong>Active</div>
+    <div data-filter="Not Yet" class="${statusFilter==='Not Yet'?'selected':''}" style="color:red;"><strong>${counts["Not Yet"]}</strong>Not Yet</div>
+    <div data-filter="Ovedue" class="${statusFilter==='Ovedue'?'selected':''}" style="color:darkred;"><strong>${counts["Ovedue"]}</strong>Ovedue</div>
+    <div data-filter="On Progess" class="${statusFilter==='On Progess'?'selected':''}" style="color:blue;"><strong>${counts["On Progess"]}</strong>On Progess</div>
+    <div data-filter="Done" class="${statusFilter==='Done'?'selected':''}" style="color:green;"><strong>${counts["Done"]}</strong>Done</div>
+    <div><strong>${rieHour}</strong> RE</div>
+  `;
+  summaryEl.querySelectorAll("[data-filter]").forEach(el=>{
+    el.onclick=()=>{ const f=el.getAttribute("data-filter"); statusFilter=(statusFilter===f)?null:f; renderWeek(); };
+  });
+
+  renderTasks(showing);
+}
+
+/* Star SVG (cartoon) */
+function starSVG(size){
+  return `
+  <svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
+    <defs>
+      <linearGradient id="gStar" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%"  stop-color="#ffe680"/>
+        <stop offset="60%" stop-color="#ffd54f"/>
+        <stop offset="100%" stop-color="#ffc84d"/>
+      </linearGradient>
+    </defs>
+    <polygon fill="url(#gStar)" stroke="#ffb300" stroke-width="3"
+      points="50,5 62,36 94,38 69,58 77,91 50,74 23,91 31,58 6,38 38,36"/>
+    <!-- eyes -->
+    <circle cx="38" cy="45" r="10" fill="#0b1a2b"/>
+    <circle cx="62" cy="47" r="9" fill="#0b1a2b"/>
+    <circle cx="34" cy="42" r="3.5" fill="#fff"/>
+    <circle cx="58" cy="44" r="3.5" fill="#fff"/>
+    <!-- cheeks -->
+    <ellipse cx="32" cy="60" rx="6" ry="4" fill="#ff86b6" opacity=".7"/>
+    <ellipse cx="68" cy="61" rx="6" ry="4" fill="#ff86b6" opacity=".7"/>
+    <!-- mouth -->
+    <path d="M38 64 Q50 73 64 64" fill="none" stroke="#7a3b00" stroke-width="4" stroke-linecap="round"/>
+    <!-- sparkles -->
+    <path d="M20 34 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2z" fill="#fff8b3" opacity=".8"/>
+    <path d="M78 28 l1.5 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5z" fill="#fff8b3" opacity=".85"/>
+  </svg>`;
+}
+
+/* render list */
+function renderTasks(tasks){
+  const html = tasks.map((t,i)=>{
+    const hasStar = (t.Status==="Done");
+    return `
+    <div class="task">
+      <div class="task-left">
+        <div class="task-number">${i+1}.</div>
+        <div class="task-icon">
+          <div class="square" style="background:${DEPT_COLORS[t.Dept]||'#ccc'}">${(t.Dept||'').toUpperCase().slice(0,3)}</div>
+          <div class="circle" style="background:${t.userColor}"></div>
+        </div>
+        <div class="task-details">
+          ${t["Task Name"]||""}<br>
+          <small>RE ${t.RE||0} min • ${fmtMMM(t.startDate)} – ${fmtMMM(t.endDate)}</small>
+        </div>
+      </div>
+      <div class="task-status ${statusClassMap[t.Status]||''} ${hasStar?'has-star':''}">
+        ${hasStar?`<button class="done-star-btn" title="Collect star" aria-label="Collect star">${starSVG(42)}</button>`:''}
+        <span>${t.Status||""}</span>
+      </div>
+    </div>`;
+  }).join("");
+  listEl.innerHTML = html || `<div class="muted">No tasks.</div>`;
+}
+
+/* ——— Sao bay về HUD khi click ——— */
+function spawnFlyingStar(fromBtn){
+  const svgHTML = starSVG(38);
+  const fly = document.createElement('div');
+  fly.className = 'fly-star';
+  fly.innerHTML = svgHTML;
+  document.body.appendChild(fly);
+
+  const r = fromBtn.getBoundingClientRect();
+  const startX = r.left + r.width/2;
+  const startY = r.top + r.height/2;
+
+  const t = document.getElementById('xpStar').getBoundingClientRect();
+  const endX = t.left + t.width/2;
+  const endY = t.top  + t.height/2;
+
+  fly.style.left = startX+'px';
+  fly.style.top  = startY+'px';
+  fly.style.transform = 'translate(-50%,-50%)';
+
+  // tạo cung cong đi hướng 11 giờ
+  const midX = (startX + endX)/2 - 120; // lệch trái để cong
+  const midY = Math.min(startY, endY) - 150;
+
+  const frames = [
+    { transform: `translate(-50%,-50%) translate(0px,0px) scale(1) rotate(0deg)`, offset: 0 },
+    { offset: .55, transform: `translate(-50%,-50%) translate(${midX-startX}px, ${midY-startY}px) scale(1.1) rotate(180deg)` },
+    { transform: `translate(-50%,-50%) translate(${endX-startX}px, ${endY-startY}px) scale(.6) rotate(360deg)`, offset: 1 }
+  ];
+  const anim = fly.animate(frames, { duration: 900, easing: 'cubic-bezier(.25,.1,.3,1)' });
+  anim.onfinish = () => { fly.remove(); addXP(1); playChime(); };
+}
+
+/* event delegation cho click star */
+document.getElementById('task-list').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.done-star-btn');
+  if(!btn) return;
+  spawnFlyingStar(btn);
+});
+
+/* Week nav + All week */
+document.getElementById("prevWeek").onclick=()=>{ if(currentWeekIndex>0){ currentWeekIndex--; currentDayIndex=0; statusFilter=null; allWeekMode=false; renderDayTabs(); renderWeek(); } };
+document.getElementById("nextWeek").onclick=()=>{ if(currentWeekIndex<weeks.length-1){ currentWeekIndex++; currentDayIndex=0; statusFilter=null; allWeekMode=false; renderDayTabs(); renderWeek(); } };
+document.getElementById("weekTitle").onclick=()=>{ allWeekMode=!allWeekMode; renderDayTabs(); renderWeek(); };
+
+/* ===== Load Excel ===== */
+document.getElementById("fileInput").addEventListener("change", async (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  const buf=await f.arrayBuffer();
+  const wb=XLSX.read(buf,{type:"array",cellDates:true});
+
+  const REQUIRED=["Week","Dept","Task Name","Start day","End day","Status","RE"];
+  let ws=null;
+  for(const name of wb.SheetNames){
+    const cand=wb.Sheets[name];
+    const rows=XLSX.utils.sheet_to_json(cand,{header:1,raw:true});
+    const headers=(rows[0]||[]).map(h=>String(h||"").trim());
+    if(REQUIRED.every(c=>headers.includes(c))){ ws=cand; break; }
+  }
+  if(!ws) ws=wb.Sheets[wb.SheetNames[0]];
+
+  let rows=XLSX.utils.sheet_to_json(ws,{defval:null,raw:true});
+  rows=rows.map(r=>{ const o={}; Object.keys(r).forEach(k=>o[String(k).trim()]=r[k]); return o; });
+
+  const byWeek={};
+  rows.forEach((r,idx)=>{
+    const start=toDateAny(r["Start day"]);
+    const end=toDateAny(r["End day"])||start;
+    if(!start) return;
+    const wk=r["Week"]??getISOWeek(start);
+    const dIdx=(start.getDay()+6)%7;
+    const userColor=MEMBER_COLORS[idx%MEMBER_COLORS.length];
+
+    const task={...r,startDate:start,endDate:end,Week:wk,
+      Dept:String(r["Dept"]||"").trim(),Status:String(r["Status"]||"").trim(),
+      RE:Number(r["RE"]||0),userColor};
+
+    if(!byWeek[wk]) byWeek[wk]=Array.from({length:7},()=>[]);
+    byWeek[wk][dIdx].push(task);
+  });
+
+  Object.values(byWeek).forEach(days=>days.forEach(arr=>arr.sort((a,b)=>a.startDate-b.startDate)));
+
+  weekToDaysMap=byWeek;
+  weeks=Object.keys(byWeek).map(n=>+n).sort((a,b)=>a-b);
+  currentWeekIndex=0; currentDayIndex=0; statusFilter=null; allWeekMode=false;
+  // reset HUD
+  xp=0; addXP(0);
+
+  renderDayTabs(); renderWeek();
+});
+
+/* init tabs */
+renderDayTabs();
+</script>
+</body>
+</html>

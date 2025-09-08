@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stores Tasks</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/stores-tasks.css">
+    <link rel="icon" href="img/logo.png">
+    <script defer src="js/script.js"></script> 
+</head>
+<body>
+    <div class="container">
+        <div class="home-screen" >
+          <button id="hq-screen">Go to HQ Screen</button>
+          <h1>STORES TASKS</h1>
+        </div>
+
+        <div class="week-header">
+            <div class="week-nav" id="prevWeek">«</div>
+            <div class="week-title" id="weekTitle" title="Bấm để xem ALL ngày của tuần">
+                <h1 id="weekLabel">W--</h1>
+                <p id="weekRange">-- --- ~ -- --- ----</p>
+            </div>
+            <div class="week-nav" id="nextWeek">»</div>
+
+            <!-- HUD sao tổng + thanh EXP -->
+            <div class="xp-hud" id="xpHud">
+                <div class="xp-star" id="xpStar" aria-label="Sao kinh nghiệm">
+                    <!-- SVG sao tổng -->
+                    <svg viewBox="0 0 100 100" width="36" height="36">
+                        <defs>
+                            <linearGradient id="gHUD" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0%" stop-color="#ffe680">
+                                <stop offset="100%" stop-color="#ffc84d">
+                            </linearGradient>
+                        </defs>
+                        <polygon fill="url(#gHUD)" stroke="#ffb300" stroke-width="4"
+                            points="50,5 60,35 93,38 68,58 76,90 50,73 24,90 32,58 7,38 40,35">
+                    </svg>
+                </div>
+                <div class="xp-bar">
+                    <div class="xp-fill" id="xpFill"></div>
+                </div>
+                <div class="xp-count" id="xpCount">0</div>
+            </div>
+        </div>
+
+        <div class="day-tabs" id="dayTabs"></div>
+
+        <div class="active-day-wrapper">
+            <div class="status-summary" id="status-summary"></div>
+        </div>
+
+        <div id="task-list"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+
+
+.chart-section {
+    width: 60%;
+    padding-right: 20px;
+}
+
+.task-info-section {
+    width: 35%;
+    padding-left: 20px;
+} 
+#task-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#task-table th, #task-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+#task-table th {
+    background-color: #007BFF;
+    color: white;
+}
+
+#task-table2 {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#task-table2 th, #task-table2 td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+#task-table2 th {
+    background-color: #007BFF;
+    color: white;
+}
+.store-list {
+    margin-top: 20px;
+}
+
+.store-list select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
