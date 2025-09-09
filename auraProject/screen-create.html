@@ -84,12 +84,11 @@
                     </div>
 
                     <div class="store-list-container">
-                        <table id="store-list" >
+                        <table id="store-list">
+                            <h3 id="storeTableTitle"></h3>
                             <thead>
                                 <tr>
-                                    <th>
-                                        <input type="checkbox"></input>
-                                    </th>
+                                    <th><input type="checkbox"></th>
                                     <th>Store Code</th>
                                     <th>Store Name</th>
                                     <th>Region</th>
@@ -103,30 +102,40 @@
                 </div>
             </div>
                 
-            <div class="form-group">
-                <span style="font-weight: bold;" for="re">RE(h)<span style="color: red; font-weight: bold">*</span>:</span>
-                <input type="number" id="re" style="width: 30px;" autocomplete="off">
-                <span style="font-weight: bold;" for="task-name">Task name<span style="color: red; font-weight: bold">*</span>:</span>
-                <input type="text" id="task-name" style="width: 350px;"  autocomplete="off" placeholder="Nhập tên task">
-                <br>
-                <br>
-                <span style="font-weight: bold;" for="task-type">Task type<span style="color: red; font-weight: bold">*</span>:</span>
-                <select name="task-type" id="task-type" style="height: 34px;">
-                    <option value="Thống kê">Thống kê</option>
-                    <option value="Sắp xếp">Sắp xếp</option>
-                    <option value="Chuẩn bị">Chuẩn bị</option>
-                </select>
-                <br>
-                <br>
-                <label for="response-type">Response type<span style="color: red; font-weight: bold">*</span>:</label>
-                <select name="response-type" id="response-type" style="height: 34px;">
-                    <option value="Img">Img</option>
-                    <option value="Comment">Comment</option>
-                    <option value="Check list">Check list</option>
-                    <option value="Yes/No">Yes/No</option>
-                </select>
-                <input type="number" id="response-type-number" style="width: 50px;">
-                <br><br>
+            <div class="form-group-row">
+                <div class="half">
+                    <span>RE(h)<span style="color:red">*</span>:</span>
+                    <input type="number" id="re" autocomplete="off">
+                </div>
+
+                <div class="half">
+                    <span>Task Name<span style="color:red">*</span>:</span>
+                    <input type="text" id="task-name" placeholder="Nhập tên task">
+                </div>
+            </div>
+
+            <div class="form-group-row">
+                <div class="half">
+                    <span>Task Type<span style="color:red">*</span>:</span>
+                    <select id="task-type">
+                        <option>Thống kê</option>
+                        <option>Sắp xếp</option>
+                        <option>Chuẩn bị</option>
+                    </select>
+                </div>
+
+                <div class="half">
+                    <span>Response Type<span style="color:red">*</span>:</span>
+                    <select id="response-type">
+                        <option>Picture</option>
+                        <option>Check-List</option>
+                        <option>Yes-No</option>
+                    </select>
+                    <input type="number" id="response-type-number" style="width:50px;">
+                </div>
+            </div>
+
+            <div class="form-group-row">
                 <textarea id="task-details" placeholder="Viết yêu cầu cho cửa hàng"></textarea>
             </div>
     

@@ -1,0 +1,763 @@
+/* ==================== FORM LAYOUT ==================== */
+.task-creation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 cột chia đều */
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+label {
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+/* ==================== NUT TẠO TASK ==================== */
+#create-task,
+#add-repeat-task {
+    padding: 10px 20px;
+    background-color: #388e3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background 0.25s, transform 0.2s;
+}
+
+#create-task {
+    margin-left: auto;
+}
+
+#create-task:hover,
+#add-repeat-task:hover {
+    background-color: #64c969;
+}
+
+#create-task:active,
+#add-repeat-task:active {
+    transform: scale(0.98);
+}
+
+/* Bố trí 2 nút lặp lại task */
+#repeat-create {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+/* Action buttons dưới form */
+.form-actions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ==================== BẢNG ==================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+input[type="checkbox"] {
+    margin: 0;
+}
+
+/* ==================== STORE FILTER ==================== */
+#store-filter {
+    width: 80%;
+    display: inline-block;
+}
+
+/* ==================== GỢI Ý TỪ KHÓA ==================== */
+.form-keyword-group {
+    position: relative;
+    display: inline-block;
+    width: 250px;
+    max-width: 100%;
+}
+
+.form-keyword-group input {
+    width: 100%;
+}
+
+.suggestion-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+}
+
+.suggestion-list li {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.suggestion-list li:hover {
+    background-color: #f0f0f0;
+}
+
+/* ==================== XÓA FILE UPLOAD ==================== */
+#remove-uploaded-file {
+    font-size: 0.6em;
+    color: #e53935;
+    background: white;
+    border: 2px solid #e53935;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    width: 16.8px;
+    height: 16.8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    transition: background 0.2s;
+}
+
+#remove-uploaded-file:hover {
+    background: #ffeaea;
+}
+
+/* ==================== POPUP ==================== */
+#task-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 16px;
+    z-index: 10000;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    width: 400px;
+    animation: fadeIn 0.3s ease;
+}
+
+#task-popup h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.task-popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+.task-popup-table th,
+.task-popup-table td {
+    border: 1px solid #ddd;
+    padding: 6px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.task-popup-table th {
+    background: #f7f7f7;
+    width: 40%;
+}
+
+.popup-close-btn {
+    background: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.popup-close-btn:hover {
+    background: #a71d2a;
+}
+
+/* ==================== LINK PREVIEW ==================== */
+#manualLinkPreview {
+    margin-top: 5px;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+
+#manualLinkPreview a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#manualLinkPreview a:hover {
+    text-decoration: underline;
+}
+
+/* ==================== ANIMATION ==================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ==================== NHÓM IS-REPEAT ==================== */
+#is-repeat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#is-repeat label {
+    font-weight: bold;
+}
+
+/* ==================== HALF INPUTS ==================== */
+.half {
+    display: inline-block;      /* nằm cạnh nhau */
+    width: 48%;                /* mỗi ô gần 50%, chừa khoảng cách */
+    box-sizing: border-box;
+    vertical-align: top;
+    margin-right: 4%;           /* khoảng cách giữa 2 cột */
+}
+
+.half:last-child {
+    margin-right: 0;            /* bỏ margin bên phải ô cuối */
+}
+
+.half label {
+    display: block;            /* label trên input */
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.half input[type="text"] {
+    width: 100%;               /* chiếm hết chiều ngang của .half */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+#re {
+    width: 60px;
+}
+
+#task-name {
+    max-width: 350px;
+}
+
+/* Select chung */
+select {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* ==================== STORE LIST ==================== */
+.store-list-container {
+    max-height: 300px;
+    overflow-y: auto;       /* scroll dọc nếu nhiều dòng */
+    overflow-x: auto;       /* scroll ngang nếu bảng rộng */
+    border: 1px solid #1976d2;  /* viền xanh chủ đạo */
+    border-radius: 6px;
+    padding: 4px;
+    background-color: #f3f8ff;   /* nền nhạt hơn tiêu đề */
+}
+
+/* STORE TABLE TITLE */
+#storeTableTitle {
+    margin: 0 0 8px 0;
+    padding: 6px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px 4px 0 0;
+    background-color: #1976d2;
+    display: block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Bảng */
+#store-list {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;       /* cột cố định tỉ lệ */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-radius: 6px;
+}
+
+/* Header */
+#store-list thead {
+    background-color: #e3f2fd;   /* xanh nhạt cho header */
+}
+
+#store-list thead th {
+    padding: 8px;
+    font-weight: 600;
+    text-align: center;
+    color: #1976d2;
+    border-bottom: 2px solid #1976d2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Width từng cột */
+#store-list thead th:first-child { width: 5%; }     /* checkbox */
+#store-list thead th:nth-child(2) { width: 30%; }   /* store code */
+#store-list thead th:nth-child(3) { width: 32.5%; } /* store name */
+#store-list thead th:nth-child(4) { width: 32.5%; } /* region */
+
+/* Body */
+#store-list tbody tr {
+    transition: background 0.2s;
+}
+
+#store-list tbody tr:hover {
+    background-color: #e8f4fd;   /* hover nhẹ xanh */
+}
+
+#store-list tbody td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #cfe3f9; /* viền xanh nhạt */
+    color: #0d47a1;                 /* chữ xanh đậm */
+    vertical-align: middle;
+    white-space: nowrap;             /* không xuống dòng */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+#store-list tbody td:first-child {
+    text-align: center;             /* checkbox căn giữa */
+}
+
+#store-list tbody tr.no-data td {
+    text-align: center;
+    color: #90caf9;                 /* xanh nhạt cho dòng trống */
+    font-style: italic;
+}
+
+/* Checkbox */
+#store-list input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    accent-color: #1976d2;          /* màu checkbox theo chủ đạo */
+}
+
+/* ==================== NÚT CHECK + ADD ==================== */
+#check-button,
+#add-button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #1976d2;
+    color: white;
+    cursor: pointer;
+    transition: background 0.25s;
+}
+
+#check-button:hover,
+#add-button:hover {
+    background-color: #2196f3;
+}
+
+/* ==================== UPLOAD BUTTON ==================== */
+#upload-file {
+    margin-left: 8px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s;
+}
+
+#upload-file:hover {
+    background: #e0e0e0;
+}
+
+#upload-file svg {
+    pointer-events: none;
+}
+
+/* ==================== FLEX ROW CHO NHÓM INPUT/SELECT ==================== */
+.form-group-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.form-group-row label,
+.form-group-row span {
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.form-group-row input,
+.form-group-row select,
+.form-group-row textarea {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* ==================== STORE POPUP ==================== */
+.store-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #1976d2;
+    border-radius: 8px;
+    padding: 16px;
+    z-index: 10000;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease;
+}
+
+/* Popup Title */
+.store-popup .popup-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1976d2;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #1976d2;
+    padding-bottom: 6px;
+}
+
+/* Bảng trong popup */
+.popup-table-container {
+    overflow-x: auto;
+}
+
+.popup-store-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.popup-store-table th,
+.popup-store-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popup-store-table th {
+    background-color: #f0f4ff;
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.popup-store-table tr:hover {
+    background-color: #e8f0fe;
+}
+
+/* Close button */
+.popup-close-btn {
+    display: block;
+    margin: 12px auto 0;
+    padding: 8px 16px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.25s;
+}
+
+.popup-close-btn:hover {
+    background-color: #2196f3;
+}
+
+/* ==================== RE(h) + Task Name ROW ==================== */
+.form-group-row-re-task {
+    display: flex;
+    gap: 5px;                 /* khoảng cách giữa 2 cột */
+    flex-wrap: wrap;            /* tự xuống dòng nếu quá hẹp */
+    margin-bottom: 12px;
+}
+
+.form-group-row-re-task > div {
+    flex: 1;                    /* chia đều 2 cột */
+    display: flex;
+    flex-direction: column;     /* label trên input */
+}
+
+.form-group-row-re-task span {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.form-group-row-re-task input[type="number"],
+.form-group-row-re-task input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==================== CHECK LIST TABLE ==================== */
+.checklist-box {
+    border: 2px solid #99ccee;
+    border-radius: 8px;
+    padding: 0;              /* bỏ padding để bảng dính sát viền */
+    background: #fdfefe;
+    margin-top: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    overflow: hidden;        /* tránh bảng tràn ra ngoài khi bo góc */
+}
+
+.checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;               /* bỏ margin-top mặc định */
+    table-layout: auto;
+    background-color: #f9fcff;
+    border: none;            /* bỏ border ngoài của bảng, chỉ dùng border .checklist-box */
+}
+
+/* Tên bảng */
+.checklist-table caption {
+    caption-side: top;
+    text-align: center;
+    font-weight: bold;
+    padding: 8px 12px;
+    background-color: #cce6ff;
+    border-bottom: 1px solid #99ccee; /* nối liền với bảng */
+    font-size: 16px;
+    color: #003366;
+    margin: 0;
+}
+
+/* Các ô trong bảng */
+.checklist-table th,
+.checklist-table td {
+    border: 1px solid #99ccee;
+    padding: 8px;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Hover hàng */
+.checklist-table tbody tr:hover {
+    background-color: #e6f3ff;
+}
+
+/* Cột STT và Delete */
+.checklist-table th:first-child,
+.checklist-table td:first-child {
+    width: 1%;
+    white-space: nowrap;
+}
+.checklist-table th:last-child,
+.checklist-table td:last-child {
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* Ô nhập nội dung */
+.check-input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.check-input:focus {
+    outline: none;
+    border-color: #3399ff;
+    box-shadow: 0 0 4px #66b3ff;
+    background-color: #f0faff;
+}
+
+/* Nút xóa */
+.delete-btn {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #666;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.delete-btn:hover {
+    transform: rotate(15deg);
+    color: red;
+}
+
+/* Khi disable bảng */
+#checklist-table-container.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+/* ==================== END CHECK LIST TABLE ==================== */
+
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .task-creation { grid-template-columns: 1fr; }
+    .form-actions { grid-column: span 1; flex-direction: column; align-items: stretch; }
+    #repeat-create { flex-direction: column; align-items: stretch; }
+    select { width: 100%; }
+    textarea { width: 100%; }
+    .store-list-container { overflow-x: auto; }
+    #store-list { display: block; min-width: 600px; }
+    #store-list thead th { font-size: 14px; padding: 8px; }
+    #store-list tbody td { padding: 6px 8px; font-size: 13px; }
+    .half {display: block;margin-right: 0;margin-bottom: 7px;}
+    .checklist-table th, .checklist-table td {padding: 6px;font-size: 14px;}
+    .check-input {width: 100%;font-size: 14px;}
+    #confirm-checklist {width: 100%;padding: 8px;font-size: 14px;}
+}
+
+/* ==================== OPTIONAL: TABLE STACKING SMALL SCREEN (<480px) ==================== */
+@media (max-width: 480px) {
+    #store-list thead { display: none; }
+    #store-list tbody tr {display: block;margin-bottom: 12px;border-bottom: 2px solid #eee;}
+    #store-list tbody td {display: flex;justify-content: space-between;padding: 6px 10px;}
+    #store-list tbody td::before {content: attr(data-label);font-weight: 600;color: #1976d2;}
+    #store-list tbody td:first-child { justify-content: center; }
+    .popup-store-table th, .popup-store-table td {font-size: 13px;padding: 6px;}
+    .form-group-row-re-task {flex-direction: column;gap: 12px;}
+    .checklist-table,
+    .checklist-table thead,
+    .checklist-table tbody,
+    .checklist-table th,
+    .checklist-table td,
+    .checklist-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .checklist-table thead {
+        display: none; /* Ẩn header */
+    }
+
+    .checklist-table tr {
+        margin-bottom: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 6px;
+    }
+
+    .checklist-table td {
+        text-align: left;
+        padding: 6px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .checklist-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        flex: 1;
+    }
+
+    .check-input {
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .delete-btn {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+
+    #confirm-checklist {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+    }
+}

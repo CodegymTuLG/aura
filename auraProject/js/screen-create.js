@@ -134,7 +134,6 @@ async function loadStores() {
     return [];
   }
 }
-
 async function autofillFieldsByKeyword() {
     if (isRepeatValue === "Yes" && keywordInput.value.trim() !== "") {
         const templateTasks = await loadTemplateTasks();
@@ -181,12 +180,12 @@ async function autofillFieldsByKeyword() {
             }
 
             if (taskTypeSelect) {
-                taskTypeSelect.value = matchedTask.task_type_id || '';
+                taskTypeSelect.value = matchedTask.task_type_name || '';
                 taskTypeSelect.disabled = true;
             }
 
             if (responseTypeSelect) {
-                responseTypeSelect.value = matchedTask.response_type_id || '';
+                responseTypeSelect.value = matchedTask.response_type_name || '';
                 responseTypeSelect.disabled = true;
             }
 
@@ -326,6 +325,109 @@ function getAllStores() {
     });
     return allStores;
 }
+async function filterAndRenderStores() {
+    const nameValue = storeNameSearchInput.value?.toLowerCase().trim() || "";
+    const regionValue = storeRegionSearchInput.value?.toLowerCase().trim() || "";
+    const storeListBody = storeListTable.getElementsByTagName('tbody')[0];
+    const tableTitle = document.getElementById('storeTableTitle');
+
+    try {
+        const [stores, regions] = await Promise.all([loadStores(), loadRegions()]);
+
+        // Tạo map region_id -> region_name
+        const regionMap = {};
+        regions?.forEach(r => {
+            if (r?.region_id != null) {
+                regionMap[r.region_id] = r.region_name || "";
+            }
+        });
+
+        let displayStores = [];
+
+        if (nameValue || regionValue) {
+            // Có input => Search Stores
+            tableTitle.textContent = "Search Stores";
+            displayStores = (stores || []).filter(store =>
+                (store?.store_id?.toString().toLowerCase().includes(nameValue) ||
+                 store?.store_code?.toLowerCase().includes(nameValue) ||
+                 store?.store_name?.toLowerCase().includes(nameValue)) &&
+                (regionMap[store?.region_id] || "").toLowerCase().includes(regionValue)
+            );
+        } else {
+            // Input trống => Selected Stores
+            tableTitle.textContent = "Selected Stores";
+
+            // Lấy store đã chọn (từ hàm getSelectedStores)
+            const selectedStores = getSelectedStores(); // [{id, name, region}, ...]
+            displayStores = selectedStores.map(s => ({
+                store_code: s.id,
+                store_name: s.name,
+                region_id: null,
+                region_name: s.region
+            }));
+        }
+
+        // Xóa body cũ
+        storeListBody.innerHTML = '';
+
+        // Tạo row cho mỗi store
+        displayStores.forEach(store => {
+            const row = document.createElement('tr');
+
+            // Checkbox
+            const tdCheckbox = document.createElement('td');
+            tdCheckbox.setAttribute('data-label', 'Select');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.classList.add('select-store');
+            tdCheckbox.appendChild(checkbox);
+            row.appendChild(tdCheckbox);
+
+            // Store Code
+            const tdCode = document.createElement('td');
+            tdCode.textContent = store?.store_code ?? '';
+            tdCode.setAttribute('data-label', 'Store Code');
+            row.appendChild(tdCode);
+
+            // Store Name
+            const tdName = document.createElement('td');
+            tdName.textContent = store?.store_name ?? '';
+            tdName.setAttribute('data-label', 'Store Name');
+            row.appendChild(tdName);
+
+            // Region Name
+            const tdRegion = document.createElement('td');
+            tdRegion.textContent = store?.region_name ?? '';
+            tdRegion.setAttribute('data-label', 'Region');
+            row.appendChild(tdRegion);
+
+            storeListBody.appendChild(row);
+        });
+
+        // Nếu không có kết quả
+        if (displayStores.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 4;
+            td.textContent = "No stores found";
+            td.classList.add('text-center');
+            emptyRow.appendChild(td);
+            storeListBody.appendChild(emptyRow);
+        }
+
+    } catch (err) {
+        console.error("Error filtering stores:", err);
+        storeListBody.innerHTML = "<tr><td colspan='4' class='text-center' style='color:red;'>Error loading stores</td></tr>";
+    }
+}
+
+// Gắn sự kiện input
+storeNameSearchInput.addEventListener("input", filterAndRenderStores);
+storeRegionSearchInput.addEventListener("input", filterAndRenderStores);
+
+// Khởi tạo mặc định hiển thị Selected Stores
+filterAndRenderStores();
+
 
 keywordInput.addEventListener("input", autofillFieldsByKeyword);
 backButton.addEventListener('click', () => {
@@ -442,53 +544,8 @@ fileUploadButton.addEventListener("click", function () {
     };
     fileInput.click();
 });
-async function filterAndRenderStores() {
-    const nameValue = storeNameSearchInput.value?.toLowerCase().trim() || "";
-    const regionValue = storeRegionSearchInput.value?.toLowerCase().trim() || "";
-    const storeListBody = storeListTable.getElementsByTagName('tbody')[0];
-
-    try {
-        // Lấy dữ liệu song song
-        const [stores, regions] = await Promise.all([loadStores(), loadRegions()]);
-
-        // Tạo map region_id -> region_name
-        const regionMap = {};
-        regions?.forEach(r => {
-            if (r?.region_id != null) {
-                regionMap[r.region_id] = r.region_name || "";
-            }
-        });
-
-        // Lọc danh sách
-        const filteredStores = (stores || []).filter(store =>
-            (store?.store_id?.toString().toLowerCase().includes(nameValue) ||
-             store?.store_code?.toLowerCase().includes(nameValue) ||
-             store?.store_name?.toLowerCase().includes(nameValue)) &&
-            (regionMap[store?.region_id] || "").toLowerCase().includes(regionValue)
-        );
-
-        // Hiển thị
-        storeListBody.innerHTML = '';
-        filteredStores.forEach(store => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><input type="checkbox" class="select-store"></td>
-                <td style="text-align:center;">${store?.store_code ?? ''}</td>
-                <td style="text-align:center;">${store?.store_name ?? ''}</td>
-                <td style="text-align:center;">${regionMap[store?.region_id] ?? ''}</td>
-            `;
-            storeListBody.appendChild(row);
-        });
-    } catch (err) {
-        console.error("Error filtering stores:", err);
-        storeListBody.innerHTML = "<tr><td colspan='7' style='text-align:center;color:red;'>Error loading stores</td></tr>";
-    }
-}
-
-// Chỉ gắn event sau khi DOM sẵn sàng
 storeNameSearchInput.addEventListener("input", filterAndRenderStores);
 storeRegionSearchInput.addEventListener("input", filterAndRenderStores);
-
 if (addButton) {
     addButton.addEventListener('click', function () {
         if (headerCheckbox && headerCheckbox.checked) {
@@ -496,20 +553,22 @@ if (addButton) {
         } else {
             storeList = getSelectedStores();
         }
+
         if (storeList.length === 0) {
             alert('Please select at least one store.');
             return;
         }
+
         // Hiển thị thông báo đã thêm cửa hàng
         alert(`Added ${storeList.length} store(s) to the task.`);
-        // Đăt lại giá trị của storeListTable
-        storeListBody.innerHTML = '';
+
+        // Reset input và header checkbox
         storeNameSearchInput.value = '';
         storeRegionSearchInput.value = '';
-        // Đặt lại checkbox ở header
-        if (headerCheckbox) {
-            headerCheckbox.checked = false;
-        }
+        if (headerCheckbox) headerCheckbox.checked = false;
+
+        // Cập nhật table để hiển thị Selected Stores
+        filterAndRenderStores();
     });
 }
 if (headerCheckbox) {
@@ -522,13 +581,14 @@ if (headerCheckbox) {
 }
 if (checkButton) {
     checkButton.addEventListener('click', function () {
-        // Hiển thị danh sách storeList với tất cả giá trị của mỗi phần tử thông qua popup
         if (storeList.length === 0) {
             alert('No stores selected.');
             return;
         }
-        let popupContent = '<table border="1" style="border-collapse:collapse;width:100%">';
-        popupContent += '<tr><th>ID</th><th>Name</th><th>Region</th></tr>';
+
+        // Tạo nội dung bảng popup
+        let popupContent = '<table class="popup-store-table">';
+        popupContent += '<thead><tr><th>ID</th><th>Name</th><th>Region</th></tr></thead><tbody>';
         storeList.forEach(store => {
             popupContent += `<tr>
                 <td>${store.id}</td>
@@ -536,34 +596,24 @@ if (checkButton) {
                 <td>${store.region}</td>
             </tr>`;
         });
-        popupContent += '</table>';
+        popupContent += '</tbody></table>';
 
-        // Kiểm tra xem popup đã tồn tại chưa, nếu có thì xoá trước khi tạo mới
+        // Xóa popup cũ nếu tồn tại
         let existingPopup = document.getElementById('store-popup');
-        if (existingPopup) {
-            existingPopup.remove();
-        }
+        if (existingPopup) existingPopup.remove();
 
         // Tạo popup
         const popup = document.createElement('div');
         popup.id = 'store-popup';
-        popup.style.position = 'fixed';
-        popup.style.top = '50%';
-        popup.style.left = '50%';
-        popup.style.transform = 'translate(-50%, -50%)';
-        popup.style.background = '#fff';
-        popup.style.border = '1px solid #ccc';
-        popup.style.padding = '16px';
-        popup.style.zIndex = '9999';
-        popup.style.maxHeight = '80vh';
-        popup.style.overflowY = 'auto';
+        popup.classList.add('store-popup');
         popup.innerHTML = `
-            <h3>Selected Stores</h3>
-            ${popupContent}
-            <button id="close-store-popup" style="margin-top:12px;">Close</button>
+            <h3 class="popup-title">Selected Stores</h3>
+            <div class="popup-table-container">${popupContent}</div>
+            <button id="close-store-popup" class="popup-close-btn">Close</button>
         `;
         document.body.appendChild(popup);
 
+        // Close button
         document.getElementById('close-store-popup').onclick = function () {
             popup.remove();
         };
@@ -571,57 +621,132 @@ if (checkButton) {
 }
 responseTypeSelect.addEventListener("change", function () {
     const selectedType = responseTypeSelect.value;
+    let container = document.getElementById("checklist-table-container");
 
-    switch (selectedType) {
-        case "Img":
-            // Nếu chọn Img thì hiển thị ô nhập số lượng ảnh
-            responseTypeNumberInput.style.display = "inline-block";
-            // Kiểm tra nếu số lượng ảnh không nằm trong khoảng 1-20
-            responseTypeNumberInput.addEventListener("input", function () {
-                const value = parseInt(responseTypeNumberInput.value, 10);
-                if (isNaN(value) || value < 1 || value > 20) {
-                    responseTypeNumberInput.style.borderColor = "red";
-                    responseTypeNumberInput.value = '10'; // Reset giá trị
-                    alert("Please enter a number between 1 and 20.");
-                } else {
-                    responseTypeNumberInput.style.borderColor = "";
-                }
-            });                
-            break;
+    // Nếu chọn Check-List mà chưa có bảng thì tạo
+    if (!container && selectedType === "Check-List") {
+        container = document.createElement("div");
+        container.id = "checklist-table-container";
+        container.innerHTML = `
+            <div class="checklist-box">
+                <table class="checklist-table">
+                    <caption>Check List</caption>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Check Content</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checklist-body">
+                        <tr>
+                            <td>1</td>
+                            <td><input type="text" class="check-input"></td>
+                            <td><button class="delete-btn">🗑</button></td>
+                        </tr>
+                        <tr id="add-row">
+                            <td colspan="3"><em>Nhập nội dung để thêm dòng mới...</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+        responseTypeSelect.insertAdjacentElement("afterend", container);
 
-        case "Comment":
-            // Nếu chọn Img thì hiển thị ô nhập số lượng ký tự
-            responseTypeNumberInput.style.display = "inline-block";
-            // Kiểm tra nếu số lượng ký tự comment không nằm trong khoảng 1-1000
-            responseTypeNumberInput.addEventListener("input", function () {
-                const value = parseInt(responseTypeNumberInput.value, 10);
-                if (isNaN(value) || value < 1 || value > 1000) {
-                    responseTypeNumberInput.style.borderColor = "red";
-                    responseTypeNumberInput.value = '500'; // Reset giá trị
-                    alert("Please enter a number between 1 and 1000.");
-                } else {
-                    responseTypeNumberInput.style.borderColor = "";
+        const tbody = container.querySelector("#checklist-body");
+        const addRow = container.querySelector("#add-row");
+        let checkContent = [];
+
+        // Cập nhật mảng dữ liệu
+        function updateCheckContent() {
+            checkContent = [];
+            tbody.querySelectorAll(".check-input").forEach(input => {
+                if (input.value.trim() !== "") {
+                    checkContent.push(input.value.trim());
                 }
             });
-            break;
+            console.log("Check List:", checkContent);
+        }
 
-        case "Check list":
-            // Nếu chọn Check list thì không hiển thị ô nhập số lượng
-            responseTypeNumberInput.style.display = "none";
-            break;
+        // Lắng nghe nhập liệu
+        tbody.addEventListener("input", function (e) {
+            if (e.target.classList.contains("check-input")) {
+                const allInputs = tbody.querySelectorAll(".check-input");
+                const lastInput = allInputs[allInputs.length - 1];
 
-        case "Yes/No":
-            // Nếu chọn Yes/No thì không hiển thị ô nhập số lượng
-            responseTypeNumberInput.style.display = "none";
+                // Nếu ô cuối có dữ liệu
+                if (lastInput.value.trim() !== "") {
+                    if (allInputs.length < 5) {
+                        // Thêm dòng mới nếu chưa đạt giới hạn
+                        const newRow = document.createElement("tr");
+                        newRow.innerHTML = `
+                            <td>${allInputs.length + 1}</td>
+                            <td><input type="text" class="check-input"></td>
+                            <td><button class="delete-btn">🗑</button></td>
+                        `;
+                        tbody.insertBefore(newRow, addRow);
+                        addRow.innerHTML = `<td colspan="3"><em>Nhập nội dung để thêm dòng mới...</em></td>`;
+                    } else {
+                        // Đã đạt 5 dòng → cập nhật thông báo
+                        addRow.innerHTML = `<td colspan="3" style="color:red;"><em>Tối đa 05 nội dung cho Check List</em></td>`;
+                    }
+                }
+                updateCheckContent();
+            }
+        });
 
-        default:
-            // Reset nếu chưa chọn hoặc không hợp lệ
-            responseTypeNumberInput.style.display = "none";
-            manualLinkInput.style.display = "inline-block";
-            taskDetailsInput.style.display = "block";
-            break;
+        // Xoá hàng
+        tbody.addEventListener("click", function (e) {
+            if (e.target.classList.contains("delete-btn")) {
+                e.target.closest("tr").remove();
+
+                // Đánh lại số thứ tự
+                const rows = tbody.querySelectorAll("tr:not(#add-row)");
+                rows.forEach((row, index) => {
+                    row.querySelector("td").textContent = index + 1;
+                });
+
+                // Reset lại thông báo nếu < 5 dòng
+                const allInputs = tbody.querySelectorAll(".check-input");
+                if (allInputs.length < 5) {
+                    addRow.innerHTML = `<td colspan="3"><em>Nhập nội dung để thêm dòng mới...</em></td>`;
+                }
+
+                updateCheckContent();
+            }
+        });
+    }
+
+    // Hiển thị theo loại
+    if (selectedType === "Check-List") {
+        if (container) container.style.display = "block";
+        responseTypeNumberInput.style.display = "none";
+        manualLinkInput.style.display = "none";
+    } 
+    else if (selectedType === "Picture") {
+        if (container) container.style.display = "none";
+        responseTypeNumberInput.style.display = "inline-block";
+        manualLinkInput.style.display = "none";
+
+        // validate số lượng ảnh
+        responseTypeNumberInput.addEventListener("input", function () {
+            const value = parseInt(responseTypeNumberInput.value, 10);
+            if (isNaN(value) || value < 1 || value > 20) {
+                responseTypeNumberInput.style.borderColor = "red";
+                responseTypeNumberInput.value = '10';
+                alert("Please enter a number between 1 and 20.");
+            } else {
+                responseTypeNumberInput.style.borderColor = "";
+            }
+        });
+    } 
+    else if (selectedType === "Yes-No") {
+        if (container) container.style.display = "none";
+        responseTypeNumberInput.style.display = "none";
+        manualLinkInput.style.display = "none";
     }
 });
+
 taskDetailsInput.addEventListener("input", function () {
     taskDetailsValue = taskDetailsInput.value.trim();
 });
