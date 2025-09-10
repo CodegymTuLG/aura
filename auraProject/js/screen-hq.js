@@ -336,7 +336,7 @@ async function render() {
             <div class="circle" style="background:${t.do_staff_id}"></div>
           </div>
           <div class="task-details">
-            ${t["Task Name"] || ""}<br>
+            ${t.task_name || ""}<br>
             <small>RE ${t.re || 0} min • ${formatDate(t.start_date)} – ${formatDate(t.end_date)}</small>
           </div>
         </div>

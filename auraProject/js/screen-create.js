@@ -623,7 +623,6 @@ responseTypeSelect.addEventListener("change", function () {
     const selectedType = responseTypeSelect.value;
     let container = document.getElementById("checklist-table-container");
 
-    // Nếu chọn Check-List mà chưa có bảng thì tạo
     if (!container && selectedType === "Check-List") {
         container = document.createElement("div");
         container.id = "checklist-table-container";
@@ -657,63 +656,94 @@ responseTypeSelect.addEventListener("change", function () {
         const addRow = container.querySelector("#add-row");
         let checkContent = [];
 
-        // Cập nhật mảng dữ liệu
         function updateCheckContent() {
             checkContent = [];
             tbody.querySelectorAll(".check-input").forEach(input => {
-                if (input.value.trim() !== "") {
-                    checkContent.push(input.value.trim());
-                }
+                if (input.value.trim() !== "") checkContent.push(input.value.trim());
             });
             console.log("Check List:", checkContent);
         }
 
-        // Lắng nghe nhập liệu
-        tbody.addEventListener("input", function (e) {
-            if (e.target.classList.contains("check-input")) {
-                const allInputs = tbody.querySelectorAll(".check-input");
-                const lastInput = allInputs[allInputs.length - 1];
+        function addNewRowIfNeeded() {
+            const allInputs = Array.from(tbody.querySelectorAll(".check-input"));
+            const lastInput = allInputs[allInputs.length - 1];
 
-                // Nếu ô cuối có dữ liệu
-                if (lastInput.value.trim() !== "") {
-                    if (allInputs.length < 5) {
-                        // Thêm dòng mới nếu chưa đạt giới hạn
-                        const newRow = document.createElement("tr");
-                        newRow.innerHTML = `
-                            <td>${allInputs.length + 1}</td>
-                            <td><input type="text" class="check-input"></td>
-                            <td><button class="delete-btn">🗑</button></td>
-                        `;
-                        tbody.insertBefore(newRow, addRow);
-                        addRow.innerHTML = `<td colspan="3"><em>Nhập nội dung để thêm dòng mới...</em></td>`;
-                    } else {
-                        // Đã đạt 5 dòng → cập nhật thông báo
-                        addRow.innerHTML = `<td colspan="3" style="color:red;"><em>Tối đa 05 nội dung cho Check List</em></td>`;
-                    }
-                }
-                updateCheckContent();
+            // Chỉ thêm dòng mới nếu dòng cuối cùng có dữ liệu và chưa quá 5 dòng
+            if (lastInput.value.trim() !== "" && allInputs.length < 5) {
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${allInputs.length + 1}</td>
+                    <td><input type="text" class="check-input"></td>
+                    <td><button class="delete-btn">🗑</button></td>
+                `;
+                tbody.insertBefore(newRow, addRow);
+                addRow.innerHTML = `<td colspan="3"><em>Nhập nội dung để thêm dòng mới...</em></td>`;
+            } else if (allInputs.length >= 5) {
+                addRow.innerHTML = `<td colspan="3" style="color:red;"><em>Tối đa 05 nội dung cho Check List</em></td>`;
             }
+        }
+
+        // Đẩy các dòng trống xuống dưới và giữ chỉ 1 dòng trống
+        function normalizeRows() {
+            const rows = Array.from(tbody.querySelectorAll("tr:not(#add-row)"));
+            const firstRow = rows[0]; // dòng đầu tiên luôn tồn tại
+            const nonEmptyRows = [];
+            const emptyRows = [];
+
+            rows.forEach(row => {
+                const input = row.querySelector(".check-input");
+                if (input.value.trim() === "") {
+                    emptyRows.push(row);
+                } else {
+                    nonEmptyRows.push(row);
+                }
+            });
+
+            // Giữ dòng đầu tiên
+            const newRows = [firstRow].concat(nonEmptyRows.filter(r => r !== firstRow));
+
+            // Thêm chỉ 1 dòng trống (dòng đầu tiên nếu nó trống, hoặc dòng trống cuối cùng)
+            if (emptyRows.length > 0) {
+                if (firstRow.querySelector(".check-input").value.trim() === "") {
+                    // dòng đầu tiên trống → không thêm dòng trống nữa
+                } else {
+                    newRows.push(emptyRows[0]);
+                }
+            }
+
+            // Xóa tất cả dòng hiện tại ngoài addRow
+            rows.forEach(row => row.remove());
+
+            // Thêm lại các dòng mới
+            newRows.forEach(row => tbody.insertBefore(row, addRow));
+
+            // Đánh lại số thứ tự
+            const updatedRows = tbody.querySelectorAll("tr:not(#add-row)");
+            updatedRows.forEach((r, index) => r.querySelector("td").textContent = index + 1);
+        }
+
+        tbody.addEventListener("input", function (e) {
+            if (!e.target.classList.contains("check-input")) return;
+            addNewRowIfNeeded();
+            normalizeRows();
+            updateCheckContent();
         });
 
-        // Xoá hàng
         tbody.addEventListener("click", function (e) {
-            if (e.target.classList.contains("delete-btn")) {
-                e.target.closest("tr").remove();
+            if (!e.target.classList.contains("delete-btn")) return;
 
-                // Đánh lại số thứ tự
-                const rows = tbody.querySelectorAll("tr:not(#add-row)");
-                rows.forEach((row, index) => {
-                    row.querySelector("td").textContent = index + 1;
-                });
+            const row = e.target.closest("tr");
+            const rows = Array.from(tbody.querySelectorAll("tr:not(#add-row)"));
 
-                // Reset lại thông báo nếu < 5 dòng
-                const allInputs = tbody.querySelectorAll(".check-input");
-                if (allInputs.length < 5) {
-                    addRow.innerHTML = `<td colspan="3"><em>Nhập nội dung để thêm dòng mới...</em></td>`;
-                }
-
-                updateCheckContent();
+            if (rows[0] === row) {
+                const input = row.querySelector(".check-input");
+                if (input) input.value = "";
+            } else {
+                row.remove();
             }
+
+            normalizeRows();
+            updateCheckContent();
         });
     }
 
@@ -722,13 +752,11 @@ responseTypeSelect.addEventListener("change", function () {
         if (container) container.style.display = "block";
         responseTypeNumberInput.style.display = "none";
         manualLinkInput.style.display = "none";
-    } 
-    else if (selectedType === "Picture") {
+    } else if (selectedType === "Picture") {
         if (container) container.style.display = "none";
         responseTypeNumberInput.style.display = "inline-block";
         manualLinkInput.style.display = "none";
 
-        // validate số lượng ảnh
         responseTypeNumberInput.addEventListener("input", function () {
             const value = parseInt(responseTypeNumberInput.value, 10);
             if (isNaN(value) || value < 1 || value > 20) {
@@ -739,8 +767,7 @@ responseTypeSelect.addEventListener("change", function () {
                 responseTypeNumberInput.style.borderColor = "";
             }
         });
-    } 
-    else if (selectedType === "Yes-No") {
+    } else if (selectedType === "Yes-No") {
         if (container) container.style.display = "none";
         responseTypeNumberInput.style.display = "none";
         manualLinkInput.style.display = "none";
