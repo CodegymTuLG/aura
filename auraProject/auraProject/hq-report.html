@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HQ System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/hq-report.css">
+    <link href="img/logo.png" rel="icon">
+    <script defer src="js/i18n.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="js/hq-report.js"></script>
+</head>
+<body>
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" data-i18n-key="loading-data">Đang tải dữ liệu...</div>
+        <div class="progress-bar-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <div id="progress-text" class="progress-text">0%</div>
+    </div>
+
+    <!-- Ẩn container chính cho đến khi tải xong -->
+    <div class="container" style="display: none;">
+        <div class="home-screen">
+            <button id="store-screen" data-i18n-key="go-to-store-screen">Go to Store screen</button>
+            <h1 data-i18n-key="hq-system">HQ SYSTEM</h1>
+        </div>
+        <div class="button-group button-row">
+            <div class="button-row-buttons">
+                <button id="go-to-hq-tasks" data-i18n-key="hq-tasks">HQ Tasks</button>
+                <button id="go-to-task-list" data-i18n-key="view-task-list">Xem danh sách Task</button>
+                <button id="go-to-create-task" data-i18n-key="create-new-task">Giao Task mới</button>
+                <button id="go-to-store-list" data-i18n-key="manage-stores">Quản lý Cửa hàng</button>
+                <button id="go-to-reports" class="selected" data-i18n-key="view-reports">Xem Báo cáo</button>
+            </div>
+            <h1 data-i18n-key="reports">Báo cáo</h1>
+        </div>
+        <main>
+            <section class="report-section">
+                <h2 data-i18n-key="completion-rate-by-store">Tỷ lệ hoàn thành theo cửa hàng</h2>
+                <div class="report-filters">
+                    <select id="year-filter"></select>
+                    <select id="quarter-filter">
+                        <option value="all" data-i18n-key="all-quarters">Tất cả các Quý</option>
+                        <option value="1" data-i18n-key="quarter-1">Quý 1</option>
+                        <option value="2" data-i18n-key="quarter-2">Quý 2</option>
+                        <option value="3" data-i18n-key="quarter-3">Quý 3</option>
+                        <option value="4" data-i18n-key="quarter-4">Quý 4</option>
+                    </select>
+                    <select id="month-filter"></select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="taskCompletionChart"></canvas>
+                </div>
+                <div id="task-table-container" class="table-container">
+                    <table id="task-table">
+                        <thead>
+                            <tr>
+                                <!-- Header sẽ được JS tự động tạo -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dữ liệu sẽ được chèn vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="report-section">
+                <h2 data-i18n-key="task-stats-by-dept">Thống kê Task theo phòng ban</h2>
+                <div class="chart-container">
+                    <canvas id="taskReviewBarChart"></canvas>
+                </div>
+                <div class="table-container">
+                    <table id="task-table2">
+                        <thead>
+                            <!-- Header sẽ được JS tự động tạo -->
+                        </thead>
+                        <tbody>
+                            <!-- Dữ liệu sẽ được chèn vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

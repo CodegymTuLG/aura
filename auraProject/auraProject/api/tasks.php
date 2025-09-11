@@ -45,6 +45,7 @@ if ($method === 'GET') {
         t.dept_id,
         d.department_name,
         t.do_staff_id,
+        s1.store_id,
         s1.staff_name AS do_staff_name,
         sm.store_name AS do_staff_store_name,
         t.start_date,

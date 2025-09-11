@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n-key="store-details-title">Chi tiết Cửa hàng</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/hq-store-detail.css">
+    <link href="img/logo.png" rel="icon">
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/hq-store-detail.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="home-screen">
+            <button id="store-screen" data-i18n-key="go-to-store-screen">Go to Store screen</button>
+            <h1 data-i18n-key="hq-system">HQ SYSTEM</h1>
+        </div>
+        <div class="button-group button-row">
+            <div class="button-row-buttons">
+                <button id="go-to-hq-tasks" data-i18n-key="hq-tasks">HQ Tasks</button>
+                <button id="go-to-task-list" data-i18n-key="view-task-list">Xem danh sách Task</button>
+                <button id="go-to-create-task" data-i18n-key="create-new-task">Giao Task mới</button>
+                <button id="go-to-store-list" class="selected" data-i18n-key="manage-stores">Quản lý Cửa hàng</button>
+                <button id="go-to-reports" data-i18n-key="view-reports">Xem Báo cáo</button>
+            </div>
+            <h1 data-i18n-key="store-details-title">Chi tiết Cửa hàng</h1>
+        </div>
+        <main>
+            <div class="page-actions">
+                <button id="export-csv" data-i18n-key="export-csv">Xuất CSV</button>
+            </div>
+            <section id="task-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-i18n-key="no-short">STT</th>
+                            <th data-i18n-key="store-name">Tên Cửa hàng</th>
+                            <th data-i18n-key="region">Khu vực</th>
+                            <th data-i18n-key="start">Bắt đầu</th>
+                            <th data-i18n-key="end">Kết thúc</th>
+                            <th data-i18n-key="actual-start">Bắt đầu thực tế</th>
+                            <th data-i18n-key="actual-end">Kết thúc thực tế</th>
+                            <th data-i18n-key="status">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Các dòng task sẽ được chèn vào đây -->
+                    </tbody>
+                </table>
+                <div id="pagination">
+                    <span> &lt;&lt; </span>
+                    <span>2/51</span>
+                    <span> &gt;&gt; </span>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Các tệp script nên được đặt ở đây nếu không dùng defer -->
+</body>
+</html>

@@ -3,28 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HQ System</title>
+    <title>Stores Tasks</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/screen-hq.css">
-    <link href="img/logo.png" rel="icon">
-    <script defer src="js/screen-hq.js"></script> 
+    <link rel="stylesheet" href="css/stores-tasks.css">
+    <link rel="icon" href="img/logo.png">
+    <script defer src="js/i18n.js"></script> 
+    <script defer src="js/script.js"></script> 
 </head>
 <body>
     <div class="container">
-        <div class="home-screen">
-            <button id="store-screen">Go to Store screen</button>
-            <h1>HQ SYSTEM</h1>
+        <div class="home-screen" >
+          <button id="hq-screen" data-i18n-key="go-to-hq-screen">Go to HQ Screen</button>
+          <h1 data-i18n-key="stores-tasks">STORES TASKS</h1>
         </div>
 
-        <div class="button-group button-row">
-            <div class="button-row-buttons">
-                <button id="go-to-hq-tasks" class="selected">HQ Tasks</button>
-                <button id="go-to-task-list">View Task List</button>
-                <button id="go-to-create-task">Assign New Task</button>
-                <button id="go-to-store-list">Manage Stores</button>
-                <button id="go-to-reports">View Reports</button>
+        <div class="filters-container">
+            <div class="filter-group">
+              <label for="store-filter">Lọc theo cửa hàng</label>
+              <select id="store-filter">
+                <option value="all">Tất cả cửa hàng</option>
+              </select>
             </div>
-            <h1>HQ Tasks</h1>
+            <div class="filter-group">
+              <label for="staff-filter">Lọc theo nhân viên</label>
+              <select id="staff-filter">
+                <option value="all">Tất cả nhân viên</option>
+              </select>
+            </div>
         </div>
 
         <div class="week-header">
@@ -65,5 +70,6 @@
 
         <div id="task-list"></div>
     </div>
+    <div id="popup" style="display:none"></div>
 </body>
 </html>

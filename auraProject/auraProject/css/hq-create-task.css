@@ -1,0 +1,523 @@
+/*
+ * Styles for the HQ Create Task page (hq-create-task.html)
+ */
+
+.form-row-of-fieldsets {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* ===================================
+   Main Form Layout (Scoped to .ct-form)
+====================================== */
+.ct-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Reduced gap for a more compact layout */
+}
+
+.ct-form .form-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center; /* Căn giữa các item theo chiều dọc */
+}
+
+.ct-form .form-row > .form-group,
+.ct-form .form-row > .form-keyword-group {
+    flex: 1; /* Make groups share space equally */
+}
+
+.ct-form fieldset {
+    border: 1px solid #d0ebff; /* Consistent blue theme */
+    border-radius: 12px;
+    padding: 10px 16px 8px; /* Further reduced padding: top, horizontal, bottom */
+    background-color: #f9fcff;
+}
+.fieldset-auto-width {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: auto;
+}
+.fieldset-flex-grow {
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.ct-form legend {
+    font-weight: 700;
+    color: #3949ab; /* Consistent blue theme */
+    padding: 0 8px;
+    font-size: 16px;
+    margin-bottom: 8px; /* Thêm khoảng đệm dưới để tránh nội dung fieldset bị legend che */
+}
+
+/* ===================================
+   General Form Elements (Scoped to .ct-form)
+====================================== */
+.ct-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ct-form .form-group label,
+.ct-form .form-group .group-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ct-form .required {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-left: 2px;
+}
+
+.ct-form input[type="text"],
+.ct-form input[type="number"],
+.ct-form input[type="date"],
+.ct-form select,
+.ct-form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #b0c4de; /* Consistent blue theme */
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ct-form input:focus, .ct-form select:focus, .ct-form textarea:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.ct-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ===================================
+   Specific Component Styling (Scoped to .ct-form)
+====================================== */
+
+/* --- Is Repeat Radio Buttons --- */
+#is-repeat {
+    flex-direction: row !important; /* Ghi đè style mặc định của form-group */
+    align-items: center;
+    align-self: center; /* Căn giữa theo chiều dọc trong form-row */
+    gap: 8px;
+    flex-grow: 0; /* Không cho phép co giãn quá mức */
+}
+.ct-form #is-repeat .group-label {
+    margin-right: 8px;
+    display: none; /* Hide this as legend is now the label */
+}
+.ct-form #is-repeat input[type="radio"] {
+    margin-right: 4px;
+}
+
+/* --- Date Inputs in form-row --- */
+.ct-form .form-group-fixed {
+    flex-grow: 0; /* Ngăn không cho co giãn */
+    flex-basis: 200px; /* Đặt chiều rộng cơ bản */
+}
+
+/* --- Keyword Suggestions --- */
+.ct-form .form-keyword-group {
+    position: relative;
+}
+
+.ct-form .suggestion-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #b0c4de;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none;
+    border-radius: 0 0 8px 8px;
+}
+
+.ct-form .suggestion-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.ct-form .suggestion-list li:hover {
+    background-color: #eaf6ff;
+}
+
+/* --- Manual Link & Upload --- */
+.ct-form .manual-group {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch; /* Make items same height */
+    gap: 8px;
+}
+.ct-form .manual-group label {
+    display: none; /* Hide this as legend is now the label */
+}
+.ct-form .manual-group input {
+    flex-grow: 1;
+}
+.ct-form #upload-file {
+    padding: 6px 10px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.ct-form #upload-file:hover {
+    background-color: #e0e0e0;
+}
+
+/* --- Store Selection --- */
+.ct-form .store-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.ct-form .store-actions {
+    display: flex;
+    justify-content: flex-end; /* Căn tất cả các nút về bên phải */
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.ct-form .store-list-container {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #d0ebff;
+    border-radius: 8px;
+}
+.ct-form #store-list {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+#store-list caption {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px;
+    background-color: #f3f8ff;
+    color: #0d47a1;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 2; /* Đảm bảo caption nằm trên thead */
+}
+.ct-form #store-list th, .ct-form #store-list td {
+    /* Thêm data-label cho CSS content */
+    --label-select: "Select";
+    --label-store-code: "Store Code";
+    --label-store-name: "Store Name";
+    --label-region: "Region";
+    padding: 10px 12px;
+    border-bottom: 1px solid #e0eaff;
+    text-align: left;
+}
+.ct-form #store-list th {
+    background-color: #f3f8ff; /* Giữ màu nền để không bị trong suốt khi cuộn */
+    color: #0d47a1;
+    font-weight: 600;
+    position: sticky;
+    top: 37px; /* Đẩy thead xuống dưới caption (chiều cao caption ~37px) */
+}
+.ct-form #store-list tbody tr:hover {
+    background-color: #eaf6ff;
+}
+.ct-form #store-list input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* --- Task Details --- */
+.ct-form .form-group-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+.ct-form .form-group-row > .form-group {
+    flex: 1;
+}
+.ct-form .response-type-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+.ct-form #response-type-number {
+    width: 70px;
+}
+
+/* --- Checklist Table --- */
+.ct-form .checklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+.ct-form .checklist-table caption {
+    font-weight: 600;
+    padding: 8px;
+    text-align: left;
+    background-color: #f3f8ff;
+}
+.ct-form .checklist-table th, .ct-form .checklist-table td {
+    border: 1px solid #d0ebff;
+    padding: 8px;
+}
+.ct-form .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #d32f2f;
+}
+
+/* ===================================
+   Action Buttons (Scoped to .ct-form)
+====================================== */
+.ct-form .form-actions {
+    display: flex;
+    justify-content: flex-end; /* Căn tất cả các nút về bên phải */
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e0eaff;
+}
+
+.ct-form #create-task,
+.ct-form #add-repeat-task,
+.ct-form #check-button,
+.ct-form #add-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.ct-form #create-task, .ct-form #add-button {
+    background-color: #388e3c; /* Green */
+    color: white;
+}
+.ct-form #create-task:hover, .ct-form #add-button:hover {
+    background-color: #4caf50;
+}
+
+/* Đẩy các nút này về phía bên trái của container chứa chúng */
+.ct-form #add-repeat-task,
+.ct-form #check-button {
+    margin-right: auto;
+}
+.ct-form #add-repeat-task, .ct-form #check-button { /* Giữ lại style màu sắc */
+    background-color: #1976d2; /* Blue */
+    color: white;
+}
+.ct-form #add-repeat-task:hover, .ct-form #check-button:hover {
+    background-color: #2196f3;
+}
+
+/* ===================================
+   Popups (Scoped to .ct-form)
+====================================== */
+.store-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #1976d2;
+    border-radius: 12px;
+    padding: 24px;
+    z-index: 10000;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s ease;
+}
+/* ... (styles for popup content can be added here if needed) ... */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* --- Confirmation Popup --- */
+.confirmation-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 50, 80, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10001;
+    backdrop-filter: blur(3px);
+    animation: fadeInOverlay 0.3s ease;
+}
+
+.confirmation-popup-content {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    animation: fadeInPopup 0.3s ease-out;
+    border: 4px solid #d0ebff;
+}
+
+.confirmation-popup-content h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #3949ab;
+    font-size: 22px;
+    text-align: center;
+}
+
+.confirmation-popup-content p {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.confirmation-details-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+    border-top: 1px solid #e0eaff;
+    border-bottom: 1px solid #e0eaff;
+    padding: 12px 0;
+}
+
+.confirmation-details-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 15px;
+}
+
+.confirmation-popup-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.popup-btn-cancel {
+    background-color: #757575;
+    color: white;
+}
+.popup-btn-cancel:hover { background-color: #9e9e9e; }
+
+.popup-btn-confirm { background-color: #388e3c; color: white; }
+.popup-btn-confirm:hover { background-color: #4caf50; }
+
+/* ===================================
+   Responsive (Scoped to .ct-form)
+====================================== */
+@media (max-width: 768px) {
+    .form-row, .form-group-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+  }
+
+  .ct-form #is-repeat, .ct-form .manual-group, .ct-form .response-type-group {
+    flex-direction: column !important;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .ct-form #is-repeat .group-label {
+    margin-bottom: 4px;
+  }
+
+  .ct-form .store-actions, .ct-form .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ct-form .store-actions button, .ct-form .form-actions button {
+    width: 100%;
+    margin-right: 0; /* Reset margin-right */
+  }
+
+    .ct-form .store-filters {
+        flex-direction: column;
+    }
+
+    /* ===== Responsive Store Table ===== */
+    #store-list {
+        border: none;
+    }
+    .ct-form #store-list thead {
+        display: none; /* Ẩn header của bảng */
+    }
+    .ct-form #store-list tr {
+        display: block;
+        border: 1px solid #d0ebff;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #fff;
+    }
+    .ct-form #store-list td {
+        display: flex;
+        justify-content: space-between; /* Đẩy label và value ra 2 bên */
+        align-items: center;
+        padding: 6px 0;
+        border-bottom: 1px dashed #e0eaff;
+        text-align: right; /* Căn phải cho value */
+    }
+    .ct-form #store-list td:last-child {
+        border-bottom: none;
+    }
+    .ct-form #store-list td::before {
+        content: attr(data-label); /* Hiển thị label */
+        font-weight: 600;
+        color: #3949ab;
+        text-align: left; /* Căn trái cho label */
+        margin-right: 10px;
+    }
+    /* Gán content cho từng cột */
+    .ct-form #store-list td:nth-of-type(1)::before { content: var(--label-select); }
+    .ct-form #store-list td:nth-of-type(2)::before { content: var(--label-store-code); }
+    .ct-form #store-list td:nth-of-type(3)::before { content: var(--label-store-name); }
+    .ct-form #store-list td:nth-of-type(4)::before { content: var(--label-region); }
+
+    /* Style riêng cho checkbox */
+    .ct-form #store-list td:nth-of-type(1) {
+        justify-content: flex-start; /* Checkbox không cần đẩy ra 2 bên */
+    }
+    .ct-form #store-list td:nth-of-type(1)::before {
+        display: none; /* Ẩn label "Select" cho gọn */
+    }
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeInPopup {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}

@@ -1,0 +1,194 @@
+/*
+ * Styles for the HQ Reports page (hq-report.html)
+ */
+
+/* ===================================
+   Loading Overlay
+====================================== */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+
+.loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; }
+.progress-bar-container { width: 80%; max-width: 400px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.progress-bar { width: 0%; height: 20px; background-color: #4caf50; border-radius: 10px; transition: width 0.4s ease; }
+.progress-text { font-size: 14px; font-weight: bold; color: #555; }
+
+/* Class để ẩn overlay */
+#loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===================================
+   Report Section Layout
+====================================== */
+.report-section {
+    background-color: #f9fcff;
+    border: 1px solid #d0ebff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.report-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3949ab;
+    margin-top: 0;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.report-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.report-filters select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #b0c4de;
+    background-color: #fff;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.report-filters select option.current-period {
+    background-color: #e3f2fd; /* Màu nền xanh nhạt */
+    font-weight: bold;         /* In đậm chữ */
+    color: #0d47a1;            /* Màu chữ xanh đậm */
+}
+
+.report-filters select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    height: 350px;
+}
+
+.table-container {
+    overflow-x: auto; /* Thêm thanh cuộn ngang khi bảng quá rộng */
+    -webkit-overflow-scrolling: touch; /* Cải thiện trải nghiệm cuộn trên iOS */
+}
+
+/* Giới hạn chiều cao và thêm cuộn dọc cho bảng cửa hàng */
+#task-table-container {
+    max-height: 280px; /* Chiều cao ước tính cho 1 hàng header + 5 hàng dữ liệu */
+    overflow-y: auto;
+    position: relative; /* Cần thiết để a sticky header hoạt động đúng */
+}
+
+
+/* ===================================
+   Table Styles
+====================================== */
+#task-table,
+#task-table2 {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Các cột sẽ chia đều không gian */
+    background: white;
+}
+
+#task-table th, #task-table td,
+#task-table2 th, #task-table2 td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid #e0eaff; /* Consistent blue theme */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+#task-table th,
+#task-table2 th {
+    background-color: #f3f8ff; /* Consistent with other pages */
+    color: #0d47a1;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Căn lề trái và cho phép xuống dòng cho cột tên cửa hàng */
+#task-table th:first-child,
+#task-table td:first-child {
+    text-align: left;
+    white-space: normal; /* Cho phép văn bản xuống dòng */
+    word-break: break-word; /* Ngắt từ nếu cần */
+    padding-left: 12px; /* Thêm chút đệm bên trái cho đẹp */
+}
+
+/* Tùy chỉnh riêng cho bảng phòng ban để vừa vặn hơn */
+#task-table2 {
+    table-layout: fixed; /* Chuyển về fixed để xử lý header phức tạp */
+}
+
+#task-table2 th,
+#task-table2 td {
+    white-space: normal;    /* Cho phép xuống dòng */
+    word-break: break-word; /* Ngắt từ nếu cần */
+    font-size: 11px;        /* Giảm kích thước chữ */
+    padding: 8px 4px;       /* Giảm padding */
+}
+
+
+#task-table2 thead tr:first-child th {
+    top: 0;
+}
+#task-table2 thead tr:last-child th {
+    top: 28px; /* Điều chỉnh lại vị trí cho phù hợp với padding/font-size mới */
+}
+
+/* Phân bổ lại độ rộng cho các cột trong bảng phòng ban */
+#task-table2 th:first-child,
+#task-table2 td:first-child {
+    width: 20%; /* Tăng độ rộng cho cột Phòng ban */
+}
+
+/* Giảm độ rộng cho 3 cột cuối */
+#task-table2 th:nth-last-child(1), #task-table2 td:nth-last-child(1),
+#task-table2 th:nth-last-child(2), #task-table2 td:nth-last-child(2),
+#task-table2 th:nth-last-child(3), #task-table2 td:nth-last-child(3) {
+    width: 8%;
+}
+
+#task-table tbody tr:hover,
+#task-table2 tbody tr:hover {
+    background-color: #eaf6ff; /* Consistent hover effect */
+}
