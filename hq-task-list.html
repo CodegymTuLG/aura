@@ -48,6 +48,23 @@
                 <!-- Report Content (initially hidden, will be on the left in split view) -->
                 <div id="report-content" class="content-pane" style="display: none;">
                     <h1 class="section-title" data-i18n-key="reports">Reports</h1>
+                    <!-- Charts Section -->
+                    <section class="charts-section">
+
+                        <div class="chart-controls">
+                            <button id="togglePie" class="chart-toggle red" data-i18n-key="show-progress-chart">Show Progress Chart</button>
+                            <button id="toggleBar" class="chart-toggle red" data-i18n-key="show-weekly-stats-chart">Show Weekly Stats Chart</button>
+                        </div>
+                        <div class="charts-container">
+                            <div class="chart-wrapper">
+                                <canvas id="progressPieChart"></canvas>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="progressBarChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+
                     <section class="report-section">
                         <h2 data-i18n-key="completion-rate-by-store">Completion Rate by Store</h2>
                         <div class="report-filters">
@@ -91,22 +108,7 @@
 
                 <!-- Task List Content -->
                 <div id="task-list-content" class="content-pane">
-                    <!-- Charts Section -->
-                    <section class="charts-section">
-                        <h1 class="section-title" data-i18n-key="view-task-list">View Task List</h1>
-                        <div class="chart-controls">
-                            <button id="togglePie" class="chart-toggle red" data-i18n-key="show-progress-chart">Show Progress Chart</button>
-                            <button id="toggleBar" class="chart-toggle red" data-i18n-key="show-weekly-stats-chart">Show Weekly Stats Chart</button>
-                        </div>
-                        <div class="charts-container">
-                            <div class="chart-wrapper">
-                                <canvas id="progressPieChart"></canvas>
-                            </div>
-                            <div class="chart-wrapper">
-                                <canvas id="progressBarChart"></canvas>
-                            </div>
-                        </div>
-                    </section>
+                    <h1 class="section-title" data-i18n-key="view-task-list">Task List</h1>
 
                     <!-- Task List Section -->
                     <section class="task-list-section">
