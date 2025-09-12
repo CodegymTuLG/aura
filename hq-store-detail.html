@@ -26,7 +26,10 @@
             <h1 data-i18n-key="store-details-title">Chi tiết Cửa hàng</h1>
         </div>
         <main>
-            <div class="page-actions">
+            <div class="table-controls">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Tìm kiếm theo Task, Phòng ban, Khu vực...">
+                </div>
                 <button id="export-csv" data-i18n-key="export-csv">Xuất CSV</button>
             </div>
             <section id="task-list">
@@ -34,7 +37,9 @@
                     <thead>
                         <tr>
                             <th data-i18n-key="no-short">STT</th>
-                            <th data-i18n-key="store-name">Tên Cửa hàng</th>
+                            <th data-i18n-key="store-name">Tên CH</th>
+                            <th data-i18n-key="department">Phòng ban</th>
+                            <th data-i18n-key="task">Task</th>
                             <th data-i18n-key="region">Khu vực</th>
                             <th data-i18n-key="start">Bắt đầu</th>
                             <th data-i18n-key="end">Kết thúc</th>
@@ -47,11 +52,7 @@
                         <!-- Các dòng task sẽ được chèn vào đây -->
                     </tbody>
                 </table>
-                <div id="pagination">
-                    <span> &lt;&lt; </span>
-                    <span>2/51</span>
-                    <span> &gt;&gt; </span>
-                </div>
+                <div id="pagination-container"></div>
             </section>
         </main>
     </div>
