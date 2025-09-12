@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task List - HQ System</title>    
-    <script>
-        (function() {
-            const v = new Date().getTime();
-            document.write(`<link rel="icon" href="img/logo.png?v=${v}">`);
-            document.write(`<link rel="stylesheet" href="css/styles.css?v=${v}">`);
-            document.write(`<link rel="stylesheet" href="css/hq-task-list.css?v=${v}">`);
-            document.write(`<script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>`);
-            document.write(`<script defer src="js/hq-task-list.js?v=${v}"><\/script>`);
-        })();
-    </script>
+    
+    <!-- Static links are preferred over document.write to avoid parser blocking -->
+    <link rel="icon" href="img/logo.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/hq-task-list.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/hq-task-list.js"></script>
 </head>
 <body>
     <div id="loading-overlay">
@@ -43,53 +41,104 @@
                 <button id="go-to-reports" data-i18n-key="view-reports">View Reports</button>
             </div>
         </div>
-
+ 
         <!-- Main content of the page -->
         <main>
-            <!-- Charts Section -->
-            <section class="charts-section">
-                <h1 class="section-title" data-i18n-key="view-task-list">View Task List</h1>
-                <div class="chart-controls">
-                    <button id="togglePie" class="chart-toggle red" data-i18n-key="show-progress-chart">Show Progress Chart</button>
-                    <button id="toggleBar" class="chart-toggle red" data-i18n-key="show-weekly-stats-chart">Show Weekly Stats Chart</button>
+            <div id="content-wrapper">
+                <!-- Report Content (initially hidden, will be on the left in split view) -->
+                <div id="report-content" class="content-pane" style="display: none;">
+                    <h1 class="section-title" data-i18n-key="reports">Reports</h1>
+                    <section class="report-section">
+                        <h2 data-i18n-key="completion-rate-by-store">Completion Rate by Store</h2>
+                        <div class="report-filters">
+                            <select id="year-filter"></select>
+                            <select id="quarter-filter">
+                                <option value="all" data-i18n-key="all-quarters">All Quarters</option>
+                                <option value="1" data-i18n-key="quarter-1">Quarter 1</option>
+                                <option value="2" data-i18n-key="quarter-2">Quarter 2</option>
+                                <option value="3" data-i18n-key="quarter-3">Quarter 3</option>
+                                <option value="4" data-i18n-key="quarter-4">Quarter 4</option>
+                            </select>
+                            <select id="month-filter"></select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="taskCompletionChart"></canvas>
+                        </div>
+                        <div id="task-table-container" class="table-container">
+                            <table id="task-table">
+                                <thead>
+                                    <tr></tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </section>
+        
+                    <section class="report-section">
+                        <h2 data-i18n-key="task-stats-by-dept">Task Stats by Department</h2>
+                        <div class="chart-container">
+                            <canvas id="taskReviewBarChart"></canvas>
+                        </div>
+                        <div class="table-container">
+                            <table id="task-table2">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
-                <div class="charts-container">
-                    <div class="chart-wrapper">
-                        <canvas id="progressPieChart"></canvas>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="progressBarChart"></canvas>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Task List Section -->
-            <section class="task-list-section">
-                <div class="filters">
-                    <button id="time-filter-toggle" class="chart-toggle green" data-i18n-key="this-week">This Week</button>
-                    <input type="date" id="startDate" />
-                    <input type="date" id="endDate" />
-                    <input type="text" id="taskSearch" data-i18n-key="search-by-task-name" placeholder="Search by Task Name..." />
-                </div>
+                <!-- Task List Content -->
+                <div id="task-list-content" class="content-pane">
+                    <!-- Charts Section -->
+                    <section class="charts-section">
+                        <h1 class="section-title" data-i18n-key="view-task-list">View Task List</h1>
+                        <div class="chart-controls">
+                            <button id="togglePie" class="chart-toggle red" data-i18n-key="show-progress-chart">Show Progress Chart</button>
+                            <button id="toggleBar" class="chart-toggle red" data-i18n-key="show-weekly-stats-chart">Show Weekly Stats Chart</button>
+                        </div>
+                        <div class="charts-container">
+                            <div class="chart-wrapper">
+                                <canvas id="progressPieChart"></canvas>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="progressBarChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-i18n-key="no-short">No.</th>
-                            <th id="weekFilter" class="clickable" data-i18n-key="week">Week</th>
-                            <th id="respFilter" class="clickable" data-i18n-key="responsible">Responsible</th>
-                            <th data-i18n-key="task">Task</th>
-                            <th data-i18n-key="progress">Progress</th>
-                            <th data-i18n-key="stores-unable">Stores Unable</th>
-                            <th data-i18n-key="status">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="taskTableBody">
-                        <!-- Rendered dynamically -->
-                    </tbody>
-                </table>
-            </section>
+                    <!-- Task List Section -->
+                    <section class="task-list-section">
+                        <div class="filters">
+                            <button id="time-filter-toggle" class="chart-toggle green" data-i18n-key="this-week">This Week</button>
+                            <input type="date" id="startDate" />
+                            <input type="date" id="endDate" />
+                            <input type="text" id="taskSearch" data-i18n-key="search-by-task-name" placeholder="Search by Task Name..." />
+                        </div>
+
+                        <table id="main-task-list-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n-key="no-short">No.</th>
+                                    <th id="weekFilter" class="clickable" data-i18n-key="week" data-column="isoWeek">Week</th>
+                                    <th id="respFilter" class="clickable" data-i18n-key="department" data-column="department_name">Department</th>
+                                    <th class="clickable" data-i18n-key="task" data-column="task_name">Task</th>
+                                    <th class="clickable" data-i18n-key="progress" data-column="progress">Progress</th>
+                                    <th class="clickable" data-i18n-key="stores-unable" data-column="unable">Stores Unable</th>
+                                    <th class="clickable" data-i18n-key="status" data-column="status_name">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taskTableBody">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                        <div id="pagination-container"></div>
+                    </section>
+                </div>
+            </div>
         </main>
+        <div id="filter-popup" class="filter-popup" style="display: none;"></div>
     </div>
 </body>
 </html>

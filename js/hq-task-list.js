@@ -1,4 +1,12 @@
-  // ===== DOM Elements =====
+/**
+ * HQ Task List & Reports - Combined logic for the main dashboard page.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
+
+  // ===================================
+  //  DOM Elements
+  // ===================================
   const goToHQTasksButton = document.getElementById("go-to-hq-tasks");
   const goToTaskListButton = document.getElementById("go-to-task-list");
   const createTaskButton = document.getElementById("go-to-create-task");
@@ -6,12 +14,15 @@
   const viewReportButton = document.getElementById("go-to-reports");
   const storeScreenButton = document.getElementById("store-screen");
 
+  // --- Task List Elements ---
   const taskSearchInput = document.getElementById("taskSearch");
   const startDateInput = document.getElementById("startDate");
   const endDateInput = document.getElementById("endDate");
   const weekFilterHeader = document.getElementById("weekFilter");
+  const mainTaskListHeader = document.querySelector('#main-task-list-table thead');
   const respFilterHeader = document.getElementById("respFilter");
   const taskTableBody = document.getElementById('taskTableBody');
+  const paginationContainer = document.getElementById('pagination-container');
   const timeFilterToggleButton = document.getElementById("time-filter-toggle");
 
   const togglePieButton = document.getElementById("togglePie");
@@ -21,16 +32,39 @@
   const loadingOverlay = document.getElementById("loading-overlay");
   const progressBar = document.getElementById("progress-bar");
   const progressText = document.getElementById("progress-text");
-  const mainContainer = document.querySelector('.container');
+  const mainContainer = document.querySelector('.container'); // Main container for the whole page
+  const contentWrapper = document.getElementById('content-wrapper'); // Wrapper for split-view
 
-  // ===== State =====
+  const reportContent = document.getElementById('report-content');
+  const filterPopup = document.getElementById('filter-popup');
+
+  // --- Report Elements ---
+  // These will be assigned when the report is initialized to avoid errors on page load
+  let yearFilter, quarterFilter, monthFilter, taskCompletionChartCanvas, taskReviewBarChartCanvas, taskTable, taskTable2;
+
+  // ===================================
+  //  State
+  // ===================================
   let allTasks = [];
+  let allStores = [];
+
+  // --- Task List State ---
   let activeWeekFilter = null;
   let activeRespFilter = null;
   let timeFilterMode = 'this_week'; // 'this_week' or 'all'
   let pieChart, barChart;
+  let currentPage = 1;
+  let sortConfig = { column: null, direction: 'asc' };
+  let columnFilters = {};
+  const tasksPerPage = 25;
 
-  // ===== API & Helpers =====
+  // --- Report State ---
+  let isReportInitialized = false;
+  let storeCompletionChart, deptStatsChart;
+
+  // ===================================
+  //  API & Helpers
+  // ===================================
   const getAPIBaseURL = () => {
     return window.location.hostname === 'localhost'
       ? 'http://localhost/auraProject/api'
@@ -43,19 +77,19 @@
     progressText.textContent = `${Math.round(percentage)}%`;
   }
 
-  async function loadTasks() {
+  async function fetchFromAPI(endpoint) {
     try {
-      const response = await fetch(`${API_URL}/tasks.php`);
+      const response = await fetch(`${API_URL}/${endpoint}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       return await response.json();
     } catch (error) {
-      console.error('Error loading tasks:', error);
-      taskTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">Failed to load tasks.</td></tr>`;
+      console.error(`Error loading ${endpoint}:`, error);
       return [];
     }
   }
 
   const getISOWeek = (dateStr) => {
+    if (!dateStr) return null;
     const date = new Date(dateStr);
     date.setHours(0, 0, 0, 0);
     date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
@@ -72,28 +106,147 @@
     };
   }
 
-  // ===== Navigation =====
+  // ===================================
+  //  Excel-like Filter Popup Logic
+  // ===================================
+  function showFilterPopup(targetHeader) {
+    const column = targetHeader.dataset.column;
+    if (!column) return;
+
+    const rect = targetHeader.getBoundingClientRect();
+    filterPopup.style.left = `${rect.left}px`;
+    filterPopup.style.top = `${rect.bottom + window.scrollY}px`;
+
+    // Get unique values for the column
+    const uniqueValues = [...new Set(allTasks.map(task => {
+        if (column === 'isoWeek') return `W${task.isoWeek}`;
+        return task[column] || '(Blank)';
+    }))].sort();
+
+    // Build popup content
+    filterPopup.innerHTML = `
+        <div class="filter-popup-actions">
+            <button id="sort-asc">Sort A to Z</button>
+            <button id="sort-desc">Sort Z to A</button>
+        </div>
+        <input type="text" id="filter-search" class="filter-popup-search" placeholder="Search...">
+        <div id="filter-list" class="filter-popup-list">
+            <label><input type="checkbox" id="select-all-filter" checked> (Select All)</label>
+            ${uniqueValues.map(val => `<label><input type="checkbox" class="filter-item" value="${val}" checked> ${val}</label>`).join('')}
+        </div>
+        <div class="filter-popup-footer">
+            <button id="filter-apply">OK</button>
+            <button id="filter-cancel">Cancel</button>
+        </div>
+    `;
+
+    filterPopup.style.display = 'flex';
+
+    // --- Add event listeners for the new popup ---
+    document.getElementById('sort-asc').onclick = () => {
+        sortConfig = { column, direction: 'asc' };
+        applyFiltersAndClosePopup();
+    };
+    document.getElementById('sort-desc').onclick = () => {
+        sortConfig = { column, direction: 'desc' };
+        applyFiltersAndClosePopup();
+    };
+
+    const filterSearch = document.getElementById('filter-search');
+    const filterList = document.getElementById('filter-list');
+    filterSearch.oninput = () => {
+        const searchTerm = filterSearch.value.toLowerCase();
+        filterList.querySelectorAll('label').forEach(label => {
+            if (label.querySelector('#select-all-filter')) return; // Skip "Select All"
+            const text = label.textContent.toLowerCase();
+            label.style.display = text.includes(searchTerm) ? 'block' : 'none';
+        });
+    };
+
+    const selectAllCheckbox = document.getElementById('select-all-filter');
+    const itemCheckboxes = filterList.querySelectorAll('.filter-item');
+    selectAllCheckbox.onchange = () => {
+        itemCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+    };
+
+    itemCheckboxes.forEach(cb => {
+        cb.onchange = () => {
+            const allChecked = [...itemCheckboxes].every(item => item.checked);
+            selectAllCheckbox.checked = allChecked;
+        };
+    });
+
+    document.getElementById('filter-apply').onclick = () => {
+        const selectedValues = new Set();
+        itemCheckboxes.forEach(cb => {
+            if (cb.checked) {
+                selectedValues.add(cb.value);
+            }
+        });
+        columnFilters[column] = selectedValues;
+        applyFiltersAndClosePopup();
+    };
+
+    document.getElementById('filter-cancel').onclick = () => {
+        filterPopup.style.display = 'none';
+    };
+  }
+
+  function applyFiltersAndClosePopup() {
+    currentPage = 1;
+    filterAndRender();
+    updateActiveFilterHeaders();
+    filterPopup.style.display = 'none';
+  }
+
+  function updateActiveFilterHeaders() {
+      mainTaskListHeader.querySelectorAll('th[data-column]').forEach(th => {
+          const column = th.dataset.column;
+          const hasFilter = columnFilters[column] && columnFilters[column].size > 0;
+          const hasSort = sortConfig.column === column;
+          if (hasFilter || hasSort) {
+              th.classList.add('active-filter');
+          } else {
+              th.classList.remove('active-filter');
+          }
+      });
+  }
+
+  // Close popup if clicked outside
+  document.addEventListener('click', (e) => {
+      if (filterPopup.style.display === 'flex' && !filterPopup.contains(e.target) && !e.target.closest('.clickable')) {
+          filterPopup.style.display = 'none';
+      }
+  });
+
+  // ===================================
+  //  Navigation
+  // ===================================
   const redirectTo = (path) => window.location.href = path;
   goToHQTasksButton.addEventListener('click', () => redirectTo('hq-store.html'));
   goToTaskListButton.addEventListener('click', () => redirectTo('hq-task-list.html'));
   createTaskButton.addEventListener('click', () => redirectTo('hq-create-task.html'));
   storeListButton.addEventListener('click', () => redirectTo('hq-store-detail.html'));
-  viewReportButton.addEventListener('click', () => redirectTo('hq-report.html'));
   storeScreenButton.addEventListener('click', () => redirectTo('index.html'));
 
-  // ===== Rendering & Filtering =====
+  // ===================================
+  //  Task List Logic
+  // ===================================
   function renderTable(tasks) {
-    if (tasks.length === 0) {
+    const startIndex = (currentPage - 1) * tasksPerPage;
+    const endIndex = startIndex + tasksPerPage;
+    const paginatedTasks = tasks.slice(startIndex, endIndex);
+
+    if (paginatedTasks.length === 0) {
       taskTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No tasks match the current filters.</td></tr>`;
       return;
     }
-
-    const tableHtml = tasks.map((task, index) => {
-      // Note: The fields 'progress' and 'unable' are not in the standard task object from tasks.php
-      // I'll use placeholders. You might need to adjust this based on your actual API response.
+ 
+    const tableHtml = paginatedTasks.map((task, index) => {
+      const taskNumber = startIndex + index + 1;
       return `
         <tr>
-          <td>${index + 1}</td>
+          <td>${taskNumber}</td>
           <td>W${task.isoWeek}</td>
           <td>${task.department_name || 'N/A'}</td>
           <td>
@@ -109,10 +262,87 @@
     taskTableBody.innerHTML = tableHtml;
   }
 
+  function renderPagination(totalTasks) {
+    const totalPages = Math.ceil(totalTasks / tasksPerPage);
+    paginationContainer.innerHTML = ''; // Clear old pagination
+
+    if (totalPages <= 1) {
+        return;
+    }
+
+    let paginationHtml = '';
+    const maxVisibleButtons = 5;
+
+    // << (Previous 5 pages) and < (Previous page) buttons
+    paginationHtml += `<button class="page-btn" data-page="${Math.max(1, currentPage - 5)}" ${currentPage <= 1 ? 'disabled' : ''}>&lt;&lt;</button>`;
+    paginationHtml += `<button class="page-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+    let startPage = 1;
+    let endPage = totalPages;
+
+    if (totalPages > maxVisibleButtons) {
+        const half = Math.floor(maxVisibleButtons / 2);
+        startPage = currentPage - half;
+        endPage = currentPage + half;
+
+        if (startPage < 1) {
+            startPage = 1;
+            endPage = maxVisibleButtons;
+        }
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = totalPages - maxVisibleButtons + 1;
+        }
+    }
+
+    // Ellipsis at the beginning
+    if (startPage > 1) {
+        paginationHtml += `<button class="page-btn" data-page="1">1</button>`;
+        if (startPage > 2) {
+            paginationHtml += `<span class="page-btn" style="cursor:default; border:none; background:none;">...</span>`;
+        }
+    }
+
+    // Page number buttons
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+
+    // Ellipsis at the end
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            paginationHtml += `<span class="page-btn" style="cursor:default; border:none; background:none;">...</span>`;
+        }
+        paginationHtml += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+    }
+
+    // > (Next page) and >> (Next 5 pages) buttons
+    paginationHtml += `<button class="page-btn" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>&gt;</button>`;
+    paginationHtml += `<button class="page-btn" data-page="${Math.min(totalPages, currentPage + 5)}" ${currentPage >= totalPages ? 'disabled' : ''}>&gt;&gt;</button>`;
+
+    paginationContainer.innerHTML = paginationHtml;
+
+    // Add event listeners to new buttons
+    document.querySelectorAll('.page-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const page = parseInt(e.target.dataset.page);
+            if (page) {
+                currentPage = page;
+                filterAndRender();
+            }
+        });
+    });
+  }
+
   function filterAndRender() {
+    // Reset to first page if filters change, but not if it's a pagination click
     const search = taskSearchInput.value.toLowerCase();
     const startDate = startDateInput.value;
     const endDate = endDateInput.value;
+
+    // Reset to first page if filters change, but not if it's a pagination click
+    // This is handled by the event listeners that call this function.
 
     let filtered = allTasks;
 
@@ -123,16 +353,44 @@
         filtered = filtered.filter(t => t.isoWeek === currentWeekNumber);
     }
 
-    filtered = filtered.filter(t => {
-      const nameMatch = t.task_name.toLowerCase().includes(search);
-      const weekMatch = !activeWeekFilter || `W${t.isoWeek}` === activeWeekFilter;
-      const respMatch = !activeRespFilter || t.department_name === activeRespFilter;
-      const startMatch = !startDate || t.start_date >= startDate;
-      const endMatch = !endDate || t.end_date <= endDate;
-      return nameMatch && weekMatch && respMatch && startMatch && endMatch;
+    // 2. Filter by column filters
+    Object.keys(columnFilters).forEach(column => {
+        const filterValues = columnFilters[column];
+        if (filterValues && filterValues.size > 0) {
+            filtered = filtered.filter(task => {
+                let taskValue = task[column];
+                if (column === 'isoWeek') taskValue = `W${taskValue}`;
+                return filterValues.has(String(taskValue));
+            });
+        }
     });
 
+    // 3. Filter by general search, date range
+    filtered = filtered.filter(t => {
+      const nameMatch = t.task_name.toLowerCase().includes(search);
+      const startMatch = !startDate || t.start_date >= startDate;
+      const endMatch = !endDate || t.end_date <= endDate;
+      return nameMatch && startMatch && endMatch;
+    });
+
+    // 4. Apply sorting
+    if (sortConfig.column) {
+        filtered.sort((a, b) => {
+            let valA = a[sortConfig.column] || '';
+            let valB = b[sortConfig.column] || '';
+            
+            // Simple numeric sort for progress/unable, otherwise string sort
+            if (!isNaN(valA) && !isNaN(valB)) {
+                return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+            }
+
+            return sortConfig.direction === 'asc' 
+                ? String(valA).localeCompare(String(valB)) 
+                : String(valB).localeCompare(String(valA));
+        });
+    }
     renderTable(filtered);
+    renderPagination(filtered.length);
   }
 
   // ===== Chart Logic =====
@@ -217,7 +475,291 @@
       }
   }
 
-  // ===== Event Listeners =====
+  // ===================================
+  //  Report Logic (Merged)
+  // ===================================
+  function initializeReport() {
+    if (isReportInitialized) return;
+
+    // Assign report DOM elements now that the section is visible
+    yearFilter = document.getElementById('year-filter');
+    quarterFilter = document.getElementById('quarter-filter');
+    monthFilter = document.getElementById('month-filter');
+    taskCompletionChartCanvas = document.getElementById('taskCompletionChart');
+    taskReviewBarChartCanvas = document.getElementById('taskReviewBarChart');
+    taskTable = document.getElementById('task-table');
+    taskTable2 = document.getElementById('task-table2');
+
+    populateFilterOptions();
+    renderReports();
+
+    yearFilter.addEventListener('change', handleFilterChange);
+    quarterFilter.addEventListener('change', handleFilterChange);
+    monthFilter.addEventListener('change', handleFilterChange);
+    document.addEventListener('languageChanged', renderReports);
+
+    isReportInitialized = true;
+  }
+
+  function populateFilterOptions() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
+
+    const years = [...new Set(allTasks.map(t => new Date(t.start_date).getFullYear()))].sort((a, b) => b - a);
+    yearFilter.innerHTML = years.map(y => `<option value="${y}" ${y === currentYear ? 'class="current-period"' : ''}>${y}</option>`).join('');
+    yearFilter.value = currentYear;
+
+    const months = [
+        "all-months", "month-1", "month-2", "month-3", "month-4", "month-5", "month-6",
+        "month-7", "month-8", "month-9", "month-10", "month-11", "month-12"
+    ];
+    monthFilter.innerHTML = months.map((key, i) => {
+        const value = i === 0 ? 'all' : i;
+        const translatedText = typeof translate === 'function' ? translate(key) : key;
+        return `<option value="${value}" ${i === currentMonth ? 'class="current-period"' : ''} data-i18n-key="${key}">${translatedText}</option>`;
+    }).join('');
+    monthFilter.value = currentMonth;
+
+    const quarterOption = quarterFilter.querySelector(`option[value="${currentQuarter}"]`);
+    if (quarterOption) quarterOption.classList.add('current-period');
+    quarterFilter.value = 'all';
+  }
+
+  function getWeeksForFilter(filters) {
+    const { year, quarter, month } = filters;
+    if (month !== 'all') {
+        const start = new Date(year, month - 1, 1);
+        const end = new Date(year, month, 0);
+        const startWeek = getISOWeek(start.toISOString());
+        const endWeek = getISOWeek(end.toISOString());
+        return Array.from({ length: endWeek - startWeek + 1 }, (_, i) => `W${startWeek + i}`);
+    }
+    if (quarter !== 'all') {
+        const startMonth = (quarter - 1) * 3;
+        const start = new Date(year, startMonth, 1);
+        const end = new Date(year, startMonth + 3, 0);
+        const startWeek = getISOWeek(start.toISOString());
+        const endWeek = getISOWeek(end.toISOString());
+        return Array.from({ length: endWeek - startWeek + 1 }, (_, i) => `W${startWeek + i}`);
+    }
+    // Default to all weeks in the year if no specific filter
+    return Array.from({ length: 53 }, (_, i) => `W${i + 1}`);
+  }
+
+  function processReportData(filters) {
+    const weeks = getWeeksForFilter(filters);
+    const weekSet = new Set(weeks);
+
+    const filteredTasks = allTasks.filter(task => {
+        if (!task.start_date || !task.isoWeek) return false;
+        const taskDate = new Date(task.start_date);
+        const weekLabel = `W${task.isoWeek}`;
+        return taskDate.getFullYear() == filters.year && weekSet.has(weekLabel);
+    });
+
+    // --- Store Stats ---
+    const storeWeeklyStats = {};
+    filteredTasks.forEach(task => {
+        if (!task.isoWeek) return;
+        const weekLabel = `W${task.isoWeek}`;
+        const storeId = task.store_id;
+        storeWeeklyStats[storeId] = storeWeeklyStats[storeId] || {};
+        storeWeeklyStats[storeId][weekLabel] = storeWeeklyStats[storeId][weekLabel] || { done: 0, total: 0 };
+        storeWeeklyStats[storeId][weekLabel].total++;
+        if (task.status_name === 'Done') storeWeeklyStats[storeId][weekLabel].done++;
+    });
+
+    const storeData = allStores.map(store => {
+        const weeklyData = weeks.map(weekLabel => {
+            const stats = storeWeeklyStats[store.store_id]?.[weekLabel];
+            return stats && stats.total > 0 ? (stats.done / stats.total) * 100 : 0;
+        });
+        return { store: store.store_name, data: weeklyData };
+    }).sort((a, b) => {
+        const avgA = a.data.reduce((sum, val) => sum + val, 0) / (a.data.length || 1);
+        const avgB = b.data.reduce((sum, val) => sum + val, 0) / (b.data.length || 1);
+        return avgB - avgA;
+    });
+
+    const deptWeeklyStats = {};
+    filteredTasks.forEach(task => {
+        if (!task.isoWeek) return;
+        const weekLabel = `W${task.isoWeek}`;
+        const deptName = task.department_name || 'Unknown';
+        const isPlanned = task.key_work && task.key_work.trim() !== '';
+        
+        deptWeeklyStats[deptName] = deptWeeklyStats[deptName] || {};
+        deptWeeklyStats[deptName][weekLabel] = deptWeeklyStats[deptName][weekLabel] || { planned: 0, unplanned: 0 };
+
+        if (isPlanned) deptWeeklyStats[deptName][weekLabel].planned++;
+        else deptWeeklyStats[deptName][weekLabel].unplanned++;
+    });
+
+    const deptData = Object.keys(deptWeeklyStats).map(deptName => {
+        const weeklyPlanned = weeks.map(weekLabel => deptWeeklyStats[deptName][weekLabel]?.planned || 0);
+        const weeklyUnplanned = weeks.map(weekLabel => deptWeeklyStats[deptName][weekLabel]?.unplanned || 0);
+        return {
+            dept: deptName,
+            planned: weeklyPlanned,
+            unplanned: weeklyUnplanned
+        };
+    }).sort((a, b) => a.dept.localeCompare(b.dept));
+
+    return { weeks, storeData, deptData };
+  }
+
+  function renderStoreCompletionTable(storeData, weeks) {
+    if (!taskTable) return;
+    const translatedStore = typeof translate === 'function' ? translate('store') : 'Store';
+    const translatedAverage = typeof translate === 'function' ? translate('average') : 'Average';
+
+    taskTable.querySelector('thead tr').innerHTML = `
+        <th>${translatedStore}</th>
+        ${weeks.map(w => `<th>${w}</th>`).join('')}
+        <th>${translatedAverage}</th>
+    `;
+    taskTable.querySelector('tbody').innerHTML = storeData.map(store => {
+        const average = store.data.length > 0 ? store.data.reduce((a, b) => a + b, 0) / store.data.length : 0;
+        return `
+            <tr>
+                <td>${store.store}</td>
+                ${store.data.map(d => `<td>${d.toFixed(2)}%</td>`).join("")}
+                <td><b>${average.toFixed(2)}%</b></td>
+            </tr>
+        `;
+    }).join('');
+  }
+
+  function renderDeptStatsTable(taskData, weeks) {
+    if (!taskTable2) return;
+    const headerHtml = `
+        <thead>
+            <tr>
+                <th rowspan="2">${typeof translate === 'function' ? translate('department') : 'Department'}</th>
+                ${weeks.map(w => `<th colspan="2">${w}</th>`).join('')}
+                <th rowspan="2">${typeof translate === 'function' ? translate('total-tasks') : 'Total'}</th>
+                <th rowspan="2">${typeof translate === 'function' ? translate('planned-percent') : '% Planned'}</th>
+                <th rowspan="2">${typeof translate === 'function' ? translate('unplanned-percent') : '% Unplanned'}</th>
+            </tr>
+            <tr>
+                ${weeks.map(() => `<th>${typeof translate === 'function' ? translate('planned') : 'P'}</th><th>${typeof translate === 'function' ? translate('unplanned') : 'U'}</th>`).join('')}
+            </tr>
+        </thead>
+    `;
+    const bodyHtml = taskData.map(department => {
+        const totalPlanned = department.planned.reduce((a, b) => a + b, 0);
+        const totalUnplanned = department.unplanned.reduce((a, b) => a + b, 0);
+        const totalTasks = totalPlanned + totalUnplanned;
+        const plannedPercentage = totalTasks > 0 ? ((totalPlanned / totalTasks) * 100).toFixed(2) : 0;
+        const unplannedPercentage = totalTasks > 0 ? ((totalUnplanned / totalTasks) * 100).toFixed(2) : 0;
+        return `
+            <tr>
+                <td>${department.dept}</td>
+                ${department.planned.map((p, i) => `<td>${p}</td><td>${department.unplanned[i]}</td>`).join('')}
+                <td>${totalTasks}</td>
+                <td>${plannedPercentage}%</td>
+                <td>${unplannedPercentage}%</td>
+            </tr>
+        `;
+    }).join('');
+    taskTable2.innerHTML = `${headerHtml}<tbody>${bodyHtml}</tbody>`;
+  }
+
+  function drawStoreCompletionChart(data, weeks) {
+    if (storeCompletionChart) storeCompletionChart.destroy();
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) color += letters[Math.floor(Math.random() * 16)];
+        return color;
+    };
+    storeCompletionChart = new Chart(taskCompletionChartCanvas, {
+        type: 'line',
+        data: {
+            labels: weeks,
+            datasets: data.map(store => ({
+                label: store.store,
+                data: store.data,
+                borderColor: getRandomColor(),
+                fill: false,
+                tension: 0.1,
+                borderWidth: 2
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: { min: 0, max: 100, ticks: { stepSize: 10 } }
+            }
+        }
+    });
+  }
+
+  function drawDeptStatsChart(taskData, weeks) {
+    if (deptStatsChart) deptStatsChart.destroy();
+    deptStatsChart = new Chart(taskReviewBarChartCanvas, {
+        type: 'bar',
+        data: {
+            labels: weeks,
+            datasets: [
+                ...taskData.map((department, index) => ({
+                    label: department.dept + ' Planned',
+                    data: department.planned,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    stack: `Stack ${index}`
+                })),
+                ...taskData.map((department, index) => ({
+                    label: department.dept + ' Unplanned',
+                    data: department.unplanned,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    stack: `Stack ${index}`
+                }))
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+        }
+    });
+  }
+
+  function renderReports() {
+    const filters = {
+        year: yearFilter.value,
+        quarter: quarterFilter.value,
+        month: monthFilter.value,
+    };
+    const { weeks, storeData, deptData } = processReportData(filters);
+
+    renderStoreCompletionTable(storeData, weeks);
+    drawStoreCompletionChart(storeData, weeks);
+    renderDeptStatsTable(deptData, weeks);
+    drawDeptStatsChart(deptData, weeks);
+  }
+
+  function handleFilterChange() {
+    if (monthFilter.value !== 'all') {
+        quarterFilter.value = 'all';
+    } else if (quarterFilter.value !== 'all') {
+        monthFilter.value = 'all';
+    }
+    renderReports();
+  }
+
+  // ===================================
+  //  Event Listeners
+  // ===================================
+  const debouncedFilter = debounce(() => {
+    currentPage = 1; // Reset page when filtering
+    filterAndRender();
+  }, 300);
+
   taskSearchInput.addEventListener("input", debounce(filterAndRender, 300));
   startDateInput.addEventListener("change", filterAndRender);
   endDateInput.addEventListener("change", filterAndRender);
@@ -232,39 +774,44 @@
         timeFilterToggleButton.textContent = 'This Week';
         timeFilterToggleButton.classList.replace('red', 'green');
     }
-    filterAndRender();
+    debouncedFilter();
   });
 
-  weekFilterHeader.addEventListener("click", () => {
-    activeWeekFilter = activeWeekFilter ? null : "W28"; // Example filter
-    filterAndRender();
-  });
-
-  respFilterHeader.addEventListener("click", () => {
-    activeRespFilter = activeRespFilter ? null : "PLANNING"; // Example filter
-    filterAndRender();
+  mainTaskListHeader.addEventListener("click", (e) => {
+    const header = e.target.closest('th.clickable');
+    if (header) showFilterPopup(header);
   });
 
   togglePieButton.addEventListener("click", () => toggleChart(pieChartCanvas, togglePieButton, 'pie'));
   toggleBarButton.addEventListener("click", () => toggleChart(barChartCanvas, toggleBarButton, 'bar'));
 
-  // ===== Initial Load =====
+  viewReportButton.addEventListener('click', () => {
+    const isSplitView = contentWrapper.classList.toggle('split-view');
+    if (isSplitView) {
+      reportContent.style.display = 'block';
+      initializeReport();
+      viewReportButton.classList.add('active-report');
+    } else {
+      reportContent.style.display = 'none';
+      viewReportButton.classList.remove('active-report');
+    }
+  });
+
+  // ===================================
+  //  Initial Load
+  // ===================================
   async function initialize() {
     updateProgress(10);
 
-    allTasks = await loadTasks();
+    [allTasks, allStores] = await Promise.all([fetchFromAPI('tasks.php'), fetchFromAPI('store_master.php')]);
     updateProgress(50);
 
-    // Pre-calculate week numbers for performance
-    allTasks.forEach(task => {
-        task.isoWeek = getISOWeek(task.start_date);
-    });
+    allTasks.forEach(task => { task.isoWeek = getISOWeek(task.start_date); });
     updateProgress(60);
 
     filterAndRender();
     updateProgress(70);
 
-    // Default to showing both charts
     pieChartCanvas.style.display = "block";
     togglePieButton.classList.add("green");
     togglePieButton.classList.remove("red");
@@ -285,3 +832,4 @@
   }
 
   initialize();
+});

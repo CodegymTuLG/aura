@@ -35,7 +35,7 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
+ 
 .loading-text { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; }
 .progress-bar-container { width: 80%; max-width: 400px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
 .progress-bar { width: 0%; height: 20px; background-color: #4caf50; border-radius: 10px; transition: width 0.4s ease; }
@@ -45,6 +45,30 @@
 #loading-overlay.hidden {
   opacity: 0;
   pointer-events: none;
+}
+
+/* ===================================
+   Main Content Layout
+====================================== */
+#content-wrapper {
+  display: flex;
+  justify-content: center; /* Center the single pane by default */
+  gap: 30px;
+}
+
+.content-pane {
+  width: 100%;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Split view mode */
+.split-view .content-pane {
+  width: 768px;
+  border: 1px solid #d0ebff; /* Viền xanh nhạt đồng bộ */
+  border-radius: 12px; /* Bo tròn góc */
+  padding: 16px; /* Thêm khoảng đệm bên trong */
+  background-color: #fff; /* Nền trắng để nổi bật */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Đổ bóng nhẹ */
 }
 
 /* ===================================
@@ -138,7 +162,7 @@ canvas {
   background-color: #fff;
 }
 
-table {
+#main-task-list-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
@@ -149,42 +173,43 @@ table {
   table-layout: fixed;
 }
 
-th, td {
-  text-align: left;
-  padding: 12px 15px; /* Adjust padding */
-  border-bottom: 1px solid #e0eaff; /* Lighter, consistent blue theme */
-  vertical-align: top;
+#main-task-list-table th, #main-task-list-table td {
+  text-align: center; /* Căn giữa nội dung các cột theo mặc định */
+  padding: 6px 6px; /*Adjust padding */
+  border: 1px solid #e0eaff; /* Thêm viền cho tất cả các ô */
+  vertical-align: middle;
 }
 
-/* Căn giữa cho cột Status để tag hiển thị đẹp hơn */
-td:last-child {
+/* Căn trái lại cho cột Task (cột thứ 4) */
+#main-task-list-table th:nth-child(4) {
   text-align: center;
 }
 
-th {
+#main-task-list-table th {
+  text-align: center;
+}
+
+#main-task-list-table th {
   background-color: #f3f8ff; /* Consistent with popup header */
   color: #0d47a1; /* Consistent with popup header */
   font-weight: 600;
   text-transform: uppercase; /* Make headers uppercase */
   font-size: 12px;
   letter-spacing: 0.5px;
+  vertical-align: middle; /* Căn giữa theo chiều dọc */
 }
 
-tbody tr:hover {
-    background-color: #eaf6ff; /* Consistent hover effect */
-}
-
-tbody tr:last-child td {
+#main-task-list-table tbody tr:last-child td {
     border-bottom: none; /* Remove border from last row */
 }
 
-table th:nth-child(1) { width: 4%; }   /* No */
-table th:nth-child(2) { width: 8%; }   /* Week */
-table th:nth-child(3) { width: 15%; }  /* Responsible */
-table th:nth-child(4) { width: 43%; }  /* Task */
-table th:nth-child(5) { width: 8%; }   /* Progress */
-table th:nth-child(6) { width: 10%; }  /* Stores Unable */
-table th:nth-child(7) { width: 12%; }  /* Status */
+#main-task-list-table th:nth-child(1) { width: 4%; }   /* No */
+#main-task-list-table th:nth-child(2) { width: 6%; }   /* Week */
+#main-task-list-table th:nth-child(3) { width: 15%; }  /* Responsible */
+#main-task-list-table th:nth-child(4) { width: 43%; }  /* Task */
+#main-task-list-table th:nth-child(5) { width: 9%; }   /* Progress */
+#main-task-list-table th:nth-child(6) { width: 10%; }  /* Stores Unable */
+#main-task-list-table th:nth-child(7) { width: 13%; }  /* Status */
 
 .task-name {
   font-weight: 600;
@@ -234,6 +259,7 @@ table th:nth-child(7) { width: 12%; }  /* Status */
 
 .clickable {
   cursor: pointer;
+  position: relative;
   color: #1976d2; /* Consistent blue */
   text-decoration: none;
   font-weight: 600;
@@ -241,4 +267,319 @@ table th:nth-child(7) { width: 12%; }  /* Status */
 
 .clickable:hover {
     text-decoration: underline;
+}
+.clickable.active-filter::after {
+    content: ' ▼';
+    font-size: 10px;
+    color: #d32f2f;
+    position: absolute;
+    right: 5px;
+}
+
+/* ========================================================================== */
+/* STYLES MERGED FROM hq-report.css */
+/* ========================================================================== */
+
+/* ===================================
+   Report Section Layout
+====================================== */
+.report-section {
+    background-color: #f9fcff;
+    border: 1px solid #d0ebff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.report-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3949ab;
+    margin-top: 0;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.report-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.report-filters select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #b0c4de;
+    background-color: #fff;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.report-filters select option.current-period {
+    background-color: #e3f2fd; /* Màu nền xanh nhạt */
+    font-weight: bold;         /* In đậm chữ */
+    color: #0d47a1;            /* Màu chữ xanh đậm */
+}
+
+.report-filters select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    height: 350px;
+}
+
+.table-container {
+    overflow-x: auto; /* Thêm thanh cuộn ngang khi bảng quá rộng */
+    -webkit-overflow-scrolling: touch; /* Cải thiện trải nghiệm cuộn trên iOS */
+}
+
+/* Giới hạn chiều cao và thêm cuộn dọc cho bảng cửa hàng */
+#task-table-container {
+    max-height: 280px; /* Chiều cao ước tính cho 1 hàng header + 5 hàng dữ liệu */
+    overflow-y: auto;
+    position: relative; /* Cần thiết để a sticky header hoạt động đúng */
+}
+
+/* ===================================
+   Report Table Styles
+====================================== */
+#task-table,
+#task-table2 {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: white;
+    font-size: 12px;
+}
+
+#task-table th, #task-table td,
+#task-table2 th, #task-table2 td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid #e0eaff;
+    white-space: nowrap;
+}
+
+#task-table th,
+#task-table2 th {
+    background-color: #f3f8ff;
+    color: #0d47a1;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+#task-table tbody tr:hover,
+#task-table2 tbody tr:hover {
+    background-color: #eaf6ff;
+}
+
+/* Căn lề trái cho cột tên cửa hàng */
+#task-table th:first-child,
+#task-table td:first-child {
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+    padding-left: 12px;
+    width: 25%; /* Tăng độ rộng cho cột tên cửa hàng */
+}
+
+/* Tùy chỉnh độ rộng cột Average */
+#task-table th:last-child,
+#task-table td:last-child {
+    width: 10%;
+    font-weight: bold;
+}
+
+/* Tùy chỉnh riêng cho bảng phòng ban */
+#task-table2 th,
+#task-table2 td {
+    white-space: normal;
+    word-break: break-word;
+    font-size: 11px;
+    padding: 8px 4px;
+}
+
+/* Phân bổ lại độ rộng cho các cột trong bảng phòng ban */
+#task-table2 th:first-child,
+#task-table2 td:first-child {
+    width: 20%; /* Tăng độ rộng cho cột Phòng ban */
+}
+
+/* Giảm độ rộng cho 3 cột cuối */
+#task-table2 th:nth-last-child(1), #task-table2 td:nth-last-child(1),
+#task-table2 th:nth-last-child(2), #task-table2 td:nth-last-child(2),
+#task-table2 th:nth-last-child(3), #task-table2 td:nth-last-child(3) {
+    width: 8%;
+}
+
+/* Xoay dọc các nhãn Planned/Unplanned trong header của bảng department */
+#task-table2 thead tr:nth-child(2) th {
+    writing-mode: vertical-rl; /* Xoay chữ dọc */
+    white-space: nowrap; /* Ngăn không cho chữ bị ngắt dòng */
+    padding: 10px 2px; /* Điều chỉnh lại padding cho phù hợp */
+    vertical-align: middle; /* Căn chữ ra giữa ô */
+}
+
+/* ===================================
+   Custom Button States
+====================================== */
+.button-row-buttons button.active-report {
+    background: #d32f2f; /* Màu đỏ */
+    color: #fff;
+}
+
+/* ===================================
+   Pagination Styles
+====================================== */
+#pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    user-select: none;
+}
+
+.page-btn {
+    padding: 8px 12px;
+    border: 1px solid #b0c4de;
+    background-color: #fff;
+    color: #1976d2;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #eaf6ff;
+}
+
+.page-btn.active {
+    background-color: #1976d2;
+    color: #fff;
+    border-color: #1976d2;
+}
+
+.page-btn:disabled {
+    background-color: #f5f5f5;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* ===================================
+   Responsive Adjustments for Split View
+====================================== */
+/* Áp dụng khi ở chế độ xem chia đôi */
+.split-view #main-task-list-table {
+    font-size: 13px; /* Giảm cỡ chữ chung của bảng */
+}
+
+.split-view #main-task-list-table th {
+    font-size: 11px; /* Giảm cỡ chữ tiêu đề để vừa vặn hơn */
+    padding: 10px 5px; /* Giảm khoảng đệm ngang của header */
+}
+
+.split-view #main-task-list-table .status {
+    white-space: normal; /* Cho phép chữ trong status xuống dòng */
+    word-break: break-word;
+}
+
+/* Đảm bảo cột Week luôn căn giữa, ngay cả trong split-view */
+.split-view #main-task-list-table th:nth-child(2),
+.split-view #main-task-list-table td:nth-child(2) {
+    text-align: center !important;
+}
+
+/* ===================================
+   Filter Popup Styles
+====================================== */
+.filter-popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 100;
+    width: 280px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0eaff;
+}
+
+.filter-popup-actions button {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 600;
+}
+.filter-popup-actions button:hover {
+    background: #e0e0e0;
+}
+
+.filter-popup-search {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #b0c4de;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.filter-popup-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e0eaff;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-popup-list label {
+    display: block;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.filter-popup-list label:hover {
+    background-color: #eaf6ff;
+}
+
+.filter-popup-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #e0eaff;
+}
+
+.filter-popup-footer button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    cursor: pointer;
 }

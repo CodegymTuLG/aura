@@ -30,7 +30,6 @@
         goToTaskListButton: document.getElementById('go-to-task-list'),
         goToCreateTaskButton: document.getElementById('go-to-create-task'),
         goToStoreListButton: document.getElementById('go-to-store-list'),
-        goToReportsButton: document.getElementById('go-to-reports'),
         goToStoreScreenButton: document.getElementById('store-screen'),
     };
 
@@ -150,7 +149,6 @@
         dom.goToTaskListButton.addEventListener('click', () => redirectTo('hq-task-list.html'));
         dom.goToCreateTaskButton.addEventListener('click', () => redirectTo('hq-create-task.html'));
         dom.goToStoreListButton.addEventListener('click', () => redirectTo('hq-store-detail.html'));
-        dom.goToReportsButton.addEventListener('click', () => redirectTo('hq-report.html'));
         dom.goToStoreScreenButton.addEventListener('click', () => redirectTo('index.html'));
     }
 

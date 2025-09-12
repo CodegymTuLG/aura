@@ -3,18 +3,16 @@ const goToHQTasksButton        = document.getElementById('go-to-hq-tasks');
 const goToReceivingTaskButton  = document.getElementById('go-to-task-list');
 const goToCreateTaskButton     = document.getElementById('go-to-create-task');
 const goToStoreListButton      = document.getElementById('go-to-store-list');
-const goToReportsButton        = document.getElementById('go-to-reports');
 const goToStoreScreenButton    = document.getElementById('store-screen');
 
 // ===== Redirect helpers =====
 const redirectTo = (path) => window.location.href = path;
 
 // ===== Event listeners =====
-goToHQTasksButton.addEventListener('click', () => redirectTo('screen-hq.html'));
+goToHQTasksButton.addEventListener('click', () => redirectTo('hq-store.html'));
 goToReceivingTaskButton.addEventListener('click', () => redirectTo('hq-task-list.html'));
 goToCreateTaskButton.addEventListener('click', () => redirectTo('hq-create-task.html'));
 goToStoreListButton.addEventListener('click', () => redirectTo('hq-store-detail.html'));
-goToReportsButton.addEventListener('click', () => redirectTo('hq-report.html'));
 goToStoreScreenButton.addEventListener('click', () => redirectTo('index.html'));
 
 /* ===== Helpers ===== */

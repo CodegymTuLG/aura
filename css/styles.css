@@ -146,6 +146,7 @@ body {
   max-width: 100%;
   box-sizing: border-box;
   padding: 0 8px;
+  margin-bottom: 24px; /* Thêm khoảng cách dưới nhóm nút */
 }
 
 .button-group h1 {
@@ -163,7 +164,7 @@ body {
   display: flex;
   flex-wrap: wrap; /* Cho phép các nút xuống dòng */
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
 }
 
