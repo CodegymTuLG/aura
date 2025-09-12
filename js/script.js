@@ -306,20 +306,35 @@
     }
     function starSVG(size){
       return `
-      <svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
         <defs>
-          <linearGradient id="gStar" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%"  stop-color="#ffe680"/><stop offset="60%" stop-color="#ffd54f"/><stop offset="100%" stop-color="#ffc84d"/>
-          </linearGradient>
+            <radialGradient id="goldCoinGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+            <stop offset="60%" style="stop-color:#FFC400;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#DAA520;stop-opacity:1" />
+            </radialGradient>
+            
+            <filter id="dropshadow" height="130%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+            <feOffset dx="0" dy="1" result="offsetblur" />
+            <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+            </filter>
         </defs>
-        <polygon fill="url(#gStar)" stroke="#ffb300" stroke-width="3" points="50,5 62,36 94,38 69,58 77,91 50,74 23,91 31,58 6,38 38,36"/>
-        <circle cx="38" cy="45" r="10" fill="#0b1a2b"/><circle cx="62" cy="47" r="9" fill="#0b1a2b"/>
-        <circle cx="34" cy="42" r="3.5" fill="#fff"/><circle cx="58" cy="44" r="3.5" fill="#fff"/>
-        <ellipse cx="32" cy="60" rx="6" ry="4" fill="#ff86b6" opacity=".7"/><ellipse cx="68" cy="61" rx="6" ry="4" fill="#ff86b6" opacity=".7"/>
-        <path d="M38 64 Q50 73 64 64" fill="none" stroke="#7a3b00" stroke-width="4" stroke-linecap="round"/>
-        <path d="M20 34 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2z" fill="#fff8b3" opacity=".8"/>
-        <path d="M78 28 l1.5 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5z" fill="#fff8b3" opacity=".85"/>
-      </svg>`;
+
+        <circle cx="50" cy="50" r="45" fill="url(#goldCoinGradient)" stroke="#B8860B" stroke-width="2" filter="url(#dropshadow)"/>
+        
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#FFC800" stroke-width="2.5"/>
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#FFFACD" stroke-width="0.5"/>
+        
+        <text x="50" y="60" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#B8860B" text-anchor="middle" stroke="#DAA520" stroke-width="0.5" >$</text>
+
+        <circle cx="20" cy="25" r="2" fill="#fff8b3" opacity="0.8"/>
+        <circle cx="80" cy="28" r="2.5" fill="#fff8b3" opacity="0.9"/>
+        <circle cx="35" cy="85" r="1.5" fill="#fff8b3" opacity="0.7"/>
+        </svg>`;
     }
     function spawnFlyingStar(fromBtn){
       const svgHTML = starSVG(38);
