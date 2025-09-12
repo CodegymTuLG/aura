@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Dashboard HQ</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    h2 { margin-top: 40px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+    .filter {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      padding: 6px;
+    }
+    .section {
+      background-color: #fff;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+    }
+    .type-options img {
+      width: 40px; height: 40px;
+      margin: 5px;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .type-options input[type="radio"] {
+      display: none;
+    }
+    .type-options label.selected img {
+      border-color: #007BFF;
+    }
+    .dynamic-section {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 10px;
+      border: 1px dashed #999;
+    }
+    .image-upload {
+      border: 2px solid #333;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .image-upload input[type="text"] {
+      display: block;
+      width: 100%;
+      margin-bottom: 5px;
+    }
+    .back-btn {
+      margin-top: 20px;
+      background: #ddd;
+      border: 1px solid #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Task Dashboard HQ</h1>
+
+  <!-- ===================== PHẦN 1 ===================== -->
+  <div class="section">
+    <h2>1. HQ Task Review</h2>
+    <label>Chọn Department:</label>
+    <select id="deptFilterHQ" onchange="updateHQChart()">
+      <option value="all">All</option>
+      <option>IMP</option><option>PLA</option><option>ADM</option>
+      <option>ACC</option><option>OPS</option>
+    </select>
+    <canvas id="hqChart" height="100"></canvas>
+  </div>
+
+  <!-- ===================== PHẦN 2 ===================== -->
+  <div class="section">
+    <h2>2. Store Completion Ratio</h2>
+    <label>Chọn Store:</label>
+    <select id="storeFilter" onchange="updateStoreChart()">
+      <option value="all">All</option>
+      <option>3002-Ecopark</option>
+      <option>3018-Lĩnh Nam</option>
+    </select>
+    <label>Chọn Tuần:</label>
+    <select id="weekFilterStore" onchange="updateStoreChart()">
+      <option value="all">All</option>
+      <option>W27</option><option>W28</option><option>W29</option>
+    </select>
+    <canvas id="storeChart" height="100"></canvas>
+  </div>
+
+  <!-- ===================== PHẦN 3 ===================== -->
+  <div class="section">
+    <h2>3. Task List</h2>
+    <div class="filter">
+      <input type="date" id="startDate" placeholder="Start Day"/>
+      <input type="date" id="endDate" placeholder="End Day"/>
+      <input type="text" id="searchTask" placeholder="Search Task Name..."/>
+      <select id="filterStore">
+        <option value="">All Stores</option>
+        <option>3002-Ecopark</option>
+      </select>
+      <button onclick="filterTasks()">Filter</button>
+    </div>
+    <table id="taskTable">
+      <thead>
+        <tr>
+          <th>No</th><th>Week</th><th>Dept</th><th>Type</th>
+          <th>Task</th><th>Progress</th><th>Stores Unable</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="taskBody">
+        <!-- Dynamic rows -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===================== FORM TẠO TASK ===================== -->
+  <div class="section">
+    <h2>+ Tạo Task mới</h2>
+    <form id="taskForm">
+      <label>Task Name:</label> <input required><br><br>
+
+      <label>Start Day:</label> <input type="date" id="newStartDay" onchange="calcWeek()" required>
+      <label>End Day:</label> <input type="date" required>
+      <label>Week:</label> <input type="text" id="newWeek" readonly><br><br>
+
+      <label>Dept:</label>
+      <select required>
+        <option>IMP</option><option>PLA</option><option>ADM</option>
+      </select>
+      <label>Store:</label>
+      <select><option>3002-Ecopark</option></select>
+      <label>Status:</label>
+      <select><option>In Progress</option><option>On-time</option></select><br><br>
+
+      <label>Loại Task (Type):</label>
+      <div class="type-options" id="typeOptions">
+        <label><input type="radio" name="taskType" value="image"><img src="https://img.icons8.com/emoji/48/camera-emoji.png"/></label>
+        <label><input type="radio" name="taskType" value="checklist"><img src="https://img.icons8.com/emoji/48/check-mark-emoji.png"/></label>
+        <label><input type="radio" name="taskType" value="yesno"><img src="https://img.icons8.com/emoji/48/memo-emoji.png"/></label>
+      </div>
+
+      <div class="dynamic-section" id="typeDetails"></div>
+      <button type="submit">Lưu Task</button>
+      <button type="button" class="back-btn" onclick="undoChanges()">Quay lại</button>
+    </form>
+  </div>
+
+  <script>
+    // HQ & Store Chart
+    const ctx1 = document.getElementById('hqChart').getContext('2d');
+    const ctx2 = document.getElementById('storeChart').getContext('2d');
+    const hqChart = new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['W27', 'W28', 'W29'],
+        datasets: [{
+          label: 'Plan',
+          data: [10, 14, 8],
+          backgroundColor: '#2980b9'
+        }, {
+          label: 'Unplan',
+          data: [3, 2, 1],
+          backgroundColor: '#d3d3d3'
+        }]
+      },
+      options: { responsive: true, stacked: true }
+    });
+
+    const storeChart = new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: ['W27', 'W28', 'W29'],
+        datasets: [{
+          label: '3002-Ecopark',
+          data: [92, 95, 90],
+          borderColor: '#3498db',
+          fill: false
+        }]
+      },
+      options: { responsive: true }
+    });
+
+    function updateHQChart() { /* dynamic filter HQ chart */ }
+    function updateStoreChart() { /* dynamic filter Store chart */ }
+
+    // Task list
+    const dummyTasks = [
+      { no: 1, week: 'W27', dept: 'IMP', type: '📋', task: 'Display Gondola End', progress: '14/25', storeUnable: 4, status: 'In Progress' },
+      { no: 2, week: 'W27', dept: 'PLA', type: '📸', task: 'Clean Entrance Zone', progress: '9/25', storeUnable: 3, status: 'In Progress' }
+    ];
+    function renderTasks() {
+      const tbody = document.getElementById('taskBody');
+      tbody.innerHTML = '';
+      dummyTasks.forEach(t => {
+        const row = `<tr>
+          <td>${t.no}</td><td>${t.week}</td><td>${t.dept}</td><td>${t.type}</td>
+          <td>${t.task}</td><td>${t.progress}</td><td>${t.storeUnable}</td><td>${t.status}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+    renderTasks();
+
+    // Auto-calc week
+    function calcWeek() {
+      const date = new Date(document.getElementById("newStartDay").value);
+      const onejan = new Date(date.getFullYear(),0,1);
+      const week = Math.ceil((((date - onejan) / 86400000) + onejan.getDay()+1)/7);
+      document.getElementById("newWeek").value = 'W' + week;
+    }
+
+    // Type toggle
+    document.querySelectorAll('input[name="taskType"]').forEach(radio => {
+      radio.addEventListener('change', e => {
+        document.querySelectorAll('.type-options label').forEach(label => label.classList.remove('selected'));
+        e.target.closest('label').classList.add('selected');
+        renderTypeFields(e.target.value);
+      });
+    });
+
+    function renderTypeFields(type) {
+      const div = document.getElementById('typeDetails');
+      div.innerHTML = '';
+      if (type === 'image') {
+        div.innerHTML = `
+          <label>Số lượng ảnh cần chụp:</label>
+          <input type="number" id="imgCount" min="1" max="10" oninput="renderImageFields(this.value)"/>
+          <div id="imageInputs"></div>`;
+      } else if (type === 'checklist') {
+        div.innerHTML = `<table>
+          <tr><th>No</th><th>Hạng mục</th><th>Check Type</th><th>How to check</th><th>Progress</th><th>Incharge Person</th></tr>
+          ${[1,2,3].map(i => `<tr><td>${i}</td><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>`).join('')}
+        </table>`;
+      } else if (type === 'yesno') {
+        div.innerHTML = `
+          <label>Nội dung YES:</label><input type="text"><br>
+          <label>Nội dung NO:</label><input type="text"><br>`;
+      }
+    }
+
+    function renderImageFields(n) {
+      const div = document.getElementById("imageInputs");
+      div.innerHTML = '';
+      for (let i = 1; i <= n; i++) {
+        div.innerHTML += `
+          <div class="image-upload">
+            <input type="text" placeholder="Tên hình ảnh ${i}">
+            <input type="file">
+          </div>`;
+      }
+    }
+
+    function undoChanges() {
+      document.getElementById("taskForm").reset();
+      document.getElementById("typeDetails").innerHTML = '';
+      document.querySelectorAll('.type-options label').forEach(label => label.classList.remove('selected'));
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+/*
+ * Styles for the HQ Task List page (hq-task-list.html)
+ * This file contains styles specific to the charts and task table on this page.
+ */
+
+/* ===================================
+   Loading Overlay
+====================================== */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+
+.loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; }
+.progress-bar-container { width: 80%; max-width: 400px; background-color: #e0e0e0; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.progress-bar { width: 0%; height: 20px; background-color: #4caf50; border-radius: 10px; transition: width 0.4s ease; }
+.progress-text { font-size: 14px; font-weight: bold; color: #555; }
+
+/* Class để ẩn overlay */
+#loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===================================
+   Charts Section
+====================================== */
+.section-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #3949ab;
+  margin-bottom: 16px;
+}
+
+.charts-section {
+  margin-bottom: 24px;
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.chart-toggle {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.chart-toggle:hover {
+  opacity: 0.9;
+}
+
+.chart-toggle.red {
+    background-color: #d32f2f;
+    color: #fff;
+}
+
+.chart-toggle.green {
+    background-color: #388e3c;
+    color: #fff;
+}
+
+.charts-container {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap; /* Added for responsiveness */
+}
+
+.chart-wrapper {
+  flex: 1;
+  min-width: 300px;
+  max-width: 48%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* ===================================
+   Task List Section
+====================================== */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f3f8ff; /* Consistent with hq-store.css */
+  border-radius: 12px;
+  border: 1px solid #d0ebff; /* Consistent with hq-store.css */
+}
+
+.filters input[type="text"],
+.filters input[type="date"] {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #b0c4de; /* Consistent with hq-store.css */
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 14px;
+  border-radius: 8px; /* Add rounded corners to the table */
+  overflow: hidden; /* Clip content to rounded corners */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Add a subtle shadow */
+  table-layout: fixed;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 15px; /* Adjust padding */
+  border-bottom: 1px solid #e0eaff; /* Lighter, consistent blue theme */
+  vertical-align: top;
+}
+
+/* Căn giữa cho cột Status để tag hiển thị đẹp hơn */
+td:last-child {
+  text-align: center;
+}
+
+th {
+  background-color: #f3f8ff; /* Consistent with popup header */
+  color: #0d47a1; /* Consistent with popup header */
+  font-weight: 600;
+  text-transform: uppercase; /* Make headers uppercase */
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+tbody tr:hover {
+    background-color: #eaf6ff; /* Consistent hover effect */
+}
+
+tbody tr:last-child td {
+    border-bottom: none; /* Remove border from last row */
+}
+
+table th:nth-child(1) { width: 4%; }   /* No */
+table th:nth-child(2) { width: 8%; }   /* Week */
+table th:nth-child(3) { width: 15%; }  /* Responsible */
+table th:nth-child(4) { width: 43%; }  /* Task */
+table th:nth-child(5) { width: 8%; }   /* Progress */
+table th:nth-child(6) { width: 10%; }  /* Stores Unable */
+table th:nth-child(7) { width: 12%; }  /* Status */
+
+.task-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.task-dates {
+  font-size: 13px;
+  color: #666;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px; /* Pill shape */
+  font-weight: 600;
+  font-size: 11px;
+  color: white;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.status.waiting {
+  background-color: #757575; /* Softer gray */
+}
+
+.status.reporting {
+  background-color: #00838f; /* Softer teal */
+}
+
+.status.done {
+  background-color: #388e3c; /* Green */
+}
+
+.status.onprogress {
+  background-color: #1976d2; /* Blue */
+}
+
+.status.notyet {
+  background-color: #f57c00; /* Orange */
+}
+
+.status.overdue {
+  background-color: #d32f2f; /* Red */
+}
+
+.clickable {
+  cursor: pointer;
+  color: #1976d2; /* Consistent blue */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.clickable:hover {
+    text-decoration: underline;
+}

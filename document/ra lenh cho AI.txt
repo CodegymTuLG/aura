@@ -1,0 +1,18 @@
+hợp nhất lại thành 1 file html là dc
+nếu bấm vào line data có status là complete thì show màn hình detail, 
+nếu chưa complete thì hiển thị màn hình cho phép đăng ký, 
+màn hình đăng ký thì có chức năng chụp hình, chọn người phụ trách, viết comment, 
+chọn yes no xét khả năng có thể hoàn thành được task hay không, 
+nếu chọn yes rồi bấm đăng ký thì chuyển status thành complete, 
+nếu No rồi bấm đăng ký thì bắt buộc phải nhập comment và chuyển thành status là confirm, 
+hiển thị thêm phần nội dung thống kê nữa, thông tin thống kê status của task, 
+ngoài ra thì cần thêm data sample cho toàn bộ các ngày trong tuần nữa, cho thêm nhiều data sample, 
+về số liệu thống kê thì phải có title, 
+và css cho đẹp vào hơn nữa
+hiện có lỗi thiếu title hiển thị xem con số thống kê đó là thống kê cho cái gì, 
+task chỉ có 3 trạng thái not yet, complete, confirm thôi
+đánh số thứ tự cho task
+chỗ hiển thị thứ Mon -> Sun thì dưới hiển thị ngày theo format YYMMDD nhỏ ở dưới Mon, Tue , , , tương ứng là dc rồi
+Register Task hiển thị lên như là popup để đăng ký
+click vào dòng record tương ứng trong list thì mới hiển thị popup đăng ký hay detail
+ở trạng thái ban đầu thì đứng hiển thị popup lên

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+  <title>iPad Task Fixed Header</title>
+  <link rel="stylesheet" href="../common/styles.css">
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #e0f7fa;
+      overflow: hidden;
+    }
+
+    .ipad-frame {
+      width: 768px; height: 1024px;
+      margin: 0 auto;
+      border: 10px solid #b2ebf2;
+      border-radius: 20px;
+      background: white;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .task-fixed-header {
+      padding: 16px 20px;
+      background: white;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .task-index {
+      font-weight: bold;
+      font-size: 15px;
+      width: 20px;
+    }
+
+    .task-icon {
+      position: relative;
+      width: 36px;
+      height: 36px;
+    }
+
+    .dept-square {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background-color: #90caf9;
+    }
+
+    .user-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #ffca28;
+      border: 2px solid white;
+      position: absolute;
+      bottom: -6px;
+      right: -6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .task-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .task-meta {
+      font-size: 13px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .task-progress-wrap {
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .task-progress-line {
+      flex: 1;
+      height: 2px;
+      background-color: #eee;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-right: 8px;
+    }
+
+    .task-progress-bar {
+      height: 100%;
+      background-color: #2196f3;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .task-percent {
+      font-size: 12px;
+      color: #444;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .task-links {
+      font-size: 13px;
+      color: #444;
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .task-links a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .task-links a:hover {
+      text-decoration: underline;
+    }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .store-block {
+      background: #e8fce8;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px;
+    }
+
+    .store-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .comment-box {
+      background: #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .comment-box textarea {
+      width: 100%;
+      font-size: 14px;
+      background: transparent;
+      border: none;
+      resize: vertical;
+      outline: none;
+    }
+
+    .photo-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      scroll-snap-type: x mandatory;
+      background: #d9fbd9;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .photo-slot {
+      flex: 0 0 auto;
+      width: 328px;
+      height: 260px;
+      background: #FFFFCC;
+      border-radius: 6px;
+      position: relative;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .photo-slot input { display: none; }
+    .photo-slot img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .add-icon {
+      font-size: 24px; color: #333; cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="ipad-frame">
+    <button id="back-button" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px;">Back to List</button>
+    <!-- Task Header -->
+    <div class="task-fixed-header">
+      <div class="task-left">
+        <div class="task-index">1.</div>
+        <div class="task-icon">
+          <div class="dept-square"></div>
+          <div class="user-circle"></div>
+        </div>
+        <div>
+          <div class="task-name">Display Full Moon Flower</div>
+          <div class="task-meta">RE 30 min • 29 Jun – 04 Jul</div>
+        </div>
+      </div>
+      <div class="task-progress-wrap">
+        <div class="task-progress-line">
+          <div id="progress-bar" class="task-progress-bar"></div>
+        </div>
+        <div id="progress-percent" class="task-percent">0%</div>
+      </div>
+      <div class="task-links">
+        <div>📘 Teachme: <a href="https://teachme.jp/124700/manuals/18124822" target="_blank">Manual #3003</a></div>
+        <div>📎 File: <a href="https://example.com/file.pdf" target="_blank">file.pdf</a></div>
+      </div>
+    </div>
+
+    <!-- Content Scroll -->
+    <div class="content-scroll" id="store-list"></div>
+  </div>
+
+  <script>
+    // Tính % tiến độ thời gian
+    function updateTaskProgress(startStr, endStr) {
+      const now = new Date();
+      const start = new Date(startStr);
+      const end = new Date(endStr);
+      let percent = 0;
+      if (now <= start) percent = 0;
+      else if (now >= end) percent = 100;
+      else percent = Math.round(((now - start) / (end - start)) * 100);
+      document.getElementById("progress-bar").style.width = percent + '%';
+      document.getElementById("progress-percent").textContent = percent + '%';
+    }
+    updateTaskProgress("2025-06-29", "2025-07-04");
+
+    // Tạo Store List
+    const stores = ["Eco Park", "Ocean Park", "Westbay", "Eco Rừng Cọ", "Landmark", "Haven Park", "Sky Oasic"];
+    const list = document.getElementById("store-list");
+    stores.forEach(s => {
+      const sec = document.createElement("section");
+      sec.className = "store-block";
+      sec.innerHTML = `
+        <div class="store-title">${s}</div>
+        <div class="comment-box">
+          <textarea placeholder="Viết nhận xét ở đây..."></textarea>
+        </div>
+        <div class="photo-container">
+          ${Array.from({ length: 10 }).map((_, i) => `
+            <label class="photo-slot" for="${s}_img${i}">
+              <input type="file" accept="image/*" capture="environment" id="${s}_img${i}" onchange="previewImage(this)">
+              <span class="add-icon">📷</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+      list.appendChild(sec);
+    });
+
+    function previewImage(input) {
+      if (!input.files?.[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        const slot = input.closest(".photo-slot");
+        slot.innerHTML = '';
+        slot.appendChild(img);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  </script>
+  <script src="script-detail.js"></script> 
+</body>
+</html>
