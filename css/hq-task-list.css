@@ -6,19 +6,23 @@
 /* ===================================
    Loading Overlay
 ====================================== */
-#loading-overlay {
-  position: fixed;
+.split-view #report-content #loading-overlay {
+  position: absolute; /* Changed from fixed to absolute */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.95);
-  display: flex;
+  display: none; /* Hidden by default */
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 9999;
   transition: opacity 0.5s ease;
+}
+
+.split-view #report-content #loading-overlay.visible {
+    display: flex; /* Shown when needed */
 }
 
 .loading-spinner {
@@ -41,12 +45,6 @@
 .progress-bar { width: 0%; height: 20px; background-color: #4caf50; border-radius: 10px; transition: width 0.4s ease; }
 .progress-text { font-size: 14px; font-weight: bold; color: #555; }
 
-/* Class để ẩn overlay */
-#loading-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* ===================================
    Main Content Layout
 ====================================== */
@@ -63,6 +61,7 @@
 
 /* Split view mode */
 .split-view .content-pane {
+  position: relative; /* Needed for the absolute positioned overlay */
   width: 768px;
   border: 1px solid #d0ebff; /* Viền xanh nhạt đồng bộ */
   border-radius: 12px; /* Bo tròn góc */

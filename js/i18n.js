@@ -145,7 +145,7 @@ const translations = {
         'go-to-store-screen': 'Go to Store screen',
         'hq-tasks': 'HQ Tasks',
         'view-task-list': 'Task List',
-        'create-new-task': 'Create New Task',
+        'assign-new-task': 'Assign New Task',
         'manage-stores': 'Manage Stores',
         'view-reports': 'View Reports',
         'reports': 'Reports',

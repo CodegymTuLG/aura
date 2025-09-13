@@ -27,10 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleBarButton = document.getElementById("toggleBar");
   const pieChartCanvas = document.getElementById("progressPieChart");
   const barChartCanvas = document.getElementById("progressBarChart");
-  const loadingOverlay = document.getElementById("loading-overlay");
-  const progressBar = document.getElementById("progress-bar");
-  const progressText = document.getElementById("progress-text");
-  const mainContainer = document.querySelector('.container'); // Main container for the whole page
+  const loadingOverlay = document.getElementById("loading-overlay"); // Now inside report-content
+  const progressBar = document.getElementById("progress-bar"); // Now inside report-content
+  const progressText = document.getElementById("progress-text"); // Now inside report-content
   const contentWrapper = document.getElementById('content-wrapper'); // Wrapper for split-view
 
   const reportContent = document.getElementById('report-content');
@@ -58,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Report State ---
   let isReportInitialized = false;
+  let isReportReady = false;
   let storeCompletionChart, deptStatsChart;
 
   // ===================================
@@ -71,8 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const API_URL = getAPIBaseURL();
 
   function updateProgress(percentage) {
-    progressBar.style.width = `${percentage}%`;
-    progressText.textContent = `${Math.round(percentage)}%`;
+    if (progressBar && progressText) {
+        progressBar.style.width = `${percentage}%`;
+        progressText.textContent = `${Math.round(percentage)}%`;
+    }
   }
 
   async function fetchFromAPI(endpoint) {
@@ -533,10 +535,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================================
   //  Report Logic (Merged)
   // ===================================
-  function initializeReport() {
+  async function initializeReport() {
     if (isReportInitialized) return;
 
-    // Assign report DOM elements now that the section is visible
+    updateProgress(0);
+
+    // 1. Assign report DOM elements
     yearFilter = document.getElementById('year-filter');
     quarterFilter = document.getElementById('quarter-filter');
     monthFilter = document.getElementById('month-filter');
@@ -545,13 +549,32 @@ document.addEventListener('DOMContentLoaded', () => {
     taskTable = document.getElementById('task-table');
     taskTable2 = document.getElementById('task-table2');
 
+    // 2. Fetch additional data required for reports
+    updateProgress(10);
+    allStores = await fetchFromAPI('store_master.php');
+    updateProgress(30);
+
+    // 3. Render initial charts for the main view (now part of report init)
+    pieChartCanvas.style.display = "block";
+    togglePieButton.classList.add("green");
+    togglePieButton.classList.remove("red");
+    drawPieChart();
+    updateProgress(50);
+
+    barChartCanvas.style.display = "block";
+    toggleBarButton.classList.add("green");
+    toggleBarButton.classList.remove("red");
+    drawBarChart();
+    updateProgress(70);
+
+    // 4. Populate filters and render detailed report sections
     populateFilterOptions();
     renderReports();
+    updateProgress(100);
 
     yearFilter.addEventListener('change', handleFilterChange);
     quarterFilter.addEventListener('change', handleFilterChange);
     monthFilter.addEventListener('change', handleFilterChange);
-    document.addEventListener('languageChanged', renderReports);
 
     isReportInitialized = true;
   }
@@ -843,13 +866,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   viewReportButton.addEventListener('click', () => {
     const isSplitView = contentWrapper.classList.toggle('split-view');
+    viewReportButton.classList.toggle('active-report', isSplitView);
+  
     if (isSplitView) {
       reportContent.style.display = 'block';
-      initializeReport();
-      viewReportButton.classList.add('active-report');
+      // Only initialize and show loading on the very first click
+      if (!isReportInitialized) {
+        loadingOverlay.classList.add('visible'); // Show loading
+        initializeReport().then(() => {
+            // Once done, hide loading
+            loadingOverlay.classList.remove('visible');
+            isReportReady = true;
+        });
+      }
     } else {
       reportContent.style.display = 'none';
-      viewReportButton.classList.remove('active-report');
     }
   });
 
@@ -857,35 +888,13 @@ document.addEventListener('DOMContentLoaded', () => {
   //  Initial Load
   // ===================================
   async function initialize() {
-    updateProgress(10);
-
-    [allTasks, allStores] = await Promise.all([fetchFromAPI('tasks.php'), fetchFromAPI('store_master.php')]);
-    updateProgress(50);
-
-    allTasks.forEach(task => { task.isoWeek = getISOWeek(task.start_date); });
-    updateProgress(60);
-
+    // 1. Fetch data and render the main task list immediately
+    allTasks = await fetchFromAPI('tasks.php');
+    allTasks.forEach(task => { 
+        task.isoWeek = getISOWeek(task.start_date); 
+    });
+    // Render only the task list, no report/chart processing
     filterAndRender();
-    updateProgress(70);
-
-    pieChartCanvas.style.display = "block";
-    togglePieButton.classList.add("green");
-    togglePieButton.classList.remove("red");
-    drawPieChart();
-    updateProgress(85);
-
-    barChartCanvas.style.display = "block";
-    toggleBarButton.classList.add("green");
-    toggleBarButton.classList.remove("red");
-    drawBarChart();
-    updateProgress(100);
-
-    // Hide loading overlay and show content
-    setTimeout(() => {
-        loadingOverlay.classList.add('hidden');
-        mainContainer.style.display = 'block';
-    }, 500); // Đợi 0.5s để người dùng thấy 100%
   }
-
   initialize();
 });
