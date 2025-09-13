@@ -47,6 +47,7 @@ if ($method === 'GET') {
         t.do_staff_id,
         s1.store_id,
         s1.staff_name AS do_staff_name,
+        rm.region_name,
         sm.store_name AS do_staff_store_name,
         t.start_date,
         t.end_date,
@@ -58,6 +59,7 @@ if ($method === 'GET') {
     FROM tasks t
     LEFT JOIN staff_master s1 ON t.do_staff_id = s1.staff_id
     LEFT JOIN store_master sm ON s1.store_id = sm.store_id
+    LEFT JOIN region_master rm ON sm.region_id = rm.region_id
     LEFT JOIN staff_master s2 ON t.created_staff_id = s2.staff_id
     LEFT JOIN store_master sm2 ON s2.store_id = sm2.store_id
     LEFT JOIN departments d ON t.dept_id = d.department_id
