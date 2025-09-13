@@ -265,6 +265,65 @@
         document.getElementById('confirm-task-creation').onclick = () => { postTask(taskData, isRepeat); resetForm(); closePopup(); };
     }
 
+    /**
+     * Shows a generic popup to display a list of items.
+     * @param {string} title The title of the popup.
+     * @param {object[]} items An array of store objects ({name, region}) to display in a table.
+     */
+    function showInfoPopup(title, items) {
+        const existingPopup = document.getElementById('info-popup');
+        if (existingPopup) existingPopup.remove();
+    
+        const popupOverlay = document.createElement('div');
+        popupOverlay.id = 'info-popup';
+        popupOverlay.className = 'confirmation-popup-overlay';
+    
+        let tableContent;
+        if (items.length > 0) {
+            const tableRows = items.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.name || ''}</td>
+                    <td>${item.region || 'N/A'}</td>
+                </tr>
+            `).join('');
+    
+            tableContent = `
+                <div class="info-popup-table-container">
+                    <table class="info-popup-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th data-i18n-key="store-name">Store Name</th>
+                                <th data-i18n-key="region">Region</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            tableContent = `<p style="text-align:center; margin: 20px 0;">No items to display.</p>`;
+        }
+    
+        popupOverlay.innerHTML = `
+            <div class="confirmation-popup-content" style="max-width: 450px;">
+                <h3>${title}</h3>
+                ${tableContent}
+                <div class="confirmation-popup-actions">
+                    <button id="close-info-popup" class="popup-btn-confirm">OK</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(popupOverlay);
+
+        applyTranslations(popupOverlay); // Apply translations to the new popup table headers
+
+        const closePopup = () => popupOverlay.remove();
+        document.getElementById('close-info-popup').onclick = closePopup;
+        popupOverlay.onclick = (e) => { if (e.target === popupOverlay) closePopup(); };
+    }
+
     function addChecklistRow() {
         const rowCount = dom.checklistTableBody.rows.length;
         if (rowCount >= 5) {
@@ -523,31 +582,53 @@
         }
     }
 
-    function handleAddStores() {
+    async function handleAddStores() {
         const selectedCheckboxes = dom.storeListBody.querySelectorAll('.select-store:checked');
         if (selectedCheckboxes.length === 0) {
             alert('Please select at least one store to add.');
             return;
         }
+
+        const addedStoreCodes = [];
         selectedCheckboxes.forEach(cb => {
             const storeCode = cb.dataset.storeCode;
             if (!state.selectedStores.includes(storeCode)) {
                 state.selectedStores.push(storeCode);
+                addedStoreCodes.push(storeCode);
             }
         });
-        alert(`Added ${selectedCheckboxes.length} store(s). Total selected: ${state.selectedStores.length}.`);
+
+        const allStores = await getStores();
+        const addedStoreInfo = addedStoreCodes.map(code => { // Changed to array of objects
+            const store = allStores.find(s => s.store_code === code);
+            if (store) {
+                return { name: store.store_name, region: store.region_name };
+            }
+            return { name: code, region: 'N/A' }; // Fallback
+        });
+    
+        showInfoPopup('Stores Added to Task', addedStoreInfo);
+
         dom.storeNameSearchInput.value = '';
         dom.storeRegionSearchInput.value = '';
         filterAndRenderStores(); // Show the selected stores list
     }
 
-    function handleCheckSelectedStores() {
+    async function handleCheckSelectedStores() {
         if (state.selectedStores.length === 0) {
-            alert('No stores have been added to the task yet.');
+            showInfoPopup('Selected Stores', ['No stores have been added to the task yet.']);
             return;
         }
         // This can be expanded to show a popup, for now, an alert is fine.
-        alert(`Currently selected stores:\n- ${state.selectedStores.join('\n- ')}`);
+        const allStores = await getStores();
+        const selectedStoreInfo = state.selectedStores.map(code => { // Changed to array of objects
+            const store = allStores.find(s => s.store_code === code);
+            if (store) {
+                return { name: store.store_name, region: store.region_name };
+            }
+            return { name: code, region: 'N/A' };
+        });
+        showInfoPopup('Currently Selected Stores', selectedStoreInfo);
     }
 
 
