@@ -74,6 +74,7 @@
                     <legend><span data-i18n-key="manual">Manual</span><span class="required">*</span></legend>
                     <div class="form-group manual-group">
                         <input type="text" id="manual-link" data-i18n-key="paste-link-here" placeholder="Paste link here" autocomplete="off">
+                        <input type="file" id="manual-file-input" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif" multiple>
                         <button type="button" id="upload-file" title="Upload File">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
                             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
@@ -136,22 +137,48 @@
                             <option data-i18n-key="task-type-prepare">Chuẩn bị</option>
                         </select>
                     </div>
-                    <div class="form-group response-type-group">
+                    <div class="form-group">
                         <label for="response-type"><span data-i18n-key="response-type">Response Type</span><span class="required">*</span>:</label>
-                        <select id="response-type">
-                            <option data-i18n-key="response-type-picture">Picture</option>
-                            <option data-i18n-key="response-type-checklist">Check-List</option>
-                            <option data-i18n-key="response-type-yesno">Yes-No</option>
-                        </select>
-                        <input type="number" id="response-type-number" style="width:50px;">
+                        <div class="response-type-group">
+                            <select id="response-type">
+                                <option value="Picture" data-i18n-key="response-type-picture">Picture</option>
+                                <option value="Check-List" data-i18n-key="response-type-checklist">Check-List</option>
+                                <option value="Yes-No" data-i18n-key="response-type-yesno">Yes-No</option>
+                            </select>
+                            <input type="number" id="response-type-number" style="width:50px;">
+                        </div>
+
+                        <!-- Checklist Container Row -->
+                        <div id="checklist-container" class="form-group-row" style="display: none;">
+                            <div class="form-group-spacer"></div> <!-- Spacer to align with Response Type -->
+                            <div class="form-group checklist-wrapper">
+                                <legend>
+                                    <span data-i18n-key="response-type-checklist">Check List</span>
+                                </legend>
+                                <table id="checklist-table" class="checklist-table">
+                                    <thead><tr><th data-i18n-key="no-short">STT</th><th data-i18n-key="task-details">Chi tiết Task</th><th>&nbsp;</th></tr></thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" id="checklist-message-cell"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                
+
+
                 <div class="form-group">
                     <label for="task-details"><span data-i18n-key="task-details-for-store">Task Details for Store:</span></label>
                     <textarea id="task-details" data-i18n-key="write-request-for-store" placeholder="Write request for store"></textarea>
                 </div>
+
+
             </fieldset>
-    
+
             <div class="form-actions">
                 <button type="button" id="add-repeat-task" data-i18n-key="add-as-repeat-task">Add as Repeat Task</button>
                 <button type="button" id="create-task" data-i18n-key="create-task">Create Task</button>

@@ -35,6 +35,7 @@
         suggestionList: document.getElementById('suggestion-list'),
         manualLinkInput: document.getElementById("manual-link"),
         fileUploadButton: document.getElementById("upload-file"),
+        manualFileInput: document.getElementById('manual-file-input'),
         storeNameSearchInput: document.getElementById("store-filter"),
         storeRegionSearchInput: document.getElementById("region-filter"),
         storeListTable: document.getElementById("store-list"),
@@ -47,6 +48,9 @@
         responseTypeSelect: document.getElementById("response-type"),
         responseTypeNumberInput: document.getElementById("response-type-number"),
         taskDetailsInput: document.getElementById("task-details"),
+        checklistContainer: document.getElementById('checklist-container'),
+        checklistTableBody: document.getElementById('checklist-table').getElementsByTagName('tbody')[0],
+        checklistMessageCell: document.getElementById('checklist-message-cell'),
 
         // Action Buttons
         checkButton: document.getElementById('check-button'),
@@ -135,6 +139,47 @@
         }
     }
 
+    async function handleFileUpload(event) {
+        const files = event.target.files;
+        if (!files.length) return;
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('manualFiles[]', files[i]);
+        }
+
+        // Show some loading indicator
+        dom.fileUploadButton.disabled = true;
+        dom.fileUploadButton.innerHTML = '...'; // Simple loading text
+
+        try {
+            const response = await fetch(`${API_URL}/upload.php`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || `Server error: ${response.statusText}`);
+            }
+
+            const fileUrls = result.filePaths.map(path => 
+                `${window.location.protocol}//${window.location.host}/auraProject/${path}`
+            );
+
+            // Append new URLs to the existing ones, separated by a comma and space
+            dom.manualLinkInput.value += (dom.manualLinkInput.value ? ', ' : '') + fileUrls.join(', ');
+
+        } catch (error) {
+            alert(`Error uploading file: ${error.message}`);
+            console.error('File upload error:', error);
+        } finally {
+            dom.fileUploadButton.disabled = false;
+            dom.fileUploadButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/></svg>`;
+            event.target.value = ''; // Clear the file input
+        }
+    }
+
     //================================================================================
     // V. UI & RENDERING
     //================================================================================
@@ -218,6 +263,109 @@
         document.getElementById('cancel-task-creation').onclick = closePopup;
         popupOverlay.onclick = (e) => { if (e.target === popupOverlay) closePopup(); };
         document.getElementById('confirm-task-creation').onclick = () => { postTask(taskData, isRepeat); resetForm(); closePopup(); };
+    }
+
+    function addChecklistRow() {
+        const rowCount = dom.checklistTableBody.rows.length;
+        if (rowCount >= 5) {
+            // Optional: alert('Tối đa 5 nội dung');
+            return;
+        }
+
+        const newRow = dom.checklistTableBody.insertRow();
+        newRow.innerHTML = `
+            <td class="row-index">${rowCount + 1}</td>
+            <td><input type="text" placeholder="Enter checklist content..."></td>
+            <td>
+                <button type="button" class="delete-btn" title="Delete row">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                        <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m3.5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m3.5-.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06"/>
+                    </svg>
+                </button>
+            </td>
+        `;
+
+        const input = newRow.querySelector('input[type="text"]');
+        input.addEventListener('input', handleChecklistInput);  // Kích hoạt trên mỗi lần gõ phím
+        input.addEventListener('change', handleChecklistInput); // Kích hoạt sau khi nhập xong
+        input.addEventListener('blur', handleChecklistInput);   // Kích hoạt khi rời khỏi ô
+        newRow.querySelector('.delete-btn').addEventListener('click', handleDeleteChecklistRow);
+    }
+
+    /**
+     * Updates the message in the checklist table's footer.
+     */
+    function updateChecklistMessage() {
+        const rowCount = dom.checklistTableBody.rows.length;
+        if (rowCount >= 5) {
+            dom.checklistMessageCell.textContent = translate('checklist-max-items-alert');
+        } else {
+            dom.checklistMessageCell.textContent = translate('checklist-add-new-prompt');
+        }
+        // Apply translation again in case language changed
+        applyTranslations(dom.checklistMessageCell.parentElement);
+    }
+
+    /**
+     * Dọn dẹp các dòng checklist trống thừa, chỉ giữ lại một dòng trống duy nhất ở cuối.
+     */
+    function cleanupEmptyChecklistRows() {
+        const allInputs = Array.from(dom.checklistTableBody.querySelectorAll('input[type="text"]'));
+        const emptyInputs = allInputs.filter(input => input.value.trim() === '');
+
+        // Giữ lại một dòng trống cuối cùng, xóa tất cả các dòng trống khác
+        if (emptyInputs.length > 1) {
+            // Lấy input trống cuối cùng
+            const lastEmptyInput = emptyInputs[emptyInputs.length - 1];
+            emptyInputs.forEach(input => {
+                if (input !== lastEmptyInput) {
+                    input.closest('tr').remove();
+                }
+            });
+            updateChecklistIndexes();
+            updateChecklistMessage();
+        }
+    }
+
+    function handleChecklistInput(event) {
+        // Bỏ qua sự kiện 'input' khi người dùng đang gõ ký tự phức hợp (VD: tiếng Việt)
+        if (event.isComposing) {
+            return;
+        }
+
+        // Dọn dẹp các dòng trống thừa trước
+        cleanupEmptyChecklistRows();
+
+        // Kiểm tra xem có cần thêm dòng mới không
+        const allInputs = Array.from(dom.checklistTableBody.querySelectorAll('input[type="text"]'));
+        const isAnyRowEmpty = allInputs.some(input => input.value.trim() === '');
+
+        // Nếu không có dòng nào trống, thêm một dòng mới
+        if (!isAnyRowEmpty) {
+            addChecklistRow();
+            updateChecklistMessage();
+        }
+    }
+
+    function handleDeleteChecklistRow(event) {
+        const row = event.target.closest('tr');
+        row.remove();
+        updateChecklistIndexes();
+        updateChecklistMessage();
+
+        // Sau khi xóa, kiểm tra xem có cần thêm dòng trống không
+        const hasEmptyRow = Array.from(dom.checklistTableBody.querySelectorAll('input[type="text"]')).some(input => input.value.trim() === '');
+        if (!hasEmptyRow) {
+            addChecklistRow();
+            updateChecklistMessage();
+        }
+    }
+
+    function updateChecklistIndexes() {
+        const rows = dom.checklistTableBody.rows;
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].querySelector('.row-index').textContent = i + 1;
+        }
     }
 
     //================================================================================
@@ -324,6 +472,27 @@
         }
     }
 
+    function handleResponseTypeChange(event) {
+        const selectedValue = event.target.value;
+        if (selectedValue === 'Check-List') {
+            dom.checklistContainer.style.display = 'block';
+            // Add first row if table is empty
+            if (dom.checklistTableBody.rows.length === 0) {
+                addChecklistRow();
+                updateChecklistMessage();
+            }
+        } else {
+            dom.checklistContainer.style.display = 'none';
+        }
+
+        // Show/hide the number input based on selection
+        if (selectedValue === 'Check-List' || selectedValue === 'Yes-No') {
+            dom.responseTypeNumberInput.style.display = 'none';
+        } else {
+            dom.responseTypeNumberInput.style.display = 'block'; // Or 'inline-block'
+        }
+    }
+
     async function handleKeywordInput() {
         if (state.isRepeat !== 'Yes') {
             dom.suggestionList.style.display = "none";
@@ -417,6 +586,9 @@
         dom.keywordInput.addEventListener("blur", () => setTimeout(() => dom.suggestionList.style.display = "none", 150));
         dom.storeNameSearchInput.addEventListener("input", filterAndRenderStores);
         dom.storeRegionSearchInput.addEventListener("input", filterAndRenderStores);
+        dom.responseTypeSelect.addEventListener('change', handleResponseTypeChange);
+        dom.fileUploadButton.addEventListener('click', () => dom.manualFileInput.click());
+        dom.manualFileInput.addEventListener('change', handleFileUpload);
 
         // Action Buttons
         dom.addButton.addEventListener('click', handleAddStores);
@@ -437,6 +609,9 @@
 
         setupEventListeners();
         filterAndRenderStores(); // Initial render for selected stores (which is empty)
+
+        // Trigger change event on load to set initial visibility
+        handleResponseTypeChange({ target: dom.responseTypeSelect });
     }
 
     initialize();

@@ -13,7 +13,7 @@ const translations = {
         'go-to-store-screen': 'Về màn hình Store',
         'hq-tasks': 'Tasks HQ',
         'view-task-list': 'Danh sách Task',
-        'create-new-task': 'Giao Task mới',
+        'assign-new-task': 'Giao Task mới',
         'manage-stores': 'Quản lý Cửa hàng',
         'view-reports': 'Xem Báo cáo',
         'reports': 'Báo cáo',
@@ -82,7 +82,6 @@ const translations = {
         'region': 'Khu vực',
         'task-details': 'Chi tiết Task',
         're-h': 'RE(h)',
-        'task-name': 'Tên Task',
         'task-type': 'Loại Task',
         'enter-task-name-placeholder': 'Nhập tên task',
         'response-type': 'Loại Phản hồi',
@@ -95,9 +94,11 @@ const translations = {
         'task-type-sort': 'Sắp xếp',
         'task-type-prepare': 'Chuẩn bị',
         'response-type-picture': 'Picture',
-        'response-type-checklist': 'Check-List',
+        'response-type-checklist': 'Check List',
+        'task-name': 'Tên Task',
         'response-type-yesno': 'Yes-No',
-
+        'checklist-add-new-prompt': 'Nhập liệu để tạo nội dung mới',
+        'checklist-max-items-alert': 'Chỉ có tối đa 5 nội dung',
         'end-date-before-start-alert': 'Ngày kết thúc không thể trước ngày bắt đầu.',
         'popup-confirm-title': 'Xác nhận Tạo Task',
         'popup-confirm-message': 'Vui lòng xem lại các chi tiết bên dưới trước khi tạo task.',
@@ -113,6 +114,7 @@ const translations = {
         'popup-task-details': 'Chi tiết Task',
         'popup-cancel-btn': 'Hủy',
         'popup-confirm-btn': 'Xác nhận & Tạo',
+
 
         // hq-store.html
         'filter-by-dept': 'Lọc theo phòng ban',
@@ -182,7 +184,7 @@ const translations = {
         // hq-task-list.html
         'show-progress-chart': 'Show Progress Chart',
         'show-weekly-stats-chart': 'Show Weekly Stats Chart',
-        'this-week': 'This Week',
+        'this-week': 'This Week', // This seems to be a duplicate key, but let's keep it for now.
         'search-by-task-name': 'Search by Task Name...',
         'week': 'Week',
         'responsible': 'Responsible',
@@ -192,7 +194,6 @@ const translations = {
         'status': 'Status',
 
         // hq-create-task.html
-        'assign-new-task': 'Assign New Task',
         'is-repeat': 'Is Repeat:',
         'date-range': 'Date Range',
         'yes': 'Yes',
@@ -214,7 +215,6 @@ const translations = {
         'region': 'Region',
         'task-details': 'Task Details',
         're-h': 'RE(h)',
-        'task-name': 'Task Name',
         'task-type': 'Task Type',
         'enter-task-name-placeholder': 'Enter task name',
         'response-type': 'Response Type',
@@ -227,8 +227,11 @@ const translations = {
         'task-type-sort': 'Sorting',
         'task-type-prepare': 'Preparation',
         'response-type-picture': 'Picture',
-        'response-type-checklist': 'Check-List',
+        'response-type-checklist': 'Check List',
+        'task-name': 'Task Name',
         'response-type-yesno': 'Yes-No',
+        'checklist-add-new-prompt': 'Enter data to create new content',
+        'checklist-max-items-alert': 'Maximum of 5 items only',
 
         'end-date-before-start-alert': 'End date cannot be before the start date.',
         'popup-confirm-title': 'Confirm Task Creation',
