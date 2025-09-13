@@ -290,6 +290,11 @@
     }
   </script>
   <script>
+    document.getElementById('back-button').addEventListener('click', () => {
+        window.history.back();
+    });
+  </script>
+  <script>
       (function() {
           const v = new Date().getTime();
           // Assuming script-detail.js is in the same directory as Detailtask.html
