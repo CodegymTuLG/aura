@@ -18,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const taskSearchInput = document.getElementById("taskSearch");
   const startDateInput = document.getElementById("startDate");
   const endDateInput = document.getElementById("endDate");
-  const weekFilterHeader = document.getElementById("weekFilter");
   const mainTaskListHeader = document.querySelector('#main-task-list-table thead');
-  const respFilterHeader = document.getElementById("respFilter");
   const taskTableBody = document.getElementById('taskTableBody');
   const paginationContainer = document.getElementById('pagination-container');
   const timeFilterToggleButton = document.getElementById("time-filter-toggle");
@@ -37,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const reportContent = document.getElementById('report-content');
   const filterPopup = document.getElementById('filter-popup');
+  const exportCsvButton = document.getElementById('export-csv');
 
   // --- Report Elements ---
   // These will be assigned when the report is initialized to avoid errors on page load
@@ -47,10 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================================
   let allTasks = [];
   let allStores = [];
+  let filteredTasks = []; // Tasks after filtering, sorting
 
   // --- Task List State ---
-  let activeWeekFilter = null;
-  let activeRespFilter = null;
   let timeFilterMode = 'this_week'; // 'this_week' or 'all'
   let pieChart, barChart;
   let currentPage = 1;
@@ -233,15 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
   //  Task List Logic
   // ===================================
   function renderTable(tasks) {
-    const startIndex = (currentPage - 1) * tasksPerPage;
-    const endIndex = startIndex + tasksPerPage;
-    const paginatedTasks = tasks.slice(startIndex, endIndex);
-
-    if (paginatedTasks.length === 0) {
+    if (tasks.length === 0) {
       taskTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No tasks match the current filters.</td></tr>`;
       return;
     }
  
+    const startIndex = (currentPage - 1) * tasksPerPage;
+    const endIndex = startIndex + tasksPerPage;
+    const paginatedTasks = tasks.slice(startIndex, endIndex);
+
     const tableHtml = paginatedTasks.map((task, index) => {
       const taskNumber = startIndex + index + 1;
       return `
@@ -350,37 +348,55 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeFilterMode === 'this_week') {
         const today = new Date();
         const currentWeekNumber = getISOWeek(today.toISOString());
-        filtered = filtered.filter(t => t.isoWeek === currentWeekNumber);
+        const currentYear = today.getFullYear();
+        filtered = filtered.filter(t => {
+            const taskYear = new Date(t.start_date).getFullYear();
+            return t.isoWeek === currentWeekNumber && taskYear === currentYear;
+        });
     }
 
     // 2. Filter by column filters
     Object.keys(columnFilters).forEach(column => {
         const filterValues = columnFilters[column];
         if (filterValues && filterValues.size > 0) {
-            filtered = filtered.filter(task => {
+            filtered = filtered.filter(task => { 
                 let taskValue = task[column];
                 if (column === 'isoWeek') taskValue = `W${taskValue}`;
-                return filterValues.has(String(taskValue));
+                if (taskValue === null || taskValue === undefined) taskValue = '(Blank)';
+                return filterValues.has(String(taskValue)); 
             });
         }
     });
 
     // 3. Filter by general search, date range
-    filtered = filtered.filter(t => {
-      const nameMatch = t.task_name.toLowerCase().includes(search);
-      const startMatch = !startDate || t.start_date >= startDate;
-      const endMatch = !endDate || t.end_date <= endDate;
-      return nameMatch && startMatch && endMatch;
-    });
+    if (search || startDate || endDate) {
+        filtered = filtered.filter(t => {
+            const nameMatch = !search || t.task_name.toLowerCase().includes(search);
+            const startMatch = !startDate || t.start_date >= startDate;
+            const endMatch = !endDate || t.end_date <= endDate;
+            return nameMatch && startMatch && endMatch;
+        });
+    }
 
     // 4. Apply sorting
     if (sortConfig.column) {
         filtered.sort((a, b) => {
-            let valA = a[sortConfig.column] || '';
-            let valB = b[sortConfig.column] || '';
+            let valA = a[sortConfig.column];
+            let valB = b[sortConfig.column];
             
-            // Simple numeric sort for progress/unable, otherwise string sort
-            if (!isNaN(valA) && !isNaN(valB)) {
+            // Handle 'progress' column (e.g., "10 / 20") by calculating percentage
+            if (sortConfig.column === 'progress') {
+                const [doneA, totalA] = (valA || '0 / 0').split(' / ').map(Number);
+                const [doneB, totalB] = (valB || '0 / 0').split(' / ').map(Number);
+                valA = totalA > 0 ? doneA / totalA : 0;
+                valB = totalB > 0 ? doneB / totalB : 0;
+            }
+
+            // Handle null/undefined values
+            if (valA == null) valA = sortConfig.direction === 'asc' ? Infinity : -Infinity;
+            if (valB == null) valB = sortConfig.direction === 'asc' ? Infinity : -Infinity;
+
+            if (typeof valA === 'number' && typeof valB === 'number') {
                 return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
             }
 
@@ -389,8 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 : String(valB).localeCompare(String(valA));
         });
     }
-    renderTable(filtered);
-    renderPagination(filtered.length);
+    
+    filteredTasks = filtered; // Update the global state
+    renderTable(filteredTasks);
+    renderPagination(filteredTasks.length);
   }
 
   // ===== Chart Logic =====
@@ -473,6 +491,43 @@ document.addEventListener('DOMContentLoaded', () => {
           if (chartType === 'pie' && !pieChart) drawPieChart();
           if (chartType === 'bar' && !barChart) drawBarChart();
       }
+  }
+
+  /**
+   * Exports the currently filtered task data to a CSV file.
+   */
+  function exportToCSV() {
+      if (filteredTasks.length === 0) {
+          alert("No data to export.");
+          return;
+      }
+
+      // Define CSV headers based on the table
+      const headers = [
+          "No.", "Week", "Department", "Task", "Start Date", "End Date", "Progress", "Stores Unable", "Status"
+      ];
+
+      // Map filtered data to CSV rows, ensuring proper quoting for strings
+      const rows = filteredTasks.map((task, index) => [
+          index + 1,
+          `W${task.isoWeek}`,
+          `"${(task.department_name || 'N/A').replace(/"/g, '""')}"`,
+          `"${(task.task_name || 'N/A').replace(/"/g, '""')}"`,
+          task.start_date || '',
+          task.end_date || '',
+          `"${task.progress || '0 / 0'}"`,
+          task.unable || 0,
+          `"${(task.status_name || 'N/A').replace(/"/g, '""')}"`
+      ]);
+
+      let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `task_list_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
   }
 
   // ===================================
@@ -784,6 +839,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   togglePieButton.addEventListener("click", () => toggleChart(pieChartCanvas, togglePieButton, 'pie'));
   toggleBarButton.addEventListener("click", () => toggleChart(barChartCanvas, toggleBarButton, 'bar'));
+  exportCsvButton.addEventListener('click', exportToCSV);
 
   viewReportButton.addEventListener('click', () => {
     const isSplitView = contentWrapper.classList.toggle('split-view');

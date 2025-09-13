@@ -144,7 +144,7 @@ canvas {
 ====================================== */
 .filters {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
   margin-bottom: 20px;
   padding: 10px;
@@ -160,7 +160,26 @@ canvas {
   border: 1px solid #b0c4de; /* Consistent with hq-store.css */
   border-radius: 8px;
   background-color: #fff;
+  flex-grow: 1; /* Make search input take available space */
 }
+
+/* === Export Button === */
+#export-csv {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #1976d2; /* Blue color */
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+#export-csv:hover {
+    background-color: #2196f3; /* Lighter blue on hover */
+}
+
 
 #main-task-list-table {
   width: 100%;
