@@ -577,6 +577,39 @@
 .popup-btn-confirm:hover { background-color: #4caf50; }
 
 /* ===================================
+   Toast Notifications
+====================================== */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    z-index: 10002; /* Higher than popups */
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.5s, top 0.5s;
+    animation: slideInToast 0.5s forwards;
+}
+
+.toast-notification.success {
+    background-color: #4caf50; /* Green for success */
+}
+
+.toast-notification.error {
+    background-color: #d32f2f; /* Red for error */
+}
+
+@keyframes slideInToast {
+    from { top: -50px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+}
+
+/* ===================================
    Responsive (Scoped to .ct-form)
 ====================================== */
 @media (max-width: 768px) {

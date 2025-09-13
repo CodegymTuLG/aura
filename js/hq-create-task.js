@@ -124,19 +124,38 @@
     const getCodes = () => state.cachedData.codes || (state.cachedData.codes = fetchFromAPI('code_master.php'));
 
     async function postTask(taskData, isRepeat) {
-        const endpoint = isRepeat ? 'repeat-task' : 'add-task';
         try {
-            const response = await fetch(`${API_URL}/${endpoint}.php`, { // Assuming .php extension
+            const response = await fetch(`${API_URL}/tasks.php`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(taskData)
             });
-            if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-            alert(`Task successfully ${isRepeat ? 'added as repeat' : 'created'}!`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: `Server error: ${response.statusText}` }));
+                throw new Error(errorData.message || `Server error: ${response.statusText}`);
+            }
+            showToast(`Task successfully ${isRepeat ? 'added as repeat' : 'created'}!`, 'success');
         } catch (error) {
-            alert(`Error saving task: ${error.message}`);
+            showToast(`Error saving task: ${error.message}`, 'error');
             console.error("Error posting task:", error);
         }
+    }
+
+    /**
+     * Displays a toast notification message.
+     * @param {string} message The message to display.
+     * @param {string} type 'success' or 'error'.
+     */
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.top = '-50px';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
     }
 
     async function handleFileUpload(event) {
