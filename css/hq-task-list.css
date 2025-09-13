@@ -161,7 +161,7 @@ canvas {
   background-color: #fff;
   flex-grow: 1; /* Make search input take available space */
 }
-
+ 
 /* === Export Button === */
 #export-csv {
     padding: 8px 16px;
@@ -215,6 +215,11 @@ canvas {
   font-size: 12px;
   letter-spacing: 0.5px;
   vertical-align: middle; /* Căn giữa theo chiều dọc */
+}
+
+#main-task-list-table tbody tr:hover {
+    background-color: #eaf6ff; /* Consistent hover effect */
+    cursor: pointer;
 }
 
 #main-task-list-table tbody tr:last-child td {

@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = paginatedTasks.map((task, index) => {
             const itemIndex = startIndex + index + 1;
             return `
-            <tr>
+            <tr class="task-row" data-task-index="${startIndex + index}" style="cursor: pointer;">
                 <td>${itemIndex}</td>
                 <td>${task.do_staff_store_name || 'N/A'}</td>
                 <td>${task.department_name || 'N/A'}</td>
@@ -223,6 +223,18 @@ document.addEventListener('DOMContentLoaded', () => {
         filteredTasks = [...allStoreTasks]; // Initially, filtered tasks are all tasks
 
         searchInput.addEventListener('input', handleSearch);
+
+        tableBody.addEventListener('click', (e) => {
+            const row = e.target.closest('.task-row');
+            if (!row) return;
+
+            const taskIndex = parseInt(row.dataset.taskIndex, 10);
+            const task = filteredTasks[taskIndex];
+
+            if (task) {
+                window.location.href = `detail-task.html?id=${task.task_id}`;
+            }
+        });
         renderTable(); // Hiển thị bảng với toàn bộ dữ liệu
     }
 

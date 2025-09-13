@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+  <title>Do Task</title>
+  <script>
+      (function() {
+          const v = new Date().getTime();
+          document.write(`<link rel="icon" href="favicon.ico?v=${v}" type="image/x-icon">`);
+      })();
+  </script>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #e0f7fa;
+      overflow: hidden;
+    }
+
+    .ipad-frame {
+      width: 768px; height: 1024px;
+      margin: 0 auto;
+      border: 10px solid #b2ebf2;
+      border-radius: 20px;
+      background: white;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .task-fixed-header {
+      padding: 16px 20px;
+      background: white;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+    }
+    
+    .task-left { display: flex; align-items: center; gap: 12px; }
+    .task-index { font-weight: bold; font-size: 15px; width: 20px; }
+    .task-icon { position: relative; width: 36px; height: 36px; }
+    .dept-square { width: 24px; height: 24px; border-radius: 6px; background-color: #90caf9; }
+    .user-circle { width: 24px; height: 24px; border-radius: 50%; background-color: #ffca28; border: 2px solid white; position: absolute; bottom: -6px; right: -6px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .task-name { font-size: 16px; font-weight: 600; }
+    .task-meta { font-size: 13px; color: #666; margin-top: 2px; }
+    .task-links { font-size: 13px; color: #444; margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+    .task-links a { color: #007bff; text-decoration: none; }
+    .task-links a:hover { text-decoration: underline; }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px;
+    }
+
+    .action-section {
+      background: #f0f8ff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .action-section h3 {
+        margin-top: 0;
+        font-size: 16px;
+        font-weight: bold;
+        color: #0d47a1;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .action-group label {
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .comment-box {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+    }
+
+    .comment-box textarea {
+      width: 100%;
+      font-size: 14px;
+      background: transparent;
+      border: none;
+      resize: vertical;
+      outline: none;
+      min-height: 60px;
+    }
+
+    .photo-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      scroll-snap-type: x mandatory;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .photo-slot {
+      flex: 0 0 auto;
+      width: 150px;
+      height: 150px;
+      background: #fff;
+      border: 2px dashed #ccc;
+      border-radius: 6px;
+      position: relative;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .photo-slot input { display: none; }
+    .photo-slot img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .add-icon {
+      font-size: 48px; color: #ccc;
+    }
+
+    .register-button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        background-color: #28a745;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+    .register-button:hover {
+        background-color: #218838;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="ipad-frame">
+    <button id="back-button" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px;" data-i18n-key="back-to-list">Back to List</button>
+    <!-- Task Header -->
+    <div class="task-fixed-header">
+      <div class="task-left">
+        <div class="task-index">1.</div>
+        <div class="task-icon">
+          <div class="dept-square"></div>
+          <div class="user-circle"></div>
+        </div>
+        <div>
+          <div class="task-name" data-i18n-key="task-name-placeholder">Display Full Moon Flower</div>
+          <div class="task-meta" data-i18n-key="task-meta-placeholder">RE 30 min • 29 Jun – 04 Jul</div>
+        </div>
+      </div>
+      <div class="task-links">
+        <div><span data-i18n-key="teachme-link">📘 Teachme:</span> <a href="#" target="_blank">Manual Link</a></div>
+        <div><span data-i18n-key="file-link">📎 File:</span> <a href="#" target="_blank">File Link</a></div>
+      </div>
+    </div>
+
+    <!-- Content Scroll -->
+    <div class="content-scroll" id="action-form">
+        <section class="action-section">
+            <h3>Can this task be completed?</h3>
+            <div class="action-group">
+                <input type="radio" id="can-complete-yes" name="can-complete" value="yes" checked>
+                <label for="can-complete-yes">Yes</label>
+                <input type="radio" id="can-complete-no" name="can-complete" value="no">
+                <label for="can-complete-no">No</label>
+            </div>
+        </section>
+
+        <section class="action-section">
+            <h3>Responsible Person</h3>
+            <div class="action-group">
+                <select id="staff-select" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;"></select>
+            </div>
+        </section>
+
+        <section class="action-section">
+            <h3>Comment</h3>
+            <div class="comment-box">
+              <textarea id="comment-input" data-i18n-key="comment-placeholder" placeholder="Write comments here..."></textarea>
+            </div>
+        </section>
+
+        <section class="action-section">
+            <h3>Photos</h3>
+            <div class="photo-container">
+              <label class="photo-slot" for="img0"><input type="file" accept="image/*" capture="environment" id="img0" onchange="previewImage(this)"><span class="add-icon">+</span></label>
+              <label class="photo-slot" for="img1"><input type="file" accept="image/*" capture="environment" id="img1" onchange="previewImage(this)"><span class="add-icon">+</span></label>
+              <label class="photo-slot" for="img2"><input type="file" accept="image/*" capture="environment" id="img2" onchange="previewImage(this)"><span class="add-icon">+</span></label>
+            </div>
+        </section>
+
+        <button id="register-button" class="register-button">Register</button>
+    </div>
+  </div>
+
+  <script>
+    // This would ideally be in a separate js/do-task.js file
+    document.getElementById('back-button').addEventListener('click', () => {
+        window.location.href = 'index.html';
+    });
+
+    function previewImage(input) {
+      if (!input.files?.[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        const slot = input.closest(".photo-slot");
+        slot.innerHTML = '';
+        slot.appendChild(img);
+        slot.style.border = 'none';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    document.getElementById('register-button').addEventListener('click', () => {
+        const canComplete = document.querySelector('input[name="can-complete"]:checked').value;
+        const commentInput = document.getElementById('comment-input');
+        const comment = commentInput.value.trim();
+
+        if (canComplete === 'no' && !comment) {
+            alert('Please provide a comment explaining why the task cannot be completed.');
+            commentInput.style.border = '2px solid red';
+            commentInput.focus();
+            return;
+        }
+
+        // Here you would add logic to get the task_id from URL,
+        // gather all data (staff, comment, photos), and send it to the API.
+        // Example:
+        // const params = new URLSearchParams(window.location.search);
+        // const taskId = params.get('id');
+        // const statusId = canComplete === 'yes' ? 9 (Done) : 12 (Confirm);
+        // ... API call logic ...
+        
+        alert('Task registered successfully!');
+        window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

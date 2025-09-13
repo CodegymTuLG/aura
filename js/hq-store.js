@@ -390,78 +390,18 @@ async function render() {
     `;
   }).join("") || `<div class="muted">No tasks for selected day/week.</div>`;
 
-  // ===== Popup with check-lists =====
-  const popupEl = document.getElementById("popup");
-  if (!popupEl) {
-    console.error("Popup element with id='popup' not found in HTML.");
-    return;
-  }
-
+  // ===== Handle Task Click for Redirection =====
   document.querySelectorAll(".task").forEach(taskEl => {
     const taskId = Number(taskEl.dataset.taskId);
     const task = tasks.find(t => t.task_id === taskId);
 
-    if (task) { // Luôn cho phép click vào task
+    if (task) {
       taskEl.style.cursor = "pointer";
       taskEl.onclick = () => {
-        const isInteractive = task.status_name === "Not Yet" || task.status_name === "On Progress";
-        const checks = task.check_lists || [];
+        const urlParams = `?id=${task.task_id}`;
 
-        let tableHTML = `<table>
-          <thead>
-            <tr>
-              <th>STT</th>
-              <th>Check</th>
-              <th>Check Name</th>
-              <th>Status</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>`;
-        checks.forEach((c, i) => {
-          tableHTML += `<tr data-check-id="${c.check_list_id}">
-            <td>${i + 1}</td>
-            <td><input type="checkbox" ${c.check_status === "Done" ? 'checked' : ''} ${isInteractive ? '' : 'disabled'}></td>
-            <td>${c.check_list_name}</td>
-            <td>${c.check_status || ''}</td>
-            <td>${c.completed_at && c.check_status === "Done" ? formatDate(c.completed_at) : ''}</td>
-          </tr>`;
-        });
-        tableHTML += '</tbody></table>';
-
-        const popupContent = `
-          <div class="popup-content">
-            <h3>Task #${task.task_id}: ${task.task_name}</h3>
-            <p><strong>Store:</strong> ${task.do_staff_store_name || ''} • <strong>Dept:</strong> ${task.department_name || ''} • <strong>Staff:</strong> ${task.do_staff_name || ''}</p>
-            <p><strong>RE:</strong> ${task.re || 0} min • <strong>Start:</strong> ${formatDate(task.start_date)} • <strong>End:</strong> ${formatDate(task.end_date)}</p>
-            ${tableHTML}
-            <button id="closePopup">Close</button>
-          </div>
-        `;
-        popupEl.innerHTML = popupContent;
-
-        popupEl.style.display = 'flex';
-
-        if (isInteractive) {
-          popupEl.querySelectorAll("input[type=checkbox]").forEach(cb => {
-            cb.onchange = async () => {
-              const trs = popupEl.querySelectorAll("tbody tr");
-              const checksToUpdate = Array.from(trs).map(tr => ({
-                check_list_id: Number(tr.dataset.checkId),
-                check_status: tr.querySelector("input").checked ? "Done" : "On Progress"
-              }));
-              await updateTaskCheckListBatch(task.task_id, checksToUpdate);
-              render(); // Render lại để cập nhật trạng thái
-            };
-          });
-        }
-
-        // Đóng popup khi click vào nút close hoặc click ra ngoài vùng content
-        const closePopup = () => popupEl.style.display = 'none';
-        document.getElementById("closePopup").onclick = closePopup;
-        popupEl.onclick = (e) => {
-          if (e.target === popupEl) closePopup();
-        };
+        // From HQ view, always navigate to the detail page regardless of status.
+        window.location.href = `detail-task.html${urlParams}`;
       };
     }
   });

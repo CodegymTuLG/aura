@@ -335,7 +335,7 @@
         <circle cx="80" cy="28" r="2.5" fill="#fff8b3" opacity="0.9"/>
         <circle cx="35" cy="85" r="1.5" fill="#fff8b3" opacity="0.7"/>
         </svg>`;
-    }
+    } 
     function spawnFlyingStar(fromBtn){
       const svgHTML = starSVG(38);
       const fly = document.createElement('div');
@@ -414,8 +414,17 @@
             if (starBtn) {
                 spawnFlyingStar(starBtn);
             } else if (taskEl) {
-                const taskId = Number(taskEl.dataset.taskId);
-                showTaskPopup(taskId);
+                const taskId = Number(taskEl.dataset.taskId); 
+                const task = state.allTasks.find(t => t.task_id === taskId);
+                if (task) {
+                    const taskStatus = task.status_name;
+                    const urlParams = `?id=${task.task_id}`;
+                    if (taskStatus === 'Not Yet') {
+                        window.location.href = `do-task.html${urlParams}`;
+                    } else {
+                        window.location.href = `detail-task.html${urlParams}`;
+                    }
+                }
             }
         });
         // Popup event handlers

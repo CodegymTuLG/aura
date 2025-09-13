@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableHtml = paginatedTasks.map((task, index) => {
       const taskNumber = startIndex + index + 1;
       return `
-        <tr>
+        <tr class="task-row" data-task-index="${startIndex + index}" style="cursor: pointer;">
           <td>${taskNumber}</td>
           <td>W${task.isoWeek}</td>
           <td>${task.department_name || 'N/A'}</td>
@@ -858,6 +858,18 @@ document.addEventListener('DOMContentLoaded', () => {
   mainTaskListHeader.addEventListener("click", (e) => {
     const header = e.target.closest('th.clickable');
     if (header) showFilterPopup(header);
+  });
+
+  taskTableBody.addEventListener('click', (e) => {
+      const row = e.target.closest('.task-row');
+      if (!row) return;
+
+      const taskIndex = parseInt(row.dataset.taskIndex, 10);
+      const task = filteredTasks[taskIndex];
+
+      if (task) {
+          window.location.href = `detail-task.html?id=${task.task_id}`;
+      }
   });
 
   togglePieButton.addEventListener("click", () => toggleChart(pieChartCanvas, togglePieButton, 'pie'));
