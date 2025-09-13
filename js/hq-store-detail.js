@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (goToStoreScreenButton) goToStoreScreenButton.addEventListener('click', () => redirectTo('index.html'));
 
     const tableBody = document.querySelector('#task-list tbody');
+    const tableHeader = document.querySelector('#task-list thead');
     const pageTitle = document.querySelector('.button-group h1');
     const searchInput = document.getElementById('search-input');
     const paginationContainer = document.getElementById('pagination-container');
+    const filterPopup = document.getElementById('filter-popup');
 
     // State management
     let allStoreTasks = []; // All tasks for the selected store
@@ -34,6 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const ROWS_PER_PAGE = 10;
 
 
+
+    /**
+     * State for sorting and column filtering
+     */
+    let sortConfig = { column: null, direction: 'asc' };
+    let columnFilters = {};
 
     /**
      * Tự xác định base API URL dựa trên hostname
@@ -194,23 +202,121 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Filters tasks based on the search input and re-renders the table.
+     * Applies all filters (search, column filters) and sorting, then re-renders the table.
      */
-    function handleSearch() {
+    function applyFiltersAndRender() {
         const searchTerm = searchInput.value.toLowerCase().trim();
 
-        if (!searchTerm) {
-            filteredTasks = [...allStoreTasks];
-        } else {
-            filteredTasks = allStoreTasks.filter(task =>
+        let tempTasks = [...allStoreTasks];
+
+        // 1. General Search Filter
+        if (searchTerm) {
+            tempTasks = tempTasks.filter(task =>
                 (task.task_name && task.task_name.toLowerCase().includes(searchTerm)) ||
                 (task.department_name && task.department_name.toLowerCase().includes(searchTerm)) ||
-                (task.region_name && task.region_name.toLowerCase().includes(searchTerm))
+                (task.region_name && task.region_name.toLowerCase().includes(searchTerm)) ||
+                (task.status_name && task.status_name.toLowerCase().includes(searchTerm))
             );
         }
 
+        // 2. Column-specific Filters
+        Object.keys(columnFilters).forEach(column => {
+            const filterValues = columnFilters[column];
+            if (filterValues && filterValues.size > 0) {
+                tempTasks = tempTasks.filter(task => {
+                    let taskValue = task[column] || '(Blank)';
+                    return filterValues.has(String(taskValue));
+                });
+            }
+        });
+
+        // 3. Sorting
+        if (sortConfig.column) {
+            tempTasks.sort((a, b) => {
+                let valA = a[sortConfig.column];
+                let valB = b[sortConfig.column];
+
+                if (valA == null) valA = sortConfig.direction === 'asc' ? Infinity : -Infinity;
+                if (valB == null) valB = sortConfig.direction === 'asc' ? Infinity : -Infinity;
+
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return sortConfig.direction === 'asc' ? valA - valB : valB - valA;
+                }
+
+                return sortConfig.direction === 'asc'
+                    ? String(valA).localeCompare(String(valB))
+                    : String(valB).localeCompare(String(valA));
+            });
+        }
+
+        filteredTasks = tempTasks;
         currentPage = 1; // Reset to first page after search
         renderTable();
+    }
+
+    /**
+     * Shows the filter popup for a specific column.
+     * @param {HTMLElement} targetHeader The clicked table header element.
+     */
+    function showFilterPopup(targetHeader) {
+        const column = targetHeader.dataset.column;
+        if (!column) return;
+
+        const rect = targetHeader.getBoundingClientRect();
+        filterPopup.style.left = `${rect.left}px`;
+        filterPopup.style.top = `${rect.bottom + window.scrollY}px`;
+
+        const uniqueValues = [...new Set(allStoreTasks.map(task => task[column] || '(Blank)'))].sort();
+
+        filterPopup.innerHTML = `
+            <div class="filter-popup-actions">
+                <button id="sort-asc">Sort A to Z</button>
+                <button id="sort-desc">Sort Z to A</button>
+            </div>
+            <input type="text" id="filter-search" class="filter-popup-search" placeholder="Search...">
+            <div id="filter-list" class="filter-popup-list">
+                <label><input type="checkbox" id="select-all-filter" checked> (Select All)</label>
+                ${uniqueValues.map(val => `<label><input type="checkbox" class="filter-item" value="${val}" checked> ${val}</label>`).join('')}
+            </div>
+            <div class="filter-popup-footer">
+                <button id="filter-apply">OK</button>
+                <button id="filter-cancel">Cancel</button>
+            </div>
+        `;
+        filterPopup.style.display = 'flex';
+
+        // Event listeners for the popup
+        document.getElementById('sort-asc').onclick = () => {
+            sortConfig = { column, direction: 'asc' };
+            applyFiltersAndClosePopup();
+        };
+        document.getElementById('sort-desc').onclick = () => {
+            sortConfig = { column, direction: 'desc' };
+            applyFiltersAndClosePopup();
+        };
+        document.getElementById('filter-apply').onclick = () => {
+            const selectedValues = new Set();
+            filterPopup.querySelectorAll('.filter-item:checked').forEach(cb => selectedValues.add(cb.value));
+            columnFilters[column] = selectedValues;
+            applyFiltersAndClosePopup();
+        };
+        document.getElementById('filter-cancel').onclick = () => filterPopup.style.display = 'none';
+        // ... other listeners like search, select all ...
+    }
+
+    function applyFiltersAndClosePopup() {
+        applyFiltersAndRender();
+        updateActiveFilterHeaders();
+        filterPopup.style.display = 'none';
+    }
+
+    function updateActiveFilterHeaders() {
+        tableHeader.querySelectorAll('th[data-column]').forEach(th => {
+            const column = th.dataset.column;
+            const hasFilter = columnFilters[column] && columnFilters[column].size > 0;
+            const hasSort = sortConfig.column === column;
+            th.classList.toggle('active-filter', hasFilter || hasSort);
+        });
     }
 
     /**
@@ -222,7 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
         allStoreTasks = allTasks; // Gán toàn bộ task, không lọc theo store_id
         filteredTasks = [...allStoreTasks]; // Initially, filtered tasks are all tasks
 
-        searchInput.addEventListener('input', handleSearch);
+        searchInput.addEventListener('input', applyFiltersAndRender);
+
+        tableHeader.addEventListener('click', (e) => {
+            const header = e.target.closest('th.clickable');
+            if (header) showFilterPopup(header);
+        });
 
         tableBody.addEventListener('click', (e) => {
             const row = e.target.closest('.task-row');
@@ -233,6 +344,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (task) {
                 window.location.href = `detail-task.html?id=${task.task_id}`;
+            }
+        });
+
+        // Close popup if clicked outside
+        document.addEventListener('click', (e) => {
+            if (filterPopup.style.display === 'flex' && !filterPopup.contains(e.target) && !e.target.closest('.clickable')) {
+                filterPopup.style.display = 'none';
             }
         });
         renderTable(); // Hiển thị bảng với toàn bộ dữ liệu

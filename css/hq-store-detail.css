@@ -133,3 +133,108 @@ tbody tr:last-child td {
     color: #555;
     font-weight: 600;
 }
+
+/* ===================================
+   Filter Popup Styles
+====================================== */
+.clickable {
+  cursor: pointer;
+  position: relative;
+  color: #1976d2; /* Consistent blue */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.clickable:hover {
+    text-decoration: underline;
+}
+.clickable.active-filter::after {
+    content: ' ▼';
+    font-size: 10px;
+    color: #d32f2f;
+    position: absolute;
+    right: 5px;
+}
+
+.filter-popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 100;
+    width: 280px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0eaff;
+}
+
+.filter-popup-actions button {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 600;
+}
+.filter-popup-actions button:hover {
+    background: #e0e0e0;
+}
+
+.filter-popup-search {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #b0c4de;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.filter-popup-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e0eaff;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-popup-list label {
+    display: block;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.filter-popup-list label:hover {
+    background-color: #eaf6ff;
+}
+
+.filter-popup-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #e0eaff;
+}
+
+.filter-popup-footer button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.filter-popup-footer button:first-child {
+    background-color: #1976d2; color: #fff; border-color: #1976d2;
+}

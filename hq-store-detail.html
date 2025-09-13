@@ -36,16 +36,16 @@
                 <table>
                     <thead>
                         <tr>
-                            <th data-i18n-key="no-short">STT</th>
-                            <th data-i18n-key="store-name">Tên CH</th>
-                            <th data-i18n-key="department">Phòng ban</th>
-                            <th data-i18n-key="task">Task</th>
-                            <th data-i18n-key="region">Khu vực</th>
-                            <th data-i18n-key="start">Bắt đầu</th>
-                            <th data-i18n-key="end">Kết thúc</th>
-                            <th data-i18n-key="actual-start">Bắt đầu thực tế</th>
-                            <th data-i18n-key="actual-end">Kết thúc thực tế</th>
-                            <th data-i18n-key="status">Trạng thái</th>
+                            <th data-i18n-key="no-short">STT</th> <!-- Not clickable -->
+                            <th class="clickable" data-column="do_staff_store_name" data-i18n-key="store-name">Tên CH</th>
+                            <th class="clickable" data-column="department_name" data-i18n-key="department">Phòng ban</th>
+                            <th class="clickable" data-column="task_name" data-i18n-key="task">Task</th>
+                            <th class="clickable" data-column="region_name" data-i18n-key="region">Khu vực</th>
+                            <th class="clickable" data-column="start_date" data-i18n-key="start">Bắt đầu</th>
+                            <th class="clickable" data-column="end_date" data-i18n-key="end">Kết thúc</th>
+                            <th class="clickable" data-column="actual_start_date" data-i18n-key="actual-start">Bắt đầu thực tế</th>
+                            <th class="clickable" data-column="actual_end_date" data-i18n-key="actual-end">Kết thúc thực tế</th>
+                            <th class="clickable" data-column="status_name" data-i18n-key="status">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,6 +55,7 @@
                 <div id="pagination-container"></div>
             </section>
         </main>
+        <div id="filter-popup" class="filter-popup" style="display: none;"></div>
     </div>
     <!-- Các tệp script nên được đặt ở đây nếu không dùng defer -->
 </body>
